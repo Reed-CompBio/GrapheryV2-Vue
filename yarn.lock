@@ -269,7 +269,7 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.10", "@babel/parser@^7.16.12", "@babel/parser@^7.16.7":
+"@babel/parser@^7.1.0", "@babel/parser@^7.14.7", "@babel/parser@^7.16.10", "@babel/parser@^7.16.12", "@babel/parser@^7.16.2", "@babel/parser@^7.16.7", "@babel/parser@^7.9.6":
   version "7.16.12"
   resolved "https://registry.npmmirror.com/@babel/parser/download/@babel/parser-7.16.12.tgz#9474794f9a650cf5e2f892444227f98e28cdf8b6"
   integrity sha512-VfaV15po8RiZssrkPweyvbGVSe4x2y+aciFCgn0n0/SJMR22cwofRV1mtnJQYcSB1wUTaA/X1LnA3es66MCO5A==
@@ -929,7 +929,7 @@
     "@babel/parser" "^7.16.7"
     "@babel/types" "^7.16.7"
 
-"@babel/traverse@^7.13.0", "@babel/traverse@^7.16.10", "@babel/traverse@^7.16.7", "@babel/traverse@^7.16.8", "@babel/traverse@^7.7.2":
+"@babel/traverse@^7.13.0", "@babel/traverse@^7.16.0", "@babel/traverse@^7.16.10", "@babel/traverse@^7.16.7", "@babel/traverse@^7.16.8", "@babel/traverse@^7.7.2":
   version "7.16.10"
   resolved "https://registry.npmmirror.com/@babel/traverse/download/@babel/traverse-7.16.10.tgz#448f940defbe95b5a8029975b051f75993e8239f"
   integrity sha512-yzuaYXoRJBGMlBhsMJoUW7G1UmSb/eXr/JHYM/MsOJgavJibLwASijW7oXBdw3NQ6T0bW7Ty5P/VarOs9cHmqw==
@@ -996,6 +996,27 @@
   version "1.2.1"
   resolved "https://registry.npmmirror.com/@humanwhocodes/object-schema/download/@humanwhocodes/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha1-tSBSnsIdjllFoYUd/Rwy6U45/0U=
+
+"@intlify/shared@^9.0.0":
+  version "9.1.9"
+  resolved "https://registry.npmmirror.com/@intlify/shared/download/@intlify/shared-9.1.9.tgz#0baaf96128b85560666bec784ffb01f6623cc17a"
+  integrity sha1-C6r5YSi4VWBma+x4T/sB9mI8wXo=
+
+"@intlify/vue-i18n-extensions@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.nlark.com/@intlify/vue-i18n-extensions/download/@intlify/vue-i18n-extensions-1.0.2.tgz?cache=0&sync_timestamp=1628495871325&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40intlify%2Fvue-i18n-extensions%2Fdownload%2F%40intlify%2Fvue-i18n-extensions-1.0.2.tgz#ab7f8507f7d423c368e44fa21d6dece700261fca"
+  integrity sha1-q3+FB/fUI8No5E+iHW3s5wAmH8o=
+  dependencies:
+    "@babel/parser" "^7.9.6"
+
+"@intlify/vue-i18n-loader@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmmirror.com/@intlify/vue-i18n-loader/download/@intlify/vue-i18n-loader-1.1.0.tgz#eecc6460823676f533784b3641665c5a609eccf0"
+  integrity sha1-7sxkYII2dvUzeEs2QWZcWmCezPA=
+  dependencies:
+    "@intlify/shared" "^9.0.0"
+    js-yaml "^3.13.1"
+    json5 "^2.1.1"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -1612,6 +1633,24 @@
   dependencies:
     consola "^2.15.0"
     eslint-webpack-plugin "^2.4.1"
+
+"@nuxtjs/i18n@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.npmmirror.com/@nuxtjs/i18n/download/@nuxtjs/i18n-7.2.0.tgz#f44fd61e3ec3c63663c392159e2d5f14d4f1091e"
+  integrity sha1-9E/WHj7DxjZjw5IVni1fFNTxCR4=
+  dependencies:
+    "@babel/parser" "^7.16.2"
+    "@babel/traverse" "^7.16.0"
+    "@intlify/vue-i18n-extensions" "^1.0.2"
+    "@intlify/vue-i18n-loader" "^1.1.0"
+    cookie "^0.4.1"
+    devalue "^2.0.1"
+    is-https "^4.0.0"
+    js-cookie "^3.0.1"
+    klona "^2.0.5"
+    lodash.merge "^4.6.2"
+    ufo "^0.7.9"
+    vue-i18n "^8.26.7"
 
 "@nuxtjs/proxy@^2.1.0":
   version "2.1.0"
@@ -3697,6 +3736,11 @@ cookie@^0.3.1:
   version "0.3.1"
   resolved "https://registry.npmmirror.com/cookie/download/cookie-0.3.1.tgz#e7e0a1f9ef43b4c8ba925c5c5a96e806d16873bb"
   integrity sha512-+IJOX0OqlHCszo2mBUq+SrEbCj6w7Kpffqx60zYbPTFaO4+yYgRjHwcZNpWvaTylDHaV7PPmBHzSecZiMhtPgw==
+
+cookie@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.npmmirror.com/cookie/download/cookie-0.4.1.tgz#afd713fe26ebd21ba95ceb61f9a8116e50a537d1"
+  integrity sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
 
 copy-concurrently@^1.0.0:
   version "1.0.5"
@@ -6062,6 +6106,11 @@ is-glob@^4.0.0, is-glob@^4.0.1, is-glob@^4.0.3, is-glob@~4.0.1:
   dependencies:
     is-extglob "^2.1.1"
 
+is-https@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmmirror.com/is-https/download/is-https-4.0.0.tgz#9ee725a334fb517b988278d2674efc96e4f348ed"
+  integrity sha1-nuclozT7UXuYgnjSZ078luTzSO0=
+
 is-negative-zero@^2.0.1:
   version "2.0.2"
   resolved "https://registry.npmmirror.com/is-negative-zero/download/is-negative-zero-2.0.2.tgz#7bf6f03a28003b8b3965de3ac26f664d765f3150"
@@ -6681,6 +6730,11 @@ js-beautify@^1.6.12, js-beautify@^1.6.14:
     glob "^7.1.3"
     nopt "^5.0.0"
 
+js-cookie@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmmirror.com/js-cookie/download/js-cookie-3.0.1.tgz#9e39b4c6c2f56563708d7d31f6f5f21873a92414"
+  integrity sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.nlark.com/js-tokens/download/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -6769,7 +6823,7 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.nlark.com/json-stable-stringify-without-jsonify/download/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
 
-json5@2.x, json5@^2.1.2:
+json5@2.x, json5@^2.1.1, json5@^2.1.2:
   version "2.2.0"
   resolved "https://registry.npmmirror.com/json5/download/json5-2.2.0.tgz#2dfefe720c6ba525d9ebd909950f0515316c89a3"
   integrity sha512-f+8cldu7X/y7RAJurMEJmdoKXGB/X550w2Nr3tTbezL6RwEE/iMcm+tZnXeoZtKuOq6ft8+CqzEkrIgx1fPoQA==
@@ -6833,7 +6887,7 @@ kleur@^3.0.3:
   resolved "https://registry.nlark.com/kleur/download/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha1-p5yezIbuHOP6YgbRIWxQHxR/wH4=
 
-klona@^2.0.4:
+klona@^2.0.4, klona@^2.0.5:
   version "2.0.5"
   resolved "https://registry.npmmirror.com/klona/download/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha1-0WZXTZAHY5XZljqnqSj6u412r7w=
@@ -10322,7 +10376,7 @@ ua-parser-js@^0.7.28:
   resolved "https://registry.npmmirror.com/ua-parser-js/download/ua-parser-js-0.7.31.tgz?cache=0&sync_timestamp=1635347062487&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fua-parser-js%2Fdownload%2Fua-parser-js-0.7.31.tgz#649a656b191dffab4f21d5e053e27ca17cbff5c6"
   integrity sha1-ZJplaxkd/6tPIdXgU+J8oXy/9cY=
 
-ufo@^0.7.4:
+ufo@^0.7.4, ufo@^0.7.9:
   version "0.7.9"
   resolved "https://registry.npmmirror.com/ufo/download/ufo-0.7.9.tgz#0268e3734b413c9ed6f3510201f42372821b875c"
   integrity sha1-Amjjc0tBPJ7W81ECAfQjcoIbh1w=
@@ -10587,6 +10641,11 @@ vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.nlark.com/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha1-UylVzB6yCKPZkLOp+acFdGV+CPI=
+
+vue-i18n@^8.26.7:
+  version "8.27.0"
+  resolved "https://registry.npmmirror.com/vue-i18n/download/vue-i18n-8.27.0.tgz#3e3b3ed2c107ccbd7f20dbdd7a96763a9990253e"
+  integrity sha512-SX35iJHL5PJ4Gfh0Mo/q0shyHiI2V6Zkh51c+k8E9O1RKv5BQyYrCxRzpvPrsIOJEnLaeiovet3dsUB0e/kDzw==
 
 vue-jest@^3.0.4:
   version "3.0.7"
