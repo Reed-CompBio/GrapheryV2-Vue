@@ -22,8 +22,12 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    // element ui
     'element-ui/lib/theme-chalk/index.css',
+    // quasar
+    'assets/quasar.sass',
     '@quasar/extras/roboto-font/roboto-font.css',
+    '@quasar/extras/mdi-v5/mdi-v5.css',
     '@quasar/extras/material-icons/material-icons.css',
   ],
 
@@ -54,5 +58,12 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     transpile: ['element-ui', 'quasar'],
+    loaders: {
+      scss: {
+        sassOptions: {
+          quietDeps: true,
+        },
+      },
+    },
   },
 };
