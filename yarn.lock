@@ -8929,10 +8929,10 @@ qs@^6.9.4:
   dependencies:
     side-channel "^1.0.4"
 
-quasar@^1.17.8:
-  version "1.17.8"
-  resolved "https://registry.npmmirror.com/quasar/download/quasar-1.17.8.tgz#0adc22924d9e9ce260dae2187066f9355e387145"
-  integrity sha512-rYoJNkodQpPRrmNghpsyVUmSQbZ9Tjgv+ZMeiIsvCm/Sgl0G63SJm8ZeFSGNvG1+7tMZLOUaxLgKdjuHa/43yw==
+quasar@^1.18.9:
+  version "1.18.9"
+  resolved "https://registry.yarnpkg.com/quasar/-/quasar-1.18.9.tgz#51e2e5e5888db8424743ea7c9f7bc295018dc264"
+  integrity sha512-TkHXOrhS3C7HIV8xYVeQwCfmKiO8WJRhElQXtx/ksbQplKXNZs7TFHlMq2QnYnHR895MDXFqzqIHq5UYU24rXw==
 
 query-string@^4.1.0:
   version "4.3.4"
