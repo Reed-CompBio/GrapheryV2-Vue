@@ -25,23 +25,10 @@
                 </q-btn>
             </div>
             <div id="language-switcher">
-                <LangSelector
-                    :change-callback="
-                        (x) => {
-                            currentLang = x;
-                        }
-                    "
-                />
+                <LangSelector :change-callback="changeLang" />
             </div>
             <q-btn flat round dense v-if="$q.screen.lt.md" size="20px">
-                <q-icon
-                    name="mdi-menu"
-                    @click="
-                        () => {
-                            drawerState = true;
-                        }
-                    "
-                />
+                <q-icon name="mdi-menu" @click="showDrawer" />
             </q-btn>
         </q-toolbar>
     </q-header>
@@ -50,22 +37,32 @@
 <script lang="ts">
 import LangSelector from 'components/layout/LangSelector.vue';
 
-import { defineComponent, inject } from 'vue';
+import { defineComponent, inject, WritableComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 export default defineComponent({
     name: 'LayoutHeader',
     components: { LangSelector },
     setup() {
-        let drawerState = inject('drawerState');
+        const drawerState = inject(
+            'drawerState'
+        ) as WritableComputedRef<boolean>;
+        function showDrawer() {
+            drawerState.value = true;
+        }
 
-        let currentLang = inject('currentLang');
+        const currentLang = inject(
+            'currentLang'
+        ) as WritableComputedRef<string>;
+        function changeLang(lang: string) {
+            currentLang.value = lang;
+        }
 
         return {
             siteName: inject('SITE_NAME'),
             buttons: inject('NAVIGATION_BUTTONS'),
-            drawerState,
-            currentLang,
+            showDrawer,
+            changeLang,
             t: useI18n().t,
         };
     },

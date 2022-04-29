@@ -3,7 +3,7 @@
         flat
         dense
         icon="mdi-translate"
-        :label="showHeader ? currentLang.value : null"
+        :label="showHeader ? currentLang : null"
     >
         <q-list>
             <q-item
@@ -15,7 +15,7 @@
             >
                 <q-item-section thumbnail class="q-px-sm">
                     <q-icon
-                        v-if="currentLang.value === lang"
+                        v-if="currentLang === lang"
                         color="primary"
                         name="keyboard_arrow_right"
                     />
