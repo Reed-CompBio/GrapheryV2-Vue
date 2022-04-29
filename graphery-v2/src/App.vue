@@ -1,11 +1,47 @@
 <template>
-  <router-view />
+    <router-view />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, computed, provide } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { SITE_NAME, NAVIGATION_BUTTONS } from 'src/utils/vars';
 
 export default defineComponent({
-  name: 'App'
-})
+    name: 'App',
+    setup() {
+        provide('SITE_NAME', SITE_NAME);
+        provide('NAVIGATION_BUTTONS', NAVIGATION_BUTTONS);
+
+        const i18n = useI18n();
+        const currentLang = computed({
+            get() {
+                return i18n.locale.value;
+            },
+            set(lang: string) {
+                i18n.locale.value = lang;
+            },
+        });
+
+        const _drawerState = ref(false);
+        const drawerState = computed({
+            get() {
+                return _drawerState.value;
+            },
+            set(state: boolean) {
+                _drawerState.value = state;
+            },
+        });
+
+        provide('currentLang', currentLang);
+        provide('drawerState', drawerState);
+
+        return {
+            SITE_NAME,
+            NAVIGATION_BUTTONS,
+            drawerState,
+            currentLang,
+        };
+    },
+});
 </script>
