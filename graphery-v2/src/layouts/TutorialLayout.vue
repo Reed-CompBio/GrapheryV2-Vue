@@ -1,6 +1,5 @@
 <template>
-    <div>
-        <p>tutorial layout</p>
-        <router-view />
-    </div>
+    <q-page>
+        <div></div>
+    </q-page>
 </template>
