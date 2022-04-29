@@ -10,7 +10,7 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const { configure } = require("quasar/wrappers");
+const { configure } = require('quasar/wrappers');
 
 module.exports = configure(function (ctx) {
     return {
@@ -19,7 +19,7 @@ module.exports = configure(function (ctx) {
             tsCheckerConfig: {
                 eslint: {
                     enabled: true,
-                    files: "./src/**/*.{ts,tsx,js,jsx,vue}",
+                    files: './src/**/*.{ts,tsx,js,jsx,vue}',
                 },
             },
         },
@@ -30,10 +30,10 @@ module.exports = configure(function (ctx) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://v2.quasar.dev/quasar-cli-webpack/boot-files
-        boot: ["i18n", "axios"],
+        boot: ['i18n', 'axios'],
 
         // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-css
-        css: ["app.scss"],
+        css: ['app.scss'],
 
         // https://github.com/quasarframework/quasar/tree/dev/extras
         extras: [
@@ -45,14 +45,14 @@ module.exports = configure(function (ctx) {
             // 'line-awesome',
             // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-            "mdi-v5",
-            "roboto-font", // optional, you are not bound to it
+            'mdi-v5',
+            'roboto-font', // optional, you are not bound to it
             // "material-icons", // optional, you are not bound to it
         ],
 
         // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-build
         build: {
-            vueRouterMode: "history", // available values: 'hash', 'history'
+            vueRouterMode: 'history', // available values: 'hash', 'history'
 
             // transpile: false,
             // publicPath: '/',
@@ -79,7 +79,7 @@ module.exports = configure(function (ctx) {
         // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-devServer
         devServer: {
             server: {
-                type: "http",
+                type: 'http',
             },
             port: 8080,
             open: true, // opens browser window automatically
@@ -100,7 +100,7 @@ module.exports = configure(function (ctx) {
             // directives: [],
 
             // Quasar plugins
-            plugins: [],
+            plugins: ['Meta'],
         },
 
         // animations: 'all', // --- includes all animations
@@ -123,14 +123,14 @@ module.exports = configure(function (ctx) {
             // chainWebpackWebserver (/* chain */) {},
 
             middlewares: [
-                ctx.prod ? "compression" : "",
-                "render", // keep this as last one
+                ctx.prod ? 'compression' : '',
+                'render', // keep this as last one
             ],
         },
 
         // https://v2.quasar.dev/quasar-cli-webpack/developing-pwa/configuring-pwa
         pwa: {
-            workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
+            workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
             workboxOptions: {}, // only for GenerateSW
 
             // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
@@ -138,38 +138,38 @@ module.exports = configure(function (ctx) {
             // chainWebpackCustomSW (/* chain */) {},
 
             manifest: {
-                name: "graphery",
-                short_name: "graphery",
-                description: "",
-                display: "standalone",
-                orientation: "portrait",
-                background_color: "#ffffff",
-                theme_color: "#027be3",
+                name: 'graphery',
+                short_name: 'graphery',
+                description: '',
+                display: 'standalone',
+                orientation: 'portrait',
+                background_color: '#ffffff',
+                theme_color: '#027be3',
                 icons: [
                     {
-                        src: "icons/icon-128x128.png",
-                        sizes: "128x128",
-                        type: "image/png",
+                        src: 'icons/icon-128x128.png',
+                        sizes: '128x128',
+                        type: 'image/png',
                     },
                     {
-                        src: "icons/icon-192x192.png",
-                        sizes: "192x192",
-                        type: "image/png",
+                        src: 'icons/icon-192x192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
                     },
                     {
-                        src: "icons/icon-256x256.png",
-                        sizes: "256x256",
-                        type: "image/png",
+                        src: 'icons/icon-256x256.png',
+                        sizes: '256x256',
+                        type: 'image/png',
                     },
                     {
-                        src: "icons/icon-384x384.png",
-                        sizes: "384x384",
-                        type: "image/png",
+                        src: 'icons/icon-384x384.png',
+                        sizes: '384x384',
+                        type: 'image/png',
                     },
                     {
-                        src: "icons/icon-512x512.png",
-                        sizes: "512x512",
-                        type: "image/png",
+                        src: 'icons/icon-512x512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
                     },
                 ],
             },
@@ -187,7 +187,7 @@ module.exports = configure(function (ctx) {
 
         // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-electron-apps/configuring-electron
         electron: {
-            bundler: "packager", // 'packager' or 'builder'
+            bundler: 'packager', // 'packager' or 'builder'
 
             packager: {
                 // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -203,7 +203,7 @@ module.exports = configure(function (ctx) {
             builder: {
                 // https://www.electron.build/configuration/configuration
 
-                appId: "graphery",
+                appId: 'graphery',
             },
 
             // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
