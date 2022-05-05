@@ -41,7 +41,7 @@ import { defineComponent, inject, WritableComputedRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 export default defineComponent({
-    name: 'LayoutHeader',
+    name: 'PageHeader',
     components: { LangSelector },
     setup() {
         const drawerState = inject(
