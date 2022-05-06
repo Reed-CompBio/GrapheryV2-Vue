@@ -1,11 +1,5 @@
-import {
-    ComputedRef,
-    provide,
-    inject,
-    computed,
-    reactive,
-    UnwrapNestedRefs,
-} from 'vue';
+import { provide, inject, computed, reactive } from 'vue';
+import type { UnwrapNestedRefs, ComputedRef } from 'vue';
 import { useQuasar } from 'quasar';
 
 export interface ScreenSizes {
