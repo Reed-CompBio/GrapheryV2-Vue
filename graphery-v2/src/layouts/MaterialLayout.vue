@@ -1,6 +1,6 @@
 <template>
     <div>
-        <MaterialCover :cover-title="'title'"/>
+        <MaterialCover :cover-title="pageName" />
         <q-page class="page">
             <div class="container q-mx-auto">
                 <div class="content-container-wrapper">
@@ -15,6 +15,8 @@
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
 import MaterialCover from 'components/layout/MaterialCover.vue';
+import { useRoute } from 'vue-router';
+import { useMeta } from 'quasar';
 
 const PageFooter = defineAsyncComponent(
     () => import('components/layout/PageFooter.vue')
@@ -24,6 +26,15 @@ export default defineComponent({
         MaterialCover,
         PageFooter,
     },
+    setup() {
+        const { name, meta } = useRoute();
+
+        if (meta.pageMetaData) {
+            useMeta(meta.pageMetaData);
+        }
+
+        return { pageName: name as string };
+    },
 });
 </script>
 
@@ -32,7 +43,7 @@ export default defineComponent({
 
 .page
   clear: both
-  // accord with Material Cover
+  // cooperate with Material Cover
   top: -8rem
 
 .page

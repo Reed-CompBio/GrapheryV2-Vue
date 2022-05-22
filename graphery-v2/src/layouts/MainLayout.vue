@@ -14,14 +14,14 @@ import { defineComponent, defineAsyncComponent } from 'vue';
 import { useMeta } from 'quasar';
 import { MetaOptions } from 'quasar/dist/types/meta';
 import PageHeader from 'components/layout/PageHeader.vue';
+import { formatPageMetaTitle } from 'src/utils/utils';
 
 const NavigationDrawer = defineAsyncComponent(
     () => import('components/layout/NavigationDrawer.vue')
 );
 
 const metaData: MetaOptions = {
-    title: 'Main',
-    titleTemplate: (title) => `${title} | Graphery`,
+    titleTemplate: formatPageMetaTitle,
 };
 
 export default defineComponent({

@@ -10,10 +10,9 @@
 </template>
 
 <script lang="ts">
-
-import {defineComponent} from 'vue';
-import type {ScreenSizes} from 'components/mixins/screen-sizes';
-import {useScreenSizes} from 'components/mixins/screen-sizes';
+import { defineComponent } from 'vue';
+import type { ScreenSizes } from 'components/mixins/screen-sizes';
+import { useScreenSizes } from 'components/mixins/screen-sizes';
 
 export default defineComponent({
     name: 'MaterialCover',
@@ -26,12 +25,12 @@ export default defineComponent({
         },
     },
     setup() {
-        const {mediumAndLarger} = useScreenSizes() as ScreenSizes
+        const { mediumAndLarger } = useScreenSizes() as ScreenSizes;
 
         return {
             mediumAndLarger,
-        }
-    }
+        };
+    },
 });
 </script>
 
@@ -41,7 +40,7 @@ export default defineComponent({
 $water-mark-opacity: .15
 .cover-wrapper
     background-color: vars.$primary
-    height: 180px
+    height: 200px
     .cover-text
         margin-left: 2rem
         margin-top: -2rem
