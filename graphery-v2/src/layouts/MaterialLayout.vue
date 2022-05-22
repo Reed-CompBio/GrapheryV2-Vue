@@ -1,29 +1,34 @@
 <template>
-    <q-page class="page">
-        <div class="container q-mx-auto">
-            <div class="content-container-wrapper">
-                <router-view></router-view>
+    <div>
+        <MaterialCover :cover-title="'title'"/>
+        <q-page class="page">
+            <div class="container q-mx-auto">
+                <div class="content-container-wrapper">
+                    <router-view></router-view>
+                </div>
             </div>
-        </div>
-    </q-page>
-    <PageFooter></PageFooter>
+        </q-page>
+        <PageFooter></PageFooter>
+    </div>
 </template>
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent } from 'vue';
+import MaterialCover from 'components/layout/MaterialCover.vue';
 
 const PageFooter = defineAsyncComponent(
     () => import('components/layout/PageFooter.vue')
 );
 export default defineComponent({
     components: {
+        MaterialCover,
         PageFooter,
     },
 });
 </script>
 
 <style lang="sass" scoped>
-@import "../css/quasar.variables"
+@use "../css/quasar.variables" as vars
 
 .page
   clear: both
@@ -43,7 +48,7 @@ export default defineComponent({
 
 .container
   min-height: inherit
-  max-width: $material-page-max-width
+  max-width: vars.$material-page-max-width
   box-shadow: rgba(0, 0, 0, 0.25) 0 25px 50px -12px
 
 .body--light .container

@@ -44,6 +44,6 @@ export function getScreenSizes(): UnwrapNestedRefs<ScreenSizes> {
     return sizes;
 }
 
-export function useScreenSizes(): UnwrapNestedRefs<ScreenSizes> | undefined {
-    return inject(_SCREEN_SIZES_KEY);
+export function useScreenSizes() {
+    return inject(_SCREEN_SIZES_KEY)
 }
