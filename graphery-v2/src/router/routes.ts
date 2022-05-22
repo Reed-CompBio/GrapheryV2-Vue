@@ -1,4 +1,13 @@
 import { NavigationGuardWithThis, RouteRecordRaw } from 'vue-router';
+import { MetaOptions } from 'quasar/dist/types/meta';
+
+import 'vue-router';
+
+declare module 'vue-router' {
+    interface RouteMeta {
+        pageMetaData?: MetaOptions;
+    }
+}
 
 const langRouteBeforeEnter = {
     beforeEnter(to, from, next) {
@@ -81,12 +90,23 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: '',
                         name: 'Home',
-                        component: () => import('pages/IndexPage.vue'),
+                        component: () => import('pages/HomePage.vue'),
+                        meta: {
+                            pageMetaData: {
+                                title: 'Home',
+                            },
+                        },
                     },
                     {
                         path: '/tutorials',
                         name: 'Tutorials',
                         component: () => import('pages/IndexPage.vue'),
+                        meta: {
+                            pageMetaData: {
+                                title: 'Tutorials',
+                            },
+                        },
+
                         // component: () =>
                         //     import(
                         //         /* webpackChunkName: "tutorials" */ '@/views/Tutorials.vue'
@@ -97,6 +117,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/graphs',
                         name: 'Graphs',
                         component: () => import('pages/IndexPage.vue'),
+                        meta: {
+                            pageMetaData: {
+                                title: 'Graphs',
+                            },
+                        },
                         // component: () =>
                         //     import(
                         //         /* webpackChunkName: "graphs" */ '@/views/Graphs.vue'
@@ -107,6 +132,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/about',
                         name: 'About',
                         component: () => import('pages/IndexPage.vue'),
+                        meta: {
+                            pageMetaData: {
+                                title: 'About',
+                            },
+                        },
 
                         // component: () =>
                         //     import(/* webpackChunkName: "about" */ '@/views/About.vue'),
@@ -115,6 +145,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/faq',
                         name: 'FAQ',
                         component: () => import('pages/IndexPage.vue'),
+                        meta: {
+                            pageMetaData: {
+                                title: 'FAQ',
+                            },
+                        },
 
                         // component: () =>
                         //     import(/* webpackChunkName: "faq" */ '@/views/FAQ.vue'),
@@ -123,7 +158,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/tos',
                         name: 'TOS',
                         component: () => import('pages/IndexPage.vue'),
-
+                        meta: {
+                            pageMetaData: {
+                                title: 'TOS',
+                            },
+                        },
                         // component: () =>
                         //     import(/* webpackChunkName: "tos" */ '@/views/TOS.vue'),
                     },
@@ -131,7 +170,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/account',
                         name: 'Account',
                         component: () => import('pages/IndexPage.vue'),
-
+                        meta: {
+                            pageMetaData: {
+                                title: 'Account',
+                            },
+                        },
                         // component: () =>
                         //     import(
                         //         /* webpackChunkName: "account" */ '@/views/Account.vue'
@@ -152,7 +195,11 @@ const routes: RouteRecordRaw[] = [
                         path: '/login',
                         name: 'Login',
                         component: () => import('pages/IndexPage.vue'),
-
+                        meta: {
+                            pageMetaData: {
+                                title: 'Login',
+                            },
+                        },
                         // component: () =>
                         //     import(/* webpackChunkName: "Login" */ '@/views/Login.vue'),
 
