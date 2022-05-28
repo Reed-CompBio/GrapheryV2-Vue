@@ -48,12 +48,13 @@
 <script lang="ts">
 import { defineComponent, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { NAVIGATION_BUTTONS, SITE_NAME } from 'src/utils/vars';
 
 export default defineComponent({
     setup() {
         return {
-            siteName: inject('SITE_NAME'),
-            buttons: inject('NAVIGATION_BUTTONS'),
+            siteName: SITE_NAME,
+            buttons: NAVIGATION_BUTTONS,
             drawerState: inject('drawerState'),
             t: useI18n().t,
             logo: require('src/assets/images/reed-compbio-logo.png'),

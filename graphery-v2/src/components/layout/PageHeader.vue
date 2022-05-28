@@ -40,6 +40,7 @@ import LangSelector from 'components/layout/LangSelector.vue';
 import type { WritableComputedRef } from 'vue';
 import { defineComponent, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { NAVIGATION_BUTTONS, SITE_NAME } from 'src/utils/vars';
 
 export default defineComponent({
     name: 'PageHeader',
@@ -60,8 +61,8 @@ export default defineComponent({
         }
 
         return {
-            siteName: inject('SITE_NAME'),
-            buttons: inject('NAVIGATION_BUTTONS'),
+            siteName: SITE_NAME,
+            buttons: NAVIGATION_BUTTONS,
             showDrawer,
             changeLang,
             t: useI18n().t,

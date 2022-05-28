@@ -11,9 +11,6 @@ import { getScreenSizes } from 'components/mixins/screen-sizes';
 export default defineComponent({
     name: 'App',
     setup() {
-        provide('SITE_NAME', SITE_NAME);
-        provide('NAVIGATION_BUTTONS', NAVIGATION_BUTTONS);
-
         const i18n = useI18n();
         const currentLang = computed({
             get() {

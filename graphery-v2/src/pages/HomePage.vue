@@ -9,7 +9,7 @@
             </div>
             <div :class="[colControl]" class="graphery-text justify-center">
                 <h3 class="welcome-title">
-                    Welcome to <span class="logo-text">GRAPHERY</span>
+                    Welcome to <span class="logo-text">{{ siteName }}</span>
                 </h3>
                 <div class="home-intro-text">
                     <p>
@@ -58,6 +58,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
+import { SITE_NAME } from 'src/utils/vars';
 import { ScreenSizes, useScreenSizes } from 'components/mixins/screen-sizes';
 
 export default defineComponent({
@@ -106,6 +107,7 @@ export default defineComponent({
             featureList,
             rowControl,
             colControl,
+            siteName: SITE_NAME,
         };
     },
 });
@@ -145,6 +147,7 @@ export default defineComponent({
                 font-size: 40px
             .logo-text
                 font-family: "Amiri", serif
+                text-transform: capitalize
                 color: vars.$primary
                 margin-left: 100px
                 @media (max-width: $breakpoint-sm-max)
