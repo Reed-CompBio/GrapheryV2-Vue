@@ -45,7 +45,7 @@ const routes: RouteRecordRaw[] = [
                         path: '/tutorial/:lang/:url',
                         props: true,
                         name: 'Tutorial',
-                        component: () => import('pages/IndexPage.vue'),
+                        component: () => import('pages/TutorialPage.vue'),
                         ...langRouteBeforeEnter,
                         // component: () =>
                         //     import(
