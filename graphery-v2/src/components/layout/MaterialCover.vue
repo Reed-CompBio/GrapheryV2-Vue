@@ -11,7 +11,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import type { ScreenSizes } from 'components/mixins/screen-sizes';
 import { useScreenSizes } from 'components/mixins/screen-sizes';
 
 export default defineComponent({
@@ -25,7 +24,7 @@ export default defineComponent({
         },
     },
     setup() {
-        const { mediumAndLarger } = useScreenSizes() as ScreenSizes;
+        const { mediumAndLarger } = useScreenSizes();
 
         return {
             mediumAndLarger,

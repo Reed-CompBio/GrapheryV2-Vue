@@ -6,8 +6,6 @@ export interface QPageStyle {
 
 const QPageStyle = reactive<QPageStyle>({});
 
-const QPageStyleKey = '__QPageStyle';
-
 export function useQPageStyle() {
     return QPageStyle;
 }

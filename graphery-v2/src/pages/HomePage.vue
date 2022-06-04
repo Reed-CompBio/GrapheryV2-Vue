@@ -59,7 +59,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { SITE_NAME } from 'src/utils/vars';
-import { ScreenSizes, useScreenSizes } from 'components/mixins/screen-sizes';
+import { useScreenSizes } from 'components/mixins/screen-sizes';
 
 export default defineComponent({
     setup() {
@@ -84,7 +84,7 @@ export default defineComponent({
             },
         ];
 
-        const { mediumAndLarger } = useScreenSizes() as ScreenSizes;
+        const { mediumAndLarger } = useScreenSizes();
 
         const rowControl = computed(() => {
             if (mediumAndLarger) {

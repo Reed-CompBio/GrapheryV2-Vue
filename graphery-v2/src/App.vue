@@ -6,7 +6,6 @@
 import { defineComponent, ref, computed, provide } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { SITE_NAME, NAVIGATION_BUTTONS } from 'src/utils/vars';
-import { getScreenSizes } from 'components/mixins/screen-sizes';
 
 export default defineComponent({
     name: 'App',
@@ -33,8 +32,6 @@ export default defineComponent({
 
         provide('currentLang', currentLang);
         provide('drawerState', drawerState);
-
-        getScreenSizes();
 
         return {
             SITE_NAME,

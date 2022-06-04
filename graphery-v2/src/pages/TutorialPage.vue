@@ -3,6 +3,7 @@
         <!--   Left and Right splitter    -->
         <FullHeightSplitter v-model="leftRightSplitterPos">
             <template v-slot:before>
+                <!--       Top and Down splitter         -->
                 <FullHeightSplitter v-model="upDownSplitterPos" horizontal>
                     <template v-slot:before>
                         <p>up</p>
