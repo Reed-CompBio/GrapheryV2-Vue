@@ -11,3 +11,15 @@ export const NAVIGATION_BUTTONS = [
 
 export const HEADER_SIZE = 50;
 export const MENU_HEADER_SIZE = 56;
+
+const PROD_BASE_URL = 'https://api-graphery.reedcompbio.org';
+const DEV_BASE_URL = 'http://localhost:8000';
+export const BASE_URL =
+    process.env.NODE_ENV === 'production' ? PROD_BASE_URL : DEV_BASE_URL;
+
+const PRO_BASE_SOCKET = 'wss://api-graphery.reedcompbio.org';
+const DEV_BASE_SOCKET = 'ws://localhost:8000';
+export const BASE_WS_URI =
+    (process.env.NODE_ENV === 'production'
+        ? PRO_BASE_SOCKET
+        : DEV_BASE_SOCKET) + '/ws/';
