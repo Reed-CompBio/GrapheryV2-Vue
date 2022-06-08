@@ -9,7 +9,7 @@
                         <p>up</p>
                     </template>
                     <template v-slot:after>
-                        <p>down</p>
+                        <MonacoEditor />
                     </template>
                 </FullHeightSplitter>
             </template>
@@ -25,9 +25,10 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/FullHeightSplitter.vue';
+import MonacoEditor from 'components/workspace/MonacoEditor.vue';
 
 export default defineComponent({
-    components: { FullHeightSplitter },
+    components: { MonacoEditor, FullHeightSplitter },
     setup() {
         const leftRightSplitterPos = ref(50);
         const upDownSplitterPos = ref(50);
