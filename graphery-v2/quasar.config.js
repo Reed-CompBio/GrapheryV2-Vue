@@ -11,6 +11,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const { configure } = require('quasar/wrappers');
+const MonacoEditorPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = configure(function (ctx) {
     return {
@@ -74,6 +75,11 @@ module.exports = configure(function (ctx) {
             // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
             // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
             // chainWebpack (/* chain */) {}
+            extendWebpack(cfg) {
+                cfg.plugins.push(
+                    new MonacoEditorPlugin({ languages: ['python'] })
+                );
+            },
         },
 
         // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-devServer
@@ -210,6 +216,12 @@ module.exports = configure(function (ctx) {
             chainWebpackMain(/* chain */) {
                 // do something with the Electron main process Webpack cfg
                 // extendWebpackMain also available besides this chainWebpackMain
+            },
+
+            extendWebpack(cfg) {
+                cfg.plugins.push(
+                    new MonacoEditorPlugin({ languages: ['python'] })
+                );
             },
 
             // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
