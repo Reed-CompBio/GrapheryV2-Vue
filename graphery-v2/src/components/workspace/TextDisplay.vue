@@ -9,17 +9,13 @@
             ref="tutorial-text-scroll"
             class="fit"
         >
-            <div
-                id="tutorial-text-wrapper"
-                class="text-center"
-                v-if="showTutorial"
-            >
-                <div id="tutorial-title-wrapper">
-                    <h1 id="tutorial-title">
-                        {{ tutorialData?.title }}
-                    </h1>
-                </div>
-                <div id="tutorial-summary-wrapper">
+            <div id="tutorial-text-wrapper" v-if="showTutorial">
+                <div id="tutorial-summary-wrapper" class="text-center">
+                    <div id="tutorial-title-wrapper">
+                        <h1 id="tutorial-title">
+                            {{ tutorialData?.title }}
+                        </h1>
+                    </div>
                     <div id="tutorial-published-status">
                         <q-chip v-if="!tutorialPublished">
                             Tutorial Status:
@@ -56,7 +52,10 @@
                     </div>
                 </div>
                 <div id="tutorial-content-wrapper">
-                    <div>Content</div>
+                    <MarkdownDisplay
+                        :doc-id="tutorialData?.title"
+                        :markdown-content="tutorialData?.contentMarkdown"
+                    />
                 </div>
                 <div id="tutorial-license-wrapper">
                     <LicenseCard />
@@ -101,6 +100,7 @@ import {
     ItemStatus,
     Tutorial,
 } from 'src/types/tutorial-types';
+import MarkdownDisplay from 'components/workspace/MarkdownDisplay.vue';
 
 const queryName = 'tutorialContent' as const;
 type TutorialText = GraphQLLoadingType<typeof queryName, [Tutorial]>;
@@ -114,6 +114,7 @@ interface TutorialTextStyle {
 
 export default defineComponent({
     components: {
+        MarkdownDisplay,
         LicenseCard: defineAsyncComponent(
             () => import('src/components/general/LicenseCard.vue')
         ),
@@ -156,7 +157,6 @@ export default defineComponent({
         });
 
         return {
-            tutorialInfo: props.info,
             tutorialStyle: style,
             showTutorial,
             tutorialData,
