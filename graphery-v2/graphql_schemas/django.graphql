@@ -1,0 +1,311 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type CodeType {
+    code: String!
+    createdTime: DateTime!
+    executionResults: [ExecutionResultType]
+    id: UUID!
+    modifiedTime: DateTime!
+    name: String!
+    tutorialAnchor: TutorialAnchorType!
+}
+
+type ExecutionResultType {
+    code: CodeType!
+    createdTime: DateTime!
+    graphAnchor: GraphAnchorType!
+    id: UUID!
+    modifiedTime: DateTime!
+    resultJson: String!
+    resultJsonMeta: String!
+}
+
+type GraphAnchorType {
+    anchorName: String!
+    createdTime: DateTime!
+    defaultOrder: Int!
+    executionResults: [ExecutionResultType]!
+    graph: GraphType
+    graphDescriptions: [GraphDescriptionType]
+    id: UUID!
+    itemStatus: String!
+    modifiedTime: DateTime!
+    tags: [TagAnchorType]!
+    tutorialAnchors: [OrderedGraphAnchorType]!
+    uploads: [UploadsType]
+    url: String!
+}
+
+type GraphDescriptionType {
+    authors: [UserType!]!
+    createdTime: DateTime!
+    descriptionMarkdown: String!
+    graphAnchor: GraphAnchorType!
+    id: UUID!
+    itemStatus: String!
+    langCode: String!
+    modifiedTime: DateTime!
+    title: String!
+}
+
+type GraphType {
+    createdTime: DateTime!
+    graphAnchor: GraphAnchorType!
+    graphJson: String!
+    id: UUID!
+    itemStatus: String!
+    makers: [UserType!]!
+    modifiedTime: DateTime!
+}
+
+type Mutation {
+    login(password: String!, username: String!): UserType
+    logout: Boolean!
+    mutateTag(tag: TagMutationType): TagType
+    register(user: UserMutationType!): UserType
+}
+
+type OrderedGraphAnchorType {
+    createdTime: DateTime!
+    graphAnchor: GraphAnchorType!
+    id: UUID!
+    modifiedTime: DateTime!
+    order: Int!
+    tutorialAnchor: TutorialAnchorType!
+}
+
+type Query {
+    graphAnchors(filters: GraphAnchorFilter): [GraphAnchorType]!
+    graphContent(filters: GraphFilter): [GraphType]!
+    me: UserType
+    tagAnchors(filters: TagAnchorFilter): [TagAnchorType]!
+    tutorialAnchors(filters: TutorialAnchorFilter): [TutorialAnchorType]!
+    tutorialContent(filters: TutorialFilter): [TutorialType]!
+}
+
+type TagAnchorType {
+    anchorName: String!
+    createdTime: DateTime!
+    graphAnchors: [GraphAnchorType]
+    id: UUID!
+    itemStatus: String!
+    modifiedTime: DateTime!
+    tags: [TagType]
+    tutorialAnchors: [TutorialAnchorType]
+}
+
+type TagType {
+    createdTime: DateTime!
+    description: String!
+    id: UUID!
+    itemStatus: String!
+    langCode: String!
+    modifiedTime: DateTime!
+    name: String!
+    tagAnchor: TagAnchorType!
+}
+
+type TutorialAnchorType {
+    anchorName: String!
+    code: CodeType
+    createdTime: DateTime!
+    graphAnchors: [GraphAnchorType]
+    id: UUID!
+    itemStatus: String!
+    modifiedTime: DateTime!
+    rank: String!
+    tagAnchors: [TagAnchorType]!
+    tutorials: [TutorialType]
+    uploads: [UploadsType]
+    url: String!
+}
+
+type TutorialType {
+    abstract: String!
+    authors: [UserType!]!
+    contentMarkdown: String!
+    createdTime: DateTime!
+    id: UUID!
+    itemStatus: String!
+    langCode: String!
+    modifiedTime: DateTime!
+    title: String!
+    tutorialAnchor: TutorialAnchorType!
+}
+
+type UploadsType {
+    createdTime: DateTime!
+    graphAnchors: [GraphAnchorType]!
+    id: UUID!
+    modifiedTime: DateTime!
+    name: String!
+    tutorialAnchors: [TutorialAnchorType]!
+}
+
+type UserType {
+    createdTime: DateTime!
+    displayedName: String!
+    email: String!
+    graphDescriptions: [GraphDescriptionType]
+    graphs: [GraphAnchorType]
+    id: UUID!
+    isStaff: Boolean!
+    modifiedTime: DateTime!
+    role: Int!
+    tutorials: [TutorialAnchorType]
+    username: String!
+}
+
+"Date with time (isoformat)"
+scalar DateTime
+
+scalar UUID
+
+input DatetimeFilterLookup {
+    contains: DateTime
+    endsWith: DateTime
+    exact: DateTime
+    gt: DateTime
+    gte: DateTime
+    iContains: DateTime
+    iEndsWith: DateTime
+    iExact: DateTime
+    iRegex: String
+    iStartsWith: DateTime
+    inList: [DateTime!]
+    isNull: Boolean
+    lt: DateTime
+    lte: DateTime
+    range: [DateTime!]
+    regex: String
+    startsWith: DateTime
+}
+
+input DjangoModelFilterInput {
+    pk: ID!
+}
+
+input GraphAnchorFilter {
+    anchorName: StrFilterLookup
+    createdTime: DatetimeFilterLookup
+    id: UUIDFilterLookup
+    itemStatus: StrFilterLookup
+    modifiedTime: DatetimeFilterLookup
+    url: StrFilterLookup
+}
+
+input GraphFilter {
+    createdTime: DatetimeFilterLookup
+    graphAnchor: GraphAnchorFilter
+    id: UUIDFilterLookup
+    itemStatus: StrFilterLookup
+    makers: UserFilter
+    modifiedTime: DatetimeFilterLookup
+}
+
+input StrFilterLookup {
+    contains: String
+    endsWith: String
+    exact: String
+    gt: String
+    gte: String
+    iContains: String
+    iEndsWith: String
+    iExact: String
+    iRegex: String
+    iStartsWith: String
+    inList: [String!]
+    isNull: Boolean
+    lt: String
+    lte: String
+    range: [String!]
+    regex: String
+    startsWith: String
+}
+
+input TagAnchorFilter {
+    anchorName: StrFilterLookup
+    createdTime: DatetimeFilterLookup
+    id: UUIDFilterLookup
+    itemStatus: StrFilterLookup
+    modifiedTime: DatetimeFilterLookup
+    tags: DjangoModelFilterInput
+}
+
+input TagAnchorMutationType {
+    anchorName: String
+    id: UUID
+    itemStatus: String
+}
+
+input TagMutationType {
+    description: String
+    id: UUID
+    itemStatus: String
+    langCode: String
+    name: String
+    tagAnchor: TagAnchorMutationType
+}
+
+input TutorialAnchorFilter {
+    anchorName: StrFilterLookup
+    createdTime: DatetimeFilterLookup
+    id: UUIDFilterLookup
+    itemStatus: StrFilterLookup
+    modifiedTime: DatetimeFilterLookup
+    rank: StrFilterLookup
+    tutorials: TutorialFilter
+    url: StrFilterLookup
+}
+
+input TutorialFilter {
+    abstract: StrFilterLookup
+    authors: UserFilter
+    contentMarkdown: StrFilterLookup
+    createdTime: DatetimeFilterLookup
+    id: UUIDFilterLookup
+    itemStatus: StrFilterLookup
+    langCode: StrFilterLookup
+    modifiedTime: DatetimeFilterLookup
+    title: StrFilterLookup
+    tutorialAnchor: TutorialAnchorFilter
+}
+
+input UUIDFilterLookup {
+    contains: UUID
+    endsWith: UUID
+    exact: UUID
+    gt: UUID
+    gte: UUID
+    iContains: UUID
+    iEndsWith: UUID
+    iExact: UUID
+    iRegex: String
+    iStartsWith: UUID
+    inList: [UUID!]
+    isNull: Boolean
+    lt: UUID
+    lte: UUID
+    range: [UUID!]
+    regex: String
+    startsWith: UUID
+}
+
+input UserFilter {
+    displayedName: StrFilterLookup
+}
+
+input UserMutationType {
+    displayedName: String
+    email: String
+    id: UUID
+    inMailingList: Boolean
+    newPassword: String
+    password: String
+    username: String
+}

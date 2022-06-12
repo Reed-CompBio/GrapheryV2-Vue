@@ -1,0 +1,16 @@
+{
+    "name": "Django Backend GraphQL Schema",
+    "schemaPath": "./graphql_schemas/django.graphql",
+    "extensions": {
+        "endpoints": {
+            "Production GraphQL Endpoint": {
+                "url": "https://api-graphery.reedcompbio.org/graphql/sync",
+                "introspect": true
+            },
+            "Development GraphQL Endpoint": {
+                "url": "http://localhost:8000/graphql/sync",
+                "introspect": true
+            }
+        }
+    }
+}
