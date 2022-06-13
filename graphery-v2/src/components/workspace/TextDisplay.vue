@@ -100,7 +100,6 @@ import {
     ItemStatus,
     Tutorial,
 } from 'src/types/tutorial-types';
-import MarkdownDisplay from 'components/workspace/MarkdownDisplay.vue';
 
 const queryName = 'tutorialContent' as const;
 type TutorialText = GraphQLLoadingType<typeof queryName, [Tutorial]>;
@@ -114,7 +113,9 @@ interface TutorialTextStyle {
 
 export default defineComponent({
     components: {
-        MarkdownDisplay,
+        MarkdownDisplay: defineAsyncComponent(
+            () => import('components/workspace/MarkdownDisplay.vue')
+        ),
         LicenseCard: defineAsyncComponent(
             () => import('src/components/general/LicenseCard.vue')
         ),
