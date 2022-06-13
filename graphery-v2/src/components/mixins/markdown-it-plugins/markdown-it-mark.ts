@@ -1,10 +1,10 @@
 import { makeDoubleDelimiterPlugin } from 'components/mixins/markdown-it-plugins/plugin-maker';
 
 const MARK = {
-    marker: 0x2b,
-    delimiter: '+',
-    ruleName: 'ins',
-    tagName: 'ins',
+    marker: 0x3d,
+    delimiter: '=',
+    ruleName: 'mark',
+    tagName: 'mark',
 };
 
 export default makeDoubleDelimiterPlugin(

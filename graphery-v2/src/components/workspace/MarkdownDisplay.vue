@@ -23,6 +23,7 @@ import MDSup from '../mixins/markdown-it-plugins/markdown-it-sup';
 import MDFootnote from '../mixins/markdown-it-plugins/markdown-it-footnote';
 import MDKatex from '../mixins/markdown-it-plugins/markdown-it-katex';
 import MDIns from '../mixins/markdown-it-plugins/markdown-it-ins';
+import MDMark from '../mixins/markdown-it-plugins/markdown-it-mark';
 
 import hljs from 'highlight.js/lib/core';
 import 'highlight.js/styles/github-dark.css';
@@ -53,7 +54,13 @@ function initMarkdown(options: MDT.Options) {
     };
 
     const md = MarkdownIt(options);
-    return md.use(MDSub).use(MDSup).use(MDFootnote).use(MDKatex).use(MDIns);
+    return md
+        .use(MDSub)
+        .use(MDSup)
+        .use(MDFootnote)
+        .use(MDKatex)
+        .use(MDIns)
+        .use(MDMark);
 }
 
 export default defineComponent({
