@@ -17,35 +17,24 @@ const DEFAULT_OPTIONS: MDT.Options = {
     quotes: '“”‘’',
 };
 
-type MarkdownItPlugin = {
-    default: MDT.PluginSimple;
-};
+import MarkdownIt from 'markdown-it';
+import MDSub from '../mixins/markdown-it-plugins/markdown-it-sub';
+import MDSup from '../mixins/markdown-it-plugins/markdown-it-sup';
+import MDFootnote from '../mixins/markdown-it-plugins/markdown-it-footnote';
+import MDKatex from '../mixins/markdown-it-plugins/markdown-it-katex';
 
-import 'highlight.js/styles/intellij-light.css';
+import hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/github-dark.css';
 
-async function initMarkdown(options: MDT.Options) {
-    const MarkdownIt = (await import('markdown-it')).default;
+import PythonLang from 'highlight.js/lib/languages/python';
+import MarkdownLang from 'highlight.js/lib/languages/markdown';
 
-    const mdSub = (
-        (await import(
-            '../mixins/markdown-it-plugins/markdown-it-sub'
-        )) as MarkdownItPlugin
-    ).default;
-    const mdSup = (
-        (await import(
-            '../mixins/markdown-it-plugins/markdown-it-sup'
-        )) as MarkdownItPlugin
-    ).default;
-    const mdFootnote = (
-        (await import(
-            '../mixins/markdown-it-plugins/markdown-it-footnote'
-        )) as MarkdownItPlugin
-    ).default;
+import 'katex/dist/katex.min.css';
 
-    const hljs = (await import('highlight.js/lib/core')).default;
-    const hljsLangPy = (await import('highlight.js/lib/languages/python'))
-        .default;
-    hljs.registerLanguage('python', hljsLangPy);
+function initMarkdown(options: MDT.Options) {
+    hljs.registerLanguage('python', PythonLang);
+    hljs.registerLanguage('markdown', MarkdownLang);
+
     options.highlight = function (str, lang) {
         if (lang && hljs.getLanguage(lang)) {
             try {
@@ -63,7 +52,7 @@ async function initMarkdown(options: MDT.Options) {
     };
 
     const md = MarkdownIt(options);
-    return md.use(mdSub).use(mdSup).use(mdFootnote);
+    return md.use(MDSub).use(MDSup).use(MDFootnote).use(MDKatex);
 }
 
 export default defineComponent({
@@ -81,12 +70,10 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const md = ref<MDT | undefined>();
-        initMarkdown({ ...DEFAULT_OPTIONS, ...props.options }).then(
-            (instance) => {
-                md.value = instance;
-            }
+        const md = ref<MDT>(
+            initMarkdown({ ...DEFAULT_OPTIONS, ...props.options })
         );
+
         const DEFAULT_CONTENT =
             '# h1 Heading 8-)\n' +
             '## h2 Heading\n' +
@@ -95,8 +82,12 @@ export default defineComponent({
             '##### h5 hhhhh\n' +
             '<h2> h2 Heading by HTML</h2>\n' +
             '\n' +
+            '## Math \n' +
+            'inline: $\\sqrt{2}$ 1\n' +
+            '$$\n' +
+            '\\mathbb{R}^3\n' +
+            '$$\n' +
             '## Horizontal Rules\n' +
-            ' $\\sqrt{2}$ 1' +
             '\n' +
             '___\n' +
             '\n' +
