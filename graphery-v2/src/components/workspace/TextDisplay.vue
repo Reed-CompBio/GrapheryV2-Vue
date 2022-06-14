@@ -170,8 +170,14 @@ export default defineComponent({
 
 <style lang="sass">
 #tutorial-text-wrapper
-    padding: 15px 10px
+    padding: 15px
+
+#tutorial-summary-wrapper
+    margin: 1rem auto
+
+#tutorial-title
+    margin: 1rem auto 2rem
 
 #tutorial-license-wrapper
-    margin: 20px 10px
+    margin: 20px 0
 </style>
