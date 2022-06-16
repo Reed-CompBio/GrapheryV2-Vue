@@ -6,7 +6,7 @@
                 <!--       Top and Down splitter         -->
                 <FullHeightSplitter v-model="upDownSplitterPos" horizontal>
                     <template v-slot:before>
-                        <p>up</p>
+                        <GraphDisplay />
                     </template>
                     <template v-slot:after>
                         <MonacoEditor />
@@ -21,15 +21,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, markRaw, ref } from 'vue';
+import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/FullHeightSplitter.vue';
-import MonacoEditor from 'components/workspace/MonacoEditor.vue';
 import TextDisplay from 'components/workspace/TextDisplay.vue';
 import { APILoader } from 'components/mixins/load-api';
 import { gql } from 'graphql-tag';
 
 export default defineComponent({
-    components: { MonacoEditor, FullHeightSplitter, TextDisplay },
+    components: {
+        GraphDisplay: defineAsyncComponent(
+            () => import('components/workspace/GraphDisplay.vue')
+        ),
+        MonacoEditor: defineAsyncComponent(
+            () => import('components/workspace/MonacoEditor.vue')
+        ),
+        FullHeightSplitter,
+        TextDisplay,
+    },
     setup() {
         const leftRightSplitterPos = ref(50);
         const upDownSplitterPos = ref(50);
