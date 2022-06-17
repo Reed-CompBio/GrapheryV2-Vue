@@ -6,23 +6,12 @@
 import { defineComponent, markRaw, onMounted, ref } from 'vue';
 import Graph from 'graphology';
 import Sigma from 'sigma';
-import { SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS } from 'components/mixins/sigma-highlight';
+import ForceSupervisor from 'graphology-layout-force/worker';
 
 import type { PropType } from 'vue';
-import type { SpecialHighlightSettings } from 'components/mixins/sigma-highlight';
-import type { Settings } from 'sigma/settings';
+import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import { SerializedGraph } from 'graphology-types';
-
-function initSigma(
-    initGraph: Graph,
-    settings: SpecialHighlightSettings = SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS
-) {
-    const graphContainer = document.getElementById(
-        'graph-container'
-    ) as HTMLElement;
-
-    return new Sigma(initGraph, graphContainer, settings as Settings);
-}
+import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 
 export default defineComponent({
     props: {
@@ -32,11 +21,12 @@ export default defineComponent({
         },
         settings: {
             type: Object as PropType<Partial<SpecialHighlightSettings>>,
+            default: undefined,
         },
     },
     setup(props) {
+        // graph object
         const graph = markRaw(new Graph());
-
         if (props.graphData) {
             // import graph from props
             graph.import(props.graphData);
@@ -81,10 +71,33 @@ export default defineComponent({
             graph.addEdge('n3', 'n1');
         }
 
+        // force layout
+        const forceLayout = ref<ForceSupervisor>(
+            new ForceSupervisor(graph, {
+                isNodeFixed: (_, attr) => attr.highlighted,
+            })
+        );
+        function toggleForceLayout() {
+            if (forceLayout.value?.isRunning()) {
+                forceLayout.value?.stop();
+            } else {
+                forceLayout.value?.start();
+            }
+        }
+        toggleForceLayout();
+
+        // sigma.js
         const sigma = ref<Sigma | undefined>();
+
         onMounted(() => {
             // load sigma when the element is mounted
-            sigma.value = initSigma(graph);
+            initSigma(
+                graph,
+                document.getElementById('graph-container') as HTMLElement,
+                props.settings
+            );
+
+            sigma.value = useSigma();
 
             // temp click event
             sigma.value?.on('clickNode', (e) => {
@@ -92,7 +105,7 @@ export default defineComponent({
             });
         });
 
-        return { sigma, graph };
+        return { sigma, graph, toggleForceLayout };
     },
 });
 </script>

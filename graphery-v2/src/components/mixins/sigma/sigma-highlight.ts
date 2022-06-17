@@ -65,7 +65,8 @@ export function drawHighlight(
 
         context.shadowOffsetX = 0;
         context.shadowOffsetY = 0;
-        // context.shadowBlur = 8;
+        // TODO: to figure out if we need shadow or not
+        // context.shadowBlur = 12;
         // context.shadowColor = '#000';
 
         const PADDING = 2;

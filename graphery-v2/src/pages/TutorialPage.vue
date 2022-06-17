@@ -30,7 +30,7 @@ import { gql } from 'graphql-tag';
 export default defineComponent({
     components: {
         GraphDisplay: defineAsyncComponent(
-            () => import('components/workspace/GraphDisplay.vue')
+            () => import('components/workspace/graph/GraphDisplay.vue')
         ),
         MonacoEditor: defineAsyncComponent(
             () => import('components/workspace/MonacoEditor.vue')
