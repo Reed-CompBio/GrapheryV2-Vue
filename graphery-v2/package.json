@@ -16,6 +16,7 @@
         "@vue/apollo-composable": "^4.0.0-alpha.17",
         "core-js": "^3.6.5",
         "graphology": "^0.24.1",
+        "graphology-layout-force": "^0.2.4",
         "graphql": "^16.5.0",
         "graphql-tag": "^2.12.6",
         "highlight.js": "^11.5.1",
