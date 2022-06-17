@@ -5,8 +5,8 @@ import { SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS } from 'components/mixins/sigma/sigm
 import type Graph from 'graphology';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { Settings } from 'sigma/settings';
-import { AnimateOptions } from 'sigma/utils/animate';
-import { CameraState } from 'sigma/types';
+import type { AnimateOptions } from 'sigma/utils/animate';
+import type { CameraState } from 'sigma/types';
 
 let sigma: Sigma | undefined = undefined;
 
