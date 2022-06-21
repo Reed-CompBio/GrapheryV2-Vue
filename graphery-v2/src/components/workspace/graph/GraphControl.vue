@@ -1,7 +1,17 @@
 <template>
     <div id="graph-control-wrapper" :class="vertical ? 'col' : 'row'">
-        <div v-for="button in buttons" :key="button.icon">
-            <q-btn :icon="button.icon" @click="button.callBack" />
+        <div
+            v-for="button in buttons"
+            :key="button.icon"
+            class="graph-control-button-wrapper"
+        >
+            <q-btn
+                :icon="button.icon"
+                @click="button.callBack"
+                rounded
+                outline
+                size="sm"
+            />
         </div>
     </div>
 </template>
@@ -9,12 +19,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useSigmaCamera } from 'components/mixins/sigma/instance';
+import { toKebabCase } from 'src/utils/utils';
+
+import type { PropType } from 'vue';
+import type GraphingSection from 'components/workspace/graph/GraphingSection.vue';
+import { useQuasar } from 'quasar';
+import saveAsPNG from 'components/mixins/sigma/save-as-png';
 
 export default defineComponent({
     props: {
         vertical: {
             type: Boolean,
-            default: false,
+            default: true,
         },
         animationDuration: {
             type: Number,
@@ -24,12 +40,17 @@ export default defineComponent({
             type: Number,
             default: 1.5,
         },
+        graphing: {
+            type: Object as PropType<InstanceType<typeof GraphingSection>>,
+        },
     },
     setup(props) {
-        const { zoomIn, zoomOut } = useSigmaCamera({
+        const { zoomIn, zoomOut, reset } = useSigmaCamera({
             factor: props.zoomFactor,
             duration: props.animationDuration,
         });
+
+        const { notify } = useQuasar();
 
         const buttons = [
             {
@@ -40,6 +61,54 @@ export default defineComponent({
                 icon: 'mdi-minus-thick',
                 callBack: () => zoomOut(),
             },
+            {
+                icon: toKebabCase('mdiArrowLeftRightBoldOutline'),
+                callBack: () => reset(),
+            },
+            {
+                icon: toKebabCase('mdiFileMultipleOutline'),
+                callBack: () => {
+                    if (navigator && 'clipboard' in navigator) {
+                        navigator.clipboard.writeText(
+                            JSON.stringify(props.graphing?.graph.export())
+                        );
+                        notify({
+                            type: 'positive',
+                            // TODO: i18n
+                            message: 'Copied The Graph Serialization',
+                        });
+                    } else {
+                        notify({
+                            type: 'negative',
+                            message:
+                                'Fail To Copy Graph Serialization Due To Lack Of Browser Support',
+                        });
+                    }
+                },
+            },
+            {
+                icon: toKebabCase('mdiImageMultipleOutline'),
+                callBack: () => {
+                    const layers = ['edges', 'nodes', 'edgeLabels', 'labels'];
+
+                    saveAsPNG(
+                        props.graphing?.sigma,
+                        layers,
+                        () => {
+                            notify({
+                                type: 'positive',
+                                message: 'Copied Graph Image',
+                            });
+                        },
+                        () => {
+                            notify({
+                                type: 'negative',
+                                message: 'Failed To Copy Graph Image',
+                            });
+                        }
+                    );
+                },
+            },
         ];
         return {
             buttons,
@@ -47,3 +116,14 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped lang="sass">
+#graph-control-wrapper
+    margin: 10px
+    position: absolute
+    z-index: 1
+
+    .graph-control-button-wrapper
+        margin-right: 5px
+        margin-bottom: 5px
+</style>
