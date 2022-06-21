@@ -3,15 +3,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, markRaw, onMounted, ref } from 'vue';
+import { computed, defineComponent, markRaw, onMounted, ref, watch } from 'vue';
+import type { Ref } from 'vue';
 import Graph from 'graphology';
-import type Sigma from 'sigma';
 import ForceSupervisor from 'graphology-layout-force/worker';
+import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 
+import type Sigma from 'sigma';
 import type { PropType } from 'vue';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { SerializedGraph } from 'graphology-types';
-import { initSigma, useSigma } from 'components/mixins/sigma/instance';
+import type { GraphNodeAttributeType } from 'components/mixins/sigma/instance';
+
+type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
 type SigmaInfo = {
     sigma: Sigma | undefined;
@@ -19,10 +23,107 @@ type SigmaInfo = {
     isDragging: boolean;
 };
 
+function initDefaultGraph(graph: GraphType) {
+    graph.addNode('n1', {
+        x: 0,
+        y: 0,
+        size: 10,
+        highlightColor: new Set(['#59351F']),
+        // color: chroma.random().hex(),
+    });
+    graph.addNode('n2', {
+        x: -5,
+        y: 5,
+        size: 10,
+        highlightColor: new Set(['#763C28', '#F54021', '#955F20', '#E4A010']),
+        // color: chroma.random().hex(),
+    });
+    graph.addNode('n3', {
+        x: 5,
+        y: 5,
+        size: 10,
+        highlightColor: new Set(['#FF2301', '#D53032', '#2F4538']),
+        // color: chroma.random().hex(),
+    });
+    graph.addNode('n4', {
+        x: 0,
+        y: 10,
+        size: 10,
+        highlightColor: new Set(['#063971', '#FF7514']),
+        // color: chroma.random().hex(),
+    });
+    graph.addEdge('n1', 'n2');
+    graph.addEdge('n2', 'n4');
+    graph.addEdge('n4', 'n3');
+    graph.addEdge('n3', 'n1');
+}
+
+function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
+    return {
+        addHighlight(nodeId: string, color: string | string[] | Set<string>) {
+            let highlightColor = graph.getNodeAttribute(
+                nodeId,
+                'highlightColor'
+            );
+            if (!highlightColor) {
+                highlightColor = new Set();
+                graph.setNodeAttribute(
+                    nodeId,
+                    'highlightColor',
+                    highlightColor
+                );
+            }
+            if (typeof color === 'string') {
+                highlightColor.add(color);
+            } else {
+                color.forEach(highlightColor.add, highlightColor);
+            }
+        },
+        removeHighlight(
+            nodeId: string,
+            color: string | string[] | Set<string>
+        ) {
+            const highlightColor = graph.getNodeAttribute(
+                nodeId,
+                'highlightColor'
+            );
+            if (highlightColor) {
+                if (typeof color === 'string') {
+                    highlightColor.delete(color);
+                } else {
+                    color.forEach(highlightColor.delete, highlightColor);
+                }
+            }
+        },
+        cleanHighlightGraph() {
+            graph.nodes().forEach((item) => {
+                const highlightColor = graph.getNodeAttribute(
+                    item,
+                    'highlightColor'
+                );
+                if (highlightColor) {
+                    this.removeHighlight(item, highlightColor);
+                }
+            });
+        },
+        clearGraph() {
+            graph.clear();
+        },
+        importGraph(data: string | Partial<SerializedGraph>) {
+            this.clearGraph();
+            if (typeof data === 'string') {
+                graph.import(JSON.parse(data));
+            } else {
+                graph.import(data);
+            }
+        },
+    };
+}
+
 export default defineComponent({
     props: {
         graphData: {
-            type: Object as PropType<Partial<SerializedGraph>>,
+            type: Object as PropType<Partial<SerializedGraph> | string>,
             default: undefined,
         },
         settings: {
@@ -33,49 +134,39 @@ export default defineComponent({
     setup(props) {
         // graph object
         const graph = markRaw(new Graph());
+        // sigma container
+        const sigmaInfo = ref<SigmaInfo>({
+            sigma: undefined,
+            draggedNode: undefined,
+            isDragging: false,
+        });
+
+        // sigma instance
+        const sigma = computed(
+            () => sigmaInfo.value.sigma as Sigma | undefined
+        );
+
+        // graph tools
+        const toolBox = markRaw(graphToolBoxCreator(graph, sigma));
+
+        // init data
         if (props.graphData) {
             // import graph from props
-            graph.import(props.graphData);
+            toolBox.importGraph(props.graphData);
         } else {
             // otherwise load the default graph
-            graph.addNode('n1', {
-                x: 0,
-                y: 0,
-                size: 10,
-                highlightColor: new Set(['#59351F']),
-                // color: chroma.random().hex(),
-            });
-            graph.addNode('n2', {
-                x: -5,
-                y: 5,
-                size: 10,
-                highlightColor: new Set([
-                    '#763C28',
-                    '#F54021',
-                    '#955F20',
-                    '#E4A010',
-                ]),
-                // color: chroma.random().hex(),
-            });
-            graph.addNode('n3', {
-                x: 5,
-                y: 5,
-                size: 10,
-                highlightColor: new Set(['#FF2301', '#D53032', '#2F4538']),
-                // color: chroma.random().hex(),
-            });
-            graph.addNode('n4', {
-                x: 0,
-                y: 10,
-                size: 10,
-                highlightColor: new Set(['#063971', '#FF7514']),
-                // color: chroma.random().hex(),
-            });
-            graph.addEdge('n1', 'n2');
-            graph.addEdge('n2', 'n4');
-            graph.addEdge('n4', 'n3');
-            graph.addEdge('n3', 'n1');
+            initDefaultGraph(graph);
         }
+        // watch prop graph data change and import if change happens
+        watch(
+            () => props.graphData,
+            (newVal) => {
+                toolBox.clearGraph();
+                if (newVal) {
+                    toolBox.importGraph(newVal);
+                }
+            }
+        );
 
         // force layout
         const forceLayout = ref<ForceSupervisor>(
@@ -91,13 +182,6 @@ export default defineComponent({
             }
         }
         toggleForceLayout();
-
-        // sigma.js
-        const sigmaInfo = ref<SigmaInfo>({
-            sigma: undefined,
-            draggedNode: undefined,
-            isDragging: false,
-        });
 
         onMounted(() => {
             // load sigma when the element is mounted
@@ -160,7 +244,7 @@ export default defineComponent({
             }
         });
 
-        return { sigmaInfo, graph };
+        return { sigmaInfo, sigma, graph, toolBox, toggleForceLayout };
     },
 });
 </script>

@@ -1,6 +1,7 @@
 import Sigma from 'sigma';
 import { computed } from 'vue';
 import { SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS } from 'components/mixins/sigma/sigma-highlight';
+import type { SpecialHighlightNodeDisplayData } from 'components/mixins/sigma/sigma-highlight';
 
 import type Graph from 'graphology';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
@@ -9,6 +10,11 @@ import type { AnimateOptions } from 'sigma/utils/animate';
 import type { CameraState } from 'sigma/types';
 
 let sigma: Sigma | undefined = undefined;
+
+export interface GraphNodeAttributeType
+    extends SpecialHighlightNodeDisplayData {
+    weight?: number;
+}
 
 export function initSigma(
     graph: Graph,
