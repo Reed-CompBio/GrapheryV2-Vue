@@ -6,7 +6,6 @@
 import { computed, defineComponent, markRaw, onMounted, ref, watch } from 'vue';
 import type { Ref } from 'vue';
 import Graph from 'graphology';
-import ForceSupervisor from 'graphology-layout-force/worker';
 import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 
 import type Sigma from 'sigma';
@@ -14,6 +13,7 @@ import type { PropType } from 'vue';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { SerializedGraph } from 'graphology-types';
 import type { GraphNodeAttributeType } from 'components/mixins/sigma/instance';
+import { initGraphLayouts } from 'components/mixins/sigma/layouts';
 
 type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
@@ -168,20 +168,8 @@ export default defineComponent({
             }
         );
 
-        // force layout
-        const forceLayout = ref<ForceSupervisor>(
-            new ForceSupervisor(graph, {
-                isNodeFixed: (_, attr) => attr.highlighted,
-            })
-        );
-        function toggleForceLayout() {
-            if (forceLayout.value?.isRunning()) {
-                forceLayout.value?.stop();
-            } else {
-                forceLayout.value?.start();
-            }
-        }
-        toggleForceLayout();
+        const layouts = initGraphLayouts(graph);
+        layouts.value.forceLayout.toggle();
 
         onMounted(() => {
             // load sigma when the element is mounted
@@ -244,7 +232,12 @@ export default defineComponent({
             }
         });
 
-        return { sigmaInfo, sigma, graph, toolBox, toggleForceLayout };
+        return {
+            sigmaInfo,
+            sigma,
+            graph,
+            toolBox,
+        };
     },
 });
 </script>

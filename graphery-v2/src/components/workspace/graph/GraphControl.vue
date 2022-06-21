@@ -13,6 +13,23 @@
                 size="sm"
             />
         </div>
+        <div class="graph-control-button-wrapper">
+            <q-btn icon="mdi-cog-outline" rounded outline size="sm">
+                <q-menu fit auto-close anchor="center right" self="center left">
+                    <q-item>
+                        <q-item-section no-wrap>
+                            <q-item-label>Force Layout</q-item-label>
+                        </q-item-section>
+                        <q-item-section no-wrap side>
+                            <q-toggle
+                                v-model="layouts.forceLayout.isRunning"
+                                :disable="!layouts.forceLayout"
+                            />
+                        </q-item-section>
+                    </q-item>
+                </q-menu>
+            </q-btn>
+        </div>
     </div>
 </template>
 
@@ -25,6 +42,7 @@ import type { PropType } from 'vue';
 import type GraphingSection from 'components/workspace/graph/GraphingSection.vue';
 import { useQuasar } from 'quasar';
 import saveAsPNG from 'components/mixins/sigma/save-as-png';
+import { useGraphLayouts } from 'components/mixins/sigma/layouts';
 
 export default defineComponent({
     props: {
@@ -110,8 +128,12 @@ export default defineComponent({
                 },
             },
         ];
+
+        const layouts = useGraphLayouts();
+
         return {
             buttons,
+            layouts,
         };
     },
 });
