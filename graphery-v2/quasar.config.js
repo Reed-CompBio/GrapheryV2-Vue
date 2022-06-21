@@ -46,7 +46,7 @@ module.exports = configure(function (ctx) {
             // 'line-awesome',
             // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-            'mdi-v5',
+            'mdi-v6',
             'roboto-font', // optional, you are not bound to it
             // 'material-icons', // optional, you are not bound to it
         ],
@@ -95,7 +95,7 @@ module.exports = configure(function (ctx) {
         framework: {
             config: {},
 
-            // iconSet: 'material-icons', // Quasar icon set
+            iconSet: 'mdi-v6', // Quasar icon set
             // lang: 'en-US', // Quasar language pack
 
             // For special cases outside of where the auto-import strategy can have an impact
@@ -106,7 +106,7 @@ module.exports = configure(function (ctx) {
             // directives: [],
 
             // Quasar plugins
-            plugins: ['Meta'],
+            plugins: ['Meta', 'Notify'],
         },
 
         // animations: 'all', // --- includes all animations
