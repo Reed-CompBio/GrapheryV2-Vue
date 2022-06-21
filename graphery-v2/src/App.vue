@@ -1,4 +1,5 @@
 <template>
+    <q-ajax-bar color="white" />
     <router-view />
 </template>
 
