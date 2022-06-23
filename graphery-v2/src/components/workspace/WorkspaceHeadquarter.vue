@@ -13,6 +13,7 @@
         <div class="q-ml-xs">Workspace</div>
         <q-space />
         <div id="progress-wrapper">
+            <!-- TODO fix flickering bug -->
             <q-badge id="progress-percentage" color="primary"> 95 % </q-badge>
             <q-slider
                 id="progress-bar"
@@ -26,68 +27,68 @@
             <q-btn
                 dense
                 icon="mdi-skip-backward"
-                @click="eventBus.emit('jumpBackward')"
+                @click="eventBus.emit('jump-backward')"
             />
             <q-btn
                 dense
                 icon="mdi-skip-previous"
-                @click="eventBus.emit('previousStep')"
+                @click="eventBus.emit('previous-step')"
             />
             <q-btn
                 dense
                 icon="mdi-skip-next"
-                @click="eventBus.emit('nextStep')"
+                @click="eventBus.emit('next-step')"
             />
             <q-btn
                 dense
                 icon="mdi-skip-forward"
-                @click="eventBus.emit('jumpForward')"
+                @click="eventBus.emit('jump-forward')"
             />
         </q-btn-group>
         <q-btn-group dense flat id="execution-buttons">
             <q-btn
                 dense
                 icon="mdi-console-network"
-                @click="eventBus.emit('executeRemotely')"
+                @click="eventBus.emit('execute-remotely')"
             />
             <q-btn
                 dense
                 icon="mdi-console"
-                @click="eventBus.emit('executeLocally')"
+                @click="eventBus.emit('execute-locally')"
             />
         </q-btn-group>
         <q-btn-group dense flat id="vcs-buttons">
             <q-btn
                 dense
                 icon="mdi-content-save-all-outline"
-                @click="eventBus.emit('toggleSavesList')"
+                @click="eventBus.emit('toggle-vcs-list')"
             />
             <q-btn
                 dense
                 icon="mdi-content-save-move-outline"
-                @click="eventBus.emit('saveCurrent')"
+                @click="eventBus.emit('save-current-to-vcs')"
             />
         </q-btn-group>
         <q-btn-group dense flat id="editor-buttons">
             <q-btn
                 dense
                 icon="mdi-content-copy"
-                @click="eventBus.emit('copyCode')"
+                @click="eventBus.emit('copy-editor-code')"
             />
             <q-btn
                 dense
                 icon="mdi-content-paste"
-                @click="eventBus.emit('pasteCode')"
+                @click="eventBus.emit('paste-editor-code')"
             />
             <q-btn
                 dense
                 icon="mdi-arrow-collapse-horizontal"
-                @click="eventBus.emit('toggleVarList')"
+                @click="eventBus.emit('toggle-var-list')"
             />
             <q-btn
                 dense
                 icon="mdi-cog-outline"
-                @click="eventBus.emit('toggleSettings')"
+                @click="eventBus.emit('toggle-settings')"
             />
         </q-btn-group>
     </q-bar>
@@ -139,5 +140,4 @@ export default defineComponent({
 
 #progress-wrapper:hover #progress-bar, #progress-bar.q-slider--active, #progress-bar:hover
     opacity: 100 !important
-    // TODO: fix flickering bug
 </style>

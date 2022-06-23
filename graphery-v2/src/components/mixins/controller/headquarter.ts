@@ -8,33 +8,35 @@ export interface HighLightProtocol {
     highlightColor: Iterable<string>;
 }
 
-export interface EventTypes extends Record<EventType, unknown> {
+export interface EventDefTypes extends Record<EventType, unknown> {
     // behind the scene
-    replaceHighlight: HighLightProtocol[];
-    removeHighlight: HighLightProtocol;
-    addHighlight: HighLightProtocol;
+    'replace-highlight': HighLightProtocol[];
+    'remove-highlight': HighLightProtocol;
+    'add-highlight': HighLightProtocol;
     // breakpoint jumping
-    jumpForward: undefined;
-    jumpBackward: undefined;
+    'jump-forward': undefined;
+    'jump-backward': undefined;
     // stepping
-    nextStep: undefined;
-    previousStep: undefined;
-    stepChangedTo: number;
+    'next-step': undefined;
+    'previous-step': undefined;
+    'step-changed-to': number;
     // executing
-    executeRemotely: undefined;
-    executeLocally: undefined;
+    'execute-remotely': undefined;
+    'execute-locally': undefined;
     // editor change
-    toggleEditorLock: undefined;
-    copyCode: undefined;
-    pasteCode: undefined;
-    toggleVarList: undefined;
-    toggleSettings: undefined;
-    // workspace csv
-    toggleSavesList: undefined;
-    saveCurrent: undefined;
+    'toggle-editorLock': undefined;
+    'copy-editor-code': undefined;
+    'paste-editor-code': undefined;
+    'toggle-var-list': undefined;
+    'toggle-settings': undefined;
+    // workspace vcs
+    'toggle-vcs-list': undefined;
+    'save-current-to-vcs': undefined;
 }
 
-export const bus = markRaw(mitt<EventTypes>());
+export type EventTypes = keyof EventDefTypes;
+
+export const bus = markRaw(mitt<EventDefTypes>());
 
 export function useBus() {
     return bus;
