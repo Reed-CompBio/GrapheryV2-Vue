@@ -9,7 +9,10 @@
                         <GraphDisplay />
                     </template>
                     <template v-slot:after>
-                        <MonacoEditor />
+                        <div class="full-height" style="overflow: hidden">
+                            <WorkspaceHeadquarter />
+                            <MonacoEditor />
+                        </div>
                     </template>
                 </FullHeightSplitter>
             </template>
@@ -24,11 +27,13 @@
 import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/FullHeightSplitter.vue';
 import TextDisplay from 'components/workspace/TextDisplay.vue';
+import WorkspaceHeadquarter from 'components/workspace/WorkspaceHeadquarter.vue';
 import { APILoader } from 'components/mixins/load-api';
 import { gql } from 'graphql-tag';
 
 export default defineComponent({
     components: {
+        WorkspaceHeadquarter,
         GraphDisplay: defineAsyncComponent(
             () => import('components/workspace/graph/GraphDisplay.vue')
         ),

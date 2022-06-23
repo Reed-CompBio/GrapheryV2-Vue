@@ -93,13 +93,11 @@
 </template>
 
 <script lang="ts">
-import type { PropType } from 'vue';
 import { computed, defineAsyncComponent, defineComponent } from 'vue';
-import {
-    GraphQLLoadingType,
-    ItemStatus,
-    Tutorial,
-} from 'src/types/tutorial-types';
+import { ItemStatus } from 'src/types/tutorial-types';
+
+import type { PropType } from 'vue';
+import type { GraphQLLoadingType, Tutorial } from 'src/types/tutorial-types';
 
 const queryName = 'tutorialContent' as const;
 type TutorialText = GraphQLLoadingType<typeof queryName, [Tutorial]>;

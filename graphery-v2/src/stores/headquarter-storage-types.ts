@@ -6,3 +6,12 @@ export interface HeadquarterStorageType {
     tutorialContent: Tutorial | null;
     graphContent: GraphAnchor | null;
 }
+
+export interface StepInfoType {
+    currentStep: number;
+    breakpoints: number[];
+}
+
+export interface CSVType {
+    locked: boolean;
+}

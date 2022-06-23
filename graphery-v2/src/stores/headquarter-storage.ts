@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
-import type { HeadquarterStorageType } from 'stores/headquarter-storage-types';
-import { ExecutionResult } from 'src/types/tutorial-types';
+import type {
+    CSVType,
+    HeadquarterStorageType,
+    StepInfoType,
+} from 'stores/headquarter-storage-types';
+import type { ExecutionResult } from 'src/types/tutorial-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -15,7 +19,14 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         graphContent: null,
     });
 
-    const stepInfo = reactive({});
+    const stepInfo = reactive<StepInfoType>({
+        currentStep: 0,
+        breakpoints: [],
+    });
+
+    const csv = reactive<CSVType>({
+        locked: true,
+    });
 
     // getters
     const graphAnchors = computed(() => {
@@ -72,12 +83,26 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         );
     });
 
+    const currentStep = computed(() => stepInfo.currentStep);
+
+    const nextBreakpoint = computed(() => {
+        return (currentLine: number) => {
+            for (const num of stepInfo.breakpoints) {
+                if (num > currentLine) {
+                    return num;
+                }
+            }
+            return null;
+        };
+    });
+
     // actions
 
     return {
         // states
         storage,
         stepInfo,
+        csv,
         // getters
         graphAnchors,
         codes,
@@ -85,5 +110,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentGraphAnchor,
         currentCode,
         currentExecutionResult,
+        currentStep,
+        nextBreakpoint,
     };
 });
