@@ -4,7 +4,7 @@
             dense
             flat
             :icon="
-                headquarterStorage.csv.locked
+                headquarterStorage.vcs.locked
                     ? 'mdi-lock-outline'
                     : 'mdi-lock-open-variant-outline'
             "
@@ -117,12 +117,11 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-#right-controls
-    .q-btn-group
-        margin-right: 15px
+.q-btn-group
+    margin-right: 15px
 
-    .q-btn-group:last-child
-        margin-right: 8px
+.q-btn-group:last-child
+    margin-right: 8px
 
 #progress-percentage
     margin-right: 5px

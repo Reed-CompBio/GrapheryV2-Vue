@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
 import type {
-    CSVType,
+    VCSType,
     HeadquarterStorageType,
     StepInfoType,
 } from 'stores/headquarter-storage-types';
@@ -24,7 +24,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         breakpoints: [],
     });
 
-    const csv = reactive<CSVType>({
+    const vcs = reactive<VCSType>({
         locked: true,
     });
 
@@ -102,7 +102,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         // states
         storage,
         stepInfo,
-        csv,
+        vcs,
         // getters
         graphAnchors,
         codes,

@@ -12,6 +12,6 @@ export interface StepInfoType {
     breakpoints: number[];
 }
 
-export interface CSVType {
+export interface VCSType {
     locked: boolean;
 }
