@@ -94,13 +94,10 @@
 
 <script lang="ts">
 import { computed, defineAsyncComponent, defineComponent } from 'vue';
-import { Status } from 'src/types/tutorial-types';
+import { Status } from 'src/types/api-types';
 
 import type { PropType } from 'vue';
-import type {
-    GraphQLLoadingType,
-    TutorialType,
-} from 'src/types/tutorial-types';
+import type { GraphQLLoadingType, TutorialType } from 'src/types/api-types';
 
 const queryName = 'tutorialContent' as const;
 type TutorialText = GraphQLLoadingType<typeof queryName, [TutorialType]>;

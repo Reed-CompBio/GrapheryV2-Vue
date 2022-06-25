@@ -1,7 +1,4 @@
-import type {
-    GraphDescriptionType,
-    TutorialType,
-} from 'src/types/tutorial-types';
+import type { GraphDescriptionType, TutorialType } from 'src/types/api-types';
 
 export interface HeadquarterStorageType {
     currentCodeId: string | null;

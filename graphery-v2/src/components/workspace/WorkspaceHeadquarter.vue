@@ -97,7 +97,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
-import { useBus } from 'components/mixins/controller/headquarter';
+import { useBus } from 'components/mixins/controller/headquarter-bus';
 
 export default defineComponent({
     setup() {

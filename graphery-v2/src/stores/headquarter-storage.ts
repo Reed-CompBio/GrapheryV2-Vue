@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
-import { useBus } from 'components/mixins/controller/headquarter';
+import { useBus } from 'components/mixins/controller/headquarter-bus';
 
 import type {
     HeadquarterStorageType,
@@ -13,7 +13,7 @@ import type {
     GraphAnchorType,
     GraphType,
     TutorialType,
-} from 'src/types/tutorial-types';
+} from 'src/types/api-types';
 import type { RecordArrayType, RecordType } from 'src/types/execution-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
