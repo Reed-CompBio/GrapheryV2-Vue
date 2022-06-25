@@ -1,7 +1,7 @@
 <template>
     <div id="graph-wrapper" class="full-height">
         <div id="graph-display-section" class="full-height">
-            <GraphControl :graphing="graphing" />
+            <GraphControl :graphing="graphing" ref="graph-control" />
             <GraphingSection :graph-data="graphData" ref="graphing" />
         </div>
     </div>
@@ -10,7 +10,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import type { PropType } from 'vue';
-import type { GraphAnchor } from 'src/types/tutorial-types';
+import type { GraphAnchorType } from 'src/types/tutorial-types';
 import type { SerializedGraph } from 'graphology-types';
 import GraphingSection from 'components/workspace/graph/GraphingSection.vue';
 import GraphControl from 'components/workspace/graph/GraphControl.vue';
@@ -19,7 +19,7 @@ export default defineComponent({
     components: { GraphControl, GraphingSection },
     props: {
         graphInfos: {
-            type: Object as PropType<GraphAnchor[]>,
+            type: Object as PropType<GraphAnchorType[]>,
             default: undefined,
         },
     },
@@ -29,10 +29,14 @@ export default defineComponent({
         ) as Partial<SerializedGraph>;
 
         const graphing = ref<InstanceType<typeof GraphingSection> | null>(null);
+        const graphControl = ref<InstanceType<typeof GraphControl> | null>(
+            null
+        );
 
         return {
             graphData,
             graphing,
+            graphControl,
         };
     },
 });

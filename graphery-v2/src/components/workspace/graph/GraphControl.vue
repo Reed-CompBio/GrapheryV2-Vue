@@ -75,7 +75,7 @@ import { useGraphLayouts } from 'components/mixins/sigma/layouts';
 
 import type { PropType } from 'vue';
 import type GraphingSection from 'components/workspace/graph/GraphingSection.vue';
-import type { GraphAnchor } from 'src/types/tutorial-types';
+import type { GraphAnchorType } from 'src/types/tutorial-types';
 
 export default defineComponent({
     props: {
@@ -99,7 +99,7 @@ export default defineComponent({
             default: undefined,
         },
         graphOptions: {
-            type: Array as PropType<GraphAnchor[]>,
+            type: Array as PropType<GraphAnchorType[]>,
             default: undefined,
         },
     },
