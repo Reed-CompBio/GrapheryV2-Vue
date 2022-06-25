@@ -19,7 +19,7 @@ export interface EventDefTypes extends Record<EventType, unknown> {
     // stepping
     'next-step': undefined;
     'previous-step': undefined;
-    'step-changed-to': number;
+    'step-changed-to': number | null;
     // executing
     'execute-remotely': undefined;
     'execute-locally': undefined;

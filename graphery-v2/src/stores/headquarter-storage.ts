@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
+import { useBus } from 'components/mixins/controller/headquarter';
 
 import type {
     HeadquarterStorageType,
@@ -13,6 +14,7 @@ import type {
     GraphType,
     TutorialType,
 } from 'src/types/tutorial-types';
+import type { RecordArrayType, RecordType } from 'src/types/execution-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -28,7 +30,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     const stepInfo = reactive<StepInfoType>({
         currentStep: 0,
-        breakpoints: [],
+        breakpoints: new Set<number>(),
     });
 
     // getters
@@ -88,21 +90,68 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         );
     });
 
-    const currentStep = computed(() => stepInfo.currentStep);
+    // I regret using Json instead of JSON, but ....
+    const currentRecordArray = computed(() => {
+        if (currentExecutionResult.value?.resultJson)
+            return JSON.parse(
+                currentExecutionResult.value?.resultJson
+            ) as RecordArrayType;
+        else return null;
+    });
 
-    const nextBreakpoint = computed(() => {
-        return (currentLine: number) => {
-            for (const num of stepInfo.breakpoints) {
-                if (num > currentLine) {
-                    return num;
+    const currentStep = computed(() => stepInfo.currentStep);
+    const currentStepRecord = computed(() => {
+        if (currentRecordArray.value) {
+            let record = currentRecordArray.value[stepInfo.currentStep];
+            if (!record.variables && !record.accesses && !record.stdout) {
+                for (let i = stepInfo.currentStep; i >= 0; i--) {
+                    record = currentRecordArray.value[i];
+                    if (record.variables || record.accesses || record.stdout) {
+                        break;
+                    }
+                }
+            }
+            return record;
+        } else {
+            return null;
+        }
+    });
+
+    const getNextBreakpoint = computed(() => {
+        // TODO, this is going to be a problem if you have stacks
+
+        return () => {
+            if (currentRecordArray.value) {
+                for (
+                    let i = stepInfo.currentStep + 1;
+                    i < currentRecordArray.value.length;
+                    i++
+                ) {
+                    const record: RecordType = currentRecordArray.value[i];
+                    if (record.line in stepInfo.breakpoints) {
+                        return i;
+                    }
                 }
             }
             return null;
         };
     });
+    const getPrevBreakpoint = computed(() => {
+        return () => {
+            if (currentRecordArray.value) {
+                for (let i = stepInfo.currentStep - 1; i >= 0; i--) {
+                    const record: RecordType = currentRecordArray.value[i];
+                    if (record.line in stepInfo.breakpoints) {
+                        return i;
+                    }
+                }
+            }
+
+            return null;
+        };
+    });
 
     // actions
-
     async function loadTutorialContent(url: string, lang: string) {
         const queryResult = await apolloClient.query<{
             tutorialContent: TutorialType;
@@ -124,6 +173,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                                 id
                                 url
                                 itemStatus
+                                # use lazy load
                                 #                                graph {
                                 #                                    graphJson
                                 #                                }
@@ -141,6 +191,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                             code {
                                 id
                                 code
+                                # use lazy load
                                 #                                executionResults {
                                 #                                    graphAnchor {
                                 #                                        id
@@ -194,6 +245,33 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         }
     }
 
+    // event bus
+    const eventBus = useBus();
+
+    // event bus actions
+    eventBus.on('step-changed-to', (step: number | null) => {
+        // change current step
+        if (step) {
+            stepInfo.currentStep = step;
+        }
+    });
+    eventBus.on('next-step', () => {
+        stepInfo.currentStep += 1;
+    });
+    eventBus.on('previous-step', () => {
+        if (stepInfo.currentStep > 0) {
+            stepInfo.currentStep -= 1;
+        }
+    });
+    eventBus.on('jump-forward', () => {
+        const nextBreakpoint = getNextBreakpoint.value();
+        eventBus.emit('step-changed-to', nextBreakpoint);
+    });
+    eventBus.on('jump-backward', () => {
+        const prevBreakpoint = getPrevBreakpoint.value();
+        eventBus.emit('step-changed-to', prevBreakpoint);
+    });
+
     return {
         // states
         storage,
@@ -205,8 +283,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentGraphAnchor,
         currentCode,
         currentExecutionResult,
+        currentRecordArray,
         currentStep,
-        nextBreakpoint,
+        currentStepRecord,
+        nextBreakpoint: getNextBreakpoint,
+        // actions
         loadTutorialContent,
         loadGraphJsonAndExecutionResult,
     };

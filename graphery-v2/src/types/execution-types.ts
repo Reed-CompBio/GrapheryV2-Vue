@@ -39,9 +39,9 @@ export interface CompositionalObjectIdentityType {
 
 export interface RecordType {
     line: number;
-    variables: Record<ObjectIdentifierType, CompositionalObjectIdentityType>;
+    variables?: Record<ObjectIdentifierType, CompositionalObjectIdentityType>;
     accesses?: CompositionalObjectIdentityType[];
-    variableOrders?: string[];
+    variableOrders?: string[]; // this is not supported for now
     stdout?: string[];
 }
 

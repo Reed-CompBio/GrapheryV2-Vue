@@ -12,5 +12,5 @@ export interface HeadquarterStorageType {
 
 export interface StepInfoType {
     currentStep: number;
-    breakpoints: number[];
+    breakpoints: Set<number>;
 }

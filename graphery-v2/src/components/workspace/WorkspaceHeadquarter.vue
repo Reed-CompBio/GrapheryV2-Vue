@@ -108,7 +108,7 @@ export default defineComponent({
                 return headquarterStorage.stepInfo.currentStep;
             },
             set(v: number) {
-                eventBus.emit('stepChangedTo', v);
+                eventBus.emit('step-changed-to', v);
             },
         });
 
