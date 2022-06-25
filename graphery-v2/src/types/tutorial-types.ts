@@ -143,6 +143,7 @@ export type Query = {
     __typename?: 'Query';
     graph?: Maybe<GraphType>;
     graphAnchors: Array<GraphAnchorType>;
+    graphContent?: Maybe<GraphDescriptionType>;
     me?: Maybe<UserType>;
     tagAnchors: Array<TagAnchorType>;
     tutorialAnchors: Array<TutorialAnchorType>;
@@ -150,11 +151,17 @@ export type Query = {
 };
 
 export type QueryGraphArgs = {
-    ident?: Maybe<Scalars['UUID']>;
+    anchorId?: Maybe<Scalars['UUID']>;
 };
 
 export type QueryGraphAnchorsArgs = {
     filters?: Maybe<GraphAnchorFilter>;
+};
+
+export type QueryGraphContentArgs = {
+    anchorId?: Maybe<Scalars['UUID']>;
+    lang?: LangCode;
+    url?: Maybe<Scalars['String']>;
 };
 
 export type QueryTagAnchorsArgs = {
