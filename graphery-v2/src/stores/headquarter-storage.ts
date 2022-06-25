@@ -4,7 +4,6 @@ import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
 
 import type {
-    VCSType,
     HeadquarterStorageType,
     StepInfoType,
 } from 'stores/headquarter-storage-types';
@@ -30,10 +29,6 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     const stepInfo = reactive<StepInfoType>({
         currentStep: 0,
         breakpoints: [],
-    });
-
-    const vcs = reactive<VCSType>({
-        locked: true,
     });
 
     // getters
@@ -203,7 +198,6 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         // states
         storage,
         stepInfo,
-        vcs,
         // getters
         graphAnchors,
         codes,

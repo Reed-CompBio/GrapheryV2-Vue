@@ -14,7 +14,3 @@ export interface StepInfoType {
     currentStep: number;
     breakpoints: number[];
 }
-
-export interface VCSType {
-    locked: boolean;
-}
