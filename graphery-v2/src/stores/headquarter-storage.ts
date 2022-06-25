@@ -1,11 +1,19 @@
 import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
+import { apolloClient } from 'src/utils/graphql-client';
+import { gql } from 'graphql-tag';
+
 import type {
     VCSType,
     HeadquarterStorageType,
     StepInfoType,
 } from 'stores/headquarter-storage-types';
-import type { ExecutionResult } from 'src/types/tutorial-types';
+import type {
+    ExecutionResultType,
+    GraphAnchorType,
+    GraphType,
+    TutorialType,
+} from 'src/types/tutorial-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -29,11 +37,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
 
     // getters
-    const graphAnchors = computed(() => {
+    const graphAnchors = computed<GraphAnchorType[]>(() => {
         if (storage.tutorialContent) {
             return storage.tutorialContent.tutorialAnchor.graphAnchors;
         } else if (storage.graphContent) {
-            return [storage.graphContent];
+            return [storage.graphContent.graphAnchor];
         } else {
             console.error('Cannot Load Graphs');
         }
@@ -44,22 +52,24 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         if (storage.tutorialContent) {
             return [storage.tutorialContent.tutorialAnchor.code];
         } else if (storage.graphContent) {
-            return storage.graphContent.tutorialAnchors.map(
-                (item) => item.code
+            return storage.graphContent.graphAnchor.tutorialAnchors.map(
+                (item) => item.tutorialAnchor.code
             );
         }
         return [];
     });
 
-    const executionResultCollection = computed<ExecutionResult[] | null>(() => {
-        if (storage.tutorialContent) {
-            return currentCode.value?.executionResults || null;
-        } else if (storage.graphContent) {
-            return currentGraphAnchor.value?.executionResults || null;
-        } else {
-            return null;
+    const executionResultCollection = computed<ExecutionResultType[] | null>(
+        () => {
+            if (storage.tutorialContent) {
+                return currentCode.value?.executionResults || null;
+            } else if (storage.graphContent) {
+                return currentGraphAnchor.value?.executionResults || null;
+            } else {
+                return null;
+            }
         }
-    });
+    );
 
     const currentGraphAnchor = computed(() => {
         const filterRes = graphAnchors.value.filter(
@@ -70,7 +80,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     const currentCode = computed(() => {
         const filterRes = codes.value.filter(
-            (item) => item.id === storage.currentCodeId
+            (item) => item && item.id === storage.currentCodeId
         );
         return filterRes.length === 0 ? null : filterRes[0];
     });
@@ -98,6 +108,97 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     // actions
 
+    async function loadTutorialContent(url: string, lang: string) {
+        const queryResult = await apolloClient.query<{
+            tutorialContent: TutorialType;
+        }>({
+            query: gql`
+                query LoadTutorialContent($url: String!, $lang: LangCode!) {
+                    tutorialContent(url: $url, lang: $lang) {
+                        id
+                        title
+                        authors {
+                            displayedName
+                        }
+                        abstract
+                        contentMarkdown
+                        modifiedTime
+                        itemStatus
+                        tutorialAnchor {
+                            graphAnchors {
+                                id
+                                url
+                                itemStatus
+                                #                                graph {
+                                #                                    graphJson
+                                #                                }
+                                graphDescription(lang: $lang) {
+                                    id
+                                    title
+                                    authors {
+                                        displayedName
+                                    }
+                                    modifiedTime
+                                    itemStatus
+                                    descriptionMarkdown
+                                }
+                            }
+                            code {
+                                id
+                                code
+                                #                                executionResults {
+                                #                                    graphAnchor {
+                                #                                        id
+                                #                                    }
+                                #                                    resultJson
+                                #                                    resultJsonMeta
+                                #                                }
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: {
+                url,
+                lang,
+            },
+        });
+
+        if (queryResult.data && !queryResult.errors) {
+            storage.tutorialContent = queryResult.data.tutorialContent;
+        }
+    }
+
+    async function loadGraphJsonAndExecutionResult(
+        anchorId: string,
+        codeId: string
+    ) {
+        // TODO figure out loading execution result with a specific code id
+        const result = await apolloClient.query<{ graph: GraphType }>({
+            query: gql`
+                query ($anchorId: UUID!, $codeId: UUID!) {
+                    graph(anchorId: $anchorId) {
+                        graphJson
+                        graphAnchor {
+                            executionResult(codeId: $codeId) {
+                                resultJson
+                                resultJsonMeta
+                            }
+                        }
+                    }
+                }
+            `,
+            variables: {
+                anchorId,
+                codeId,
+            },
+        });
+
+        if (result.data && !result.errors) {
+            // TODO fill in the lazy load result here
+        }
+    }
+
     return {
         // states
         storage,
@@ -112,5 +213,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentExecutionResult,
         currentStep,
         nextBreakpoint,
+        loadTutorialContent,
+        loadGraphJsonAndExecutionResult,
     };
 });
