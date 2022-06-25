@@ -8,7 +8,8 @@ schema {
 type CodeType {
     code: String!
     createdTime: DateTime!
-    executionResults: [ExecutionResultType]
+    executionResult(graphAnchorId: UUID!): ExecutionResultType
+    executionResults: [ExecutionResultType!]!
     id: UUID!
     modifiedTime: DateTime!
     name: String!
@@ -29,15 +30,17 @@ type GraphAnchorType {
     anchorName: String!
     createdTime: DateTime!
     defaultOrder: Int!
-    executionResults: [ExecutionResultType]!
+    executionResult(codeId: UUID!): ExecutionResultType
+    executionResults: [ExecutionResultType!]!
     graph: GraphType
-    graphDescriptions: [GraphDescriptionType]
+    graphDescription(lang: LangCode! = EN): GraphDescriptionType
+    graphDescriptions: [GraphDescriptionType!]!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     modifiedTime: DateTime!
-    tags: [TagAnchorType]!
-    tutorialAnchors: [OrderedGraphAnchorType]!
-    uploads: [UploadsType]
+    tags: [TagAnchorType!]!
+    tutorialAnchors: [OrderedGraphAnchorType!]!
+    uploads: [UploadsType!]!
     url: String!
 }
 
@@ -47,7 +50,7 @@ type GraphDescriptionType {
     descriptionMarkdown: String!
     graphAnchor: GraphAnchorType!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     langCode: String!
     modifiedTime: DateTime!
     title: String!
@@ -58,7 +61,7 @@ type GraphType {
     graphAnchor: GraphAnchorType!
     graphJson: String!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     makers: [UserType!]!
     modifiedTime: DateTime!
 }
@@ -80,30 +83,31 @@ type OrderedGraphAnchorType {
 }
 
 type Query {
-    graphAnchors(filters: GraphAnchorFilter): [GraphAnchorType]!
-    graphContent(filters: GraphFilter): [GraphType]!
+    graph(ident: UUID): GraphType
+    graphAnchors(filters: GraphAnchorFilter): [GraphAnchorType!]!
+    graphContent(ident: UUID, lang: LangCode! = EN, url: String): GraphDescriptionType
     me: UserType
-    tagAnchors(filters: TagAnchorFilter): [TagAnchorType]!
-    tutorialAnchors(filters: TutorialAnchorFilter): [TutorialAnchorType]!
-    tutorialContent(filters: TutorialFilter): [TutorialType]!
+    tagAnchors(filters: TagAnchorFilter): [TagAnchorType!]!
+    tutorialAnchors(filters: TutorialAnchorFilter): [TutorialAnchorType!]!
+    tutorialContent(lang: LangCode! = EN, url: String!): TutorialType
 }
 
 type TagAnchorType {
     anchorName: String!
     createdTime: DateTime!
-    graphAnchors: [GraphAnchorType]
+    graphAnchors: [GraphAnchorType!]!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     modifiedTime: DateTime!
-    tags: [TagType]
-    tutorialAnchors: [TutorialAnchorType]
+    tags: [TagType!]!
+    tutorialAnchors: [TutorialAnchorType!]!
 }
 
 type TagType {
     createdTime: DateTime!
     description: String!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     langCode: String!
     modifiedTime: DateTime!
     name: String!
@@ -114,14 +118,14 @@ type TutorialAnchorType {
     anchorName: String!
     code: CodeType
     createdTime: DateTime!
-    graphAnchors: [GraphAnchorType]
+    graphAnchors: [GraphAnchorType!]!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     modifiedTime: DateTime!
     rank: String!
-    tagAnchors: [TagAnchorType]!
-    tutorials: [TutorialType]
-    uploads: [UploadsType]
+    tagAnchors: [TagAnchorType!]!
+    tutorials: [TutorialType!]!
+    uploads: [UploadsType!]!
     url: String!
 }
 
@@ -131,7 +135,7 @@ type TutorialType {
     contentMarkdown: String!
     createdTime: DateTime!
     id: UUID!
-    itemStatus: String!
+    itemStatus: Status!
     langCode: String!
     modifiedTime: DateTime!
     title: String!
@@ -140,25 +144,134 @@ type TutorialType {
 
 type UploadsType {
     createdTime: DateTime!
-    graphAnchors: [GraphAnchorType]!
+    graphAnchors: [GraphAnchorType!]!
     id: UUID!
     modifiedTime: DateTime!
     name: String!
-    tutorialAnchors: [TutorialAnchorType]!
+    tutorialAnchors: [TutorialAnchorType!]!
 }
 
 type UserType {
     createdTime: DateTime!
     displayedName: String!
     email: String!
-    graphDescriptions: [GraphDescriptionType]
-    graphs: [GraphAnchorType]
+    graphDescriptions: [GraphDescriptionType!]!
+    graphs: [GraphAnchorType!]!
     id: UUID!
     isStaff: Boolean!
     modifiedTime: DateTime!
     role: Int!
-    tutorials: [TutorialAnchorType]
+    tutorials: [TutorialAnchorType!]!
     username: String!
+}
+
+enum LangCode {
+    AF
+    AR
+    AR_DZ
+    AST
+    AZ
+    BE
+    BG
+    BN
+    BR
+    BS
+    CA
+    CS
+    CY
+    DA
+    DE
+    DSB
+    EL
+    EN
+    EN_AU
+    EN_GB
+    EO
+    ES
+    ES_AR
+    ES_CO
+    ES_MX
+    ES_NI
+    ES_VE
+    ET
+    EU
+    FA
+    FI
+    FR
+    FY
+    GA
+    GD
+    GL
+    HE
+    HI
+    HR
+    HSB
+    HU
+    HY
+    IA
+    ID
+    IG
+    IO
+    IS
+    IT
+    JA
+    KA
+    KAB
+    KK
+    KM
+    KN
+    KO
+    KY
+    LB
+    LT
+    LV
+    MK
+    ML
+    MN
+    MR
+    MY
+    NB
+    NE
+    NL
+    NN
+    OS
+    PA
+    PL
+    PT
+    PT_BR
+    RO
+    RU
+    SK
+    SL
+    SQ
+    SR
+    SR_LATN
+    SV
+    SW
+    TA
+    TE
+    TG
+    TH
+    TK
+    TR
+    TT
+    UDM
+    UK
+    UR
+    UZ
+    VI
+    ZH_HANS
+    ZH_HANT
+}
+
+enum Status {
+    AUTOSAVE
+    CLOSED
+    DRAFT
+    PRIVATE
+    PUBLISHED
+    REVIEWING
+    TRASH
 }
 
 "Date with time (isoformat)"
@@ -194,18 +307,9 @@ input GraphAnchorFilter {
     anchorName: StrFilterLookup
     createdTime: DatetimeFilterLookup
     id: UUIDFilterLookup
-    itemStatus: StrFilterLookup
+    itemStatus: Status
     modifiedTime: DatetimeFilterLookup
     url: StrFilterLookup
-}
-
-input GraphFilter {
-    createdTime: DatetimeFilterLookup
-    graphAnchor: GraphAnchorFilter
-    id: UUIDFilterLookup
-    itemStatus: StrFilterLookup
-    makers: UserFilter
-    modifiedTime: DatetimeFilterLookup
 }
 
 input StrFilterLookup {
@@ -232,7 +336,7 @@ input TagAnchorFilter {
     anchorName: StrFilterLookup
     createdTime: DatetimeFilterLookup
     id: UUIDFilterLookup
-    itemStatus: StrFilterLookup
+    itemStatus: Status
     modifiedTime: DatetimeFilterLookup
     tags: DjangoModelFilterInput
 }
@@ -240,13 +344,13 @@ input TagAnchorFilter {
 input TagAnchorMutationType {
     anchorName: String
     id: UUID
-    itemStatus: String
+    itemStatus: Status
 }
 
 input TagMutationType {
     description: String
     id: UUID
-    itemStatus: String
+    itemStatus: Status
     langCode: String
     name: String
     tagAnchor: TagAnchorMutationType
@@ -256,7 +360,7 @@ input TutorialAnchorFilter {
     anchorName: StrFilterLookup
     createdTime: DatetimeFilterLookup
     id: UUIDFilterLookup
-    itemStatus: StrFilterLookup
+    itemStatus: Status
     modifiedTime: DatetimeFilterLookup
     rank: StrFilterLookup
     tutorials: TutorialFilter
@@ -269,7 +373,7 @@ input TutorialFilter {
     contentMarkdown: StrFilterLookup
     createdTime: DatetimeFilterLookup
     id: UUIDFilterLookup
-    itemStatus: StrFilterLookup
+    itemStatus: Status
     langCode: StrFilterLookup
     modifiedTime: DatetimeFilterLookup
     title: StrFilterLookup

@@ -94,13 +94,16 @@
 
 <script lang="ts">
 import { computed, defineAsyncComponent, defineComponent } from 'vue';
-import { ItemStatus } from 'src/types/tutorial-types';
+import { Status } from 'src/types/tutorial-types';
 
 import type { PropType } from 'vue';
-import type { GraphQLLoadingType, Tutorial } from 'src/types/tutorial-types';
+import type {
+    GraphQLLoadingType,
+    TutorialType,
+} from 'src/types/tutorial-types';
 
 const queryName = 'tutorialContent' as const;
-type TutorialText = GraphQLLoadingType<typeof queryName, [Tutorial]>;
+type TutorialText = GraphQLLoadingType<typeof queryName, [TutorialType]>;
 
 interface TutorialTextStyle {
     titleFont?: string;
@@ -134,7 +137,7 @@ export default defineComponent({
         });
         // TODO: add separate styles for different sections, and add a general style for
 
-        const tutorialData = computed<Tutorial | undefined>(() => {
+        const tutorialData = computed<TutorialType | undefined>(() => {
             return props.info?.data
                 ? props.info?.data[queryName][0]
                 : undefined;
@@ -143,12 +146,12 @@ export default defineComponent({
         const tutorialPublished = computed(() => {
             return (
                 tutorialData.value?.tutorialAnchor.itemStatus ===
-                ItemStatus.PUBLISHED
+                Status.PUBLISHED
             );
         });
 
         const translationPublished = computed(() => {
-            return tutorialData.value?.itemStatus === ItemStatus.PUBLISHED;
+            return tutorialData.value?.itemStatus === Status.PUBLISHED;
         });
 
         const showTutorial = computed(() => {
