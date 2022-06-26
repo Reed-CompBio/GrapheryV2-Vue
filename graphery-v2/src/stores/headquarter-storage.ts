@@ -9,12 +9,14 @@ import type {
     StepInfoType,
 } from 'stores/headquarter-storage-types';
 import type {
+    CodeType,
     ExecutionResultType,
     GraphAnchorType,
     GraphType,
     TutorialType,
 } from 'src/types/api-types';
 import type { RecordArrayType, RecordType } from 'src/types/execution-types';
+import { LangCode } from 'src/types/api-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -47,10 +49,12 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     const codes = computed(() => {
         if (storage.tutorialContent) {
-            return [storage.tutorialContent.tutorialAnchor.code];
+            return storage.tutorialContent.tutorialAnchor.code
+                ? [storage.tutorialContent.tutorialAnchor.code]
+                : [];
         } else if (storage.graphContent) {
             return storage.graphContent.graphAnchor.tutorialAnchors.map(
-                (item) => item.tutorialAnchor.code
+                (item) => item.tutorialAnchor.code as CodeType
             );
         }
         return [];
@@ -59,9 +63,9 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     const executionResultCollection = computed<ExecutionResultType[] | null>(
         () => {
             if (storage.tutorialContent) {
-                return currentCode.value?.executionResults || null;
-            } else if (storage.graphContent) {
                 return currentGraphAnchor.value?.executionResults || null;
+            } else if (storage.graphContent) {
+                return currentCode.value?.executionResults || null;
             } else {
                 return null;
             }
@@ -69,24 +73,26 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     );
 
     const currentGraphAnchor = computed(() => {
-        const filterRes = graphAnchors.value.filter(
+        const findRes = graphAnchors.value.find(
             (item) => item.id === storage.currentGraphId
         );
-        return filterRes.length === 0 ? null : filterRes[0];
+        return findRes || null;
     });
 
     const currentCode = computed(() => {
-        const filterRes = codes.value.filter(
+        const findRes = codes.value.find(
             (item) => item && item.id === storage.currentCodeId
         );
-        return filterRes.length === 0 ? null : filterRes[0];
+        return findRes || null;
     });
 
     const currentExecutionResult = computed(() => {
-        return executionResultCollection.value?.find(
-            (item) =>
-                item.graphAnchor.id === currentGraphAnchor.value?.id &&
-                item.code.id === currentCode.value?.id
+        return (
+            executionResultCollection.value?.find(
+                (item) =>
+                    item.graphAnchor.id === currentGraphAnchor.value?.id &&
+                    item.code.id === currentCode.value?.id
+            ) || null
         );
     });
 
@@ -128,7 +134,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                     i++
                 ) {
                     const record: RecordType = currentRecordArray.value[i];
-                    if (record.line in stepInfo.breakpoints) {
+                    if (stepInfo.breakpoints.has(record.line)) {
                         return i;
                     }
                 }
@@ -141,7 +147,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             if (currentRecordArray.value) {
                 for (let i = stepInfo.currentStep - 1; i >= 0; i--) {
                     const record: RecordType = currentRecordArray.value[i];
-                    if (record.line in stepInfo.breakpoints) {
+                    if (stepInfo.breakpoints.has(record.line)) {
                         return i;
                     }
                 }
@@ -210,8 +216,12 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             },
         });
 
-        if (queryResult.data && !queryResult.errors) {
-            storage.tutorialContent = queryResult.data.tutorialContent;
+        if (queryResult.data && !queryResult.errors && !queryResult.error) {
+            return queryResult.data.tutorialContent;
+        } else {
+            console.error(queryResult.error);
+            console.error(queryResult.errors);
+            return null;
         }
     }
 
@@ -227,6 +237,12 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                         graphJson
                         graphAnchor {
                             executionResult(codeId: $codeId) {
+                                graphAnchor {
+                                    id
+                                }
+                                code {
+                                    id
+                                }
                                 resultJson
                                 resultJsonMeta
                             }
@@ -240,8 +256,46 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             },
         });
 
-        if (result.data && !result.errors) {
-            // TODO fill in the lazy load result here
+        if (result.data && !result.errors && !result.error) {
+            return result.data.graph;
+        } else {
+            console.error(result.error);
+            console.error(result.errors);
+            return null;
+        }
+    }
+
+    async function loadCode(codeId: string, graphAnchorId: string) {
+        const result = await apolloClient.query<{ code: CodeType }>({
+            query: gql`
+                query ($codeId: UUID!, $graphAnchorId: UUID!) {
+                    code(codeId: $codeId) {
+                        code
+                        executionResult(graphAnchorId: $graphAnchorId) {
+                            graphAnchor {
+                                id
+                            }
+                            code {
+                                id
+                            }
+                            resultJson
+                            resultJsonMeta
+                        }
+                    }
+                }
+            `,
+            variables: {
+                codeId,
+                graphAnchorId,
+            },
+        });
+
+        if (result.data && !result.errors && !result.error) {
+            return result.data.code;
+        } else {
+            console.error(result.error);
+            console.error(result.errors);
+            return null;
         }
     }
 
@@ -270,6 +324,86 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     eventBus.on('jump-backward', () => {
         const prevBreakpoint = getPrevBreakpoint.value();
         eventBus.emit('step-changed-to', prevBreakpoint);
+    });
+    eventBus.on('add-breakpoint', (line: number) => {
+        stepInfo.breakpoints.add(line);
+    });
+    eventBus.on('remove-breakpoint', (line: number) => {
+        stepInfo.breakpoints.delete(line);
+    });
+    // TODO: consider moving this to other places
+    eventBus.on(
+        'load-graph',
+        ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
+            graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
+            codeAnchorId = codeAnchorId || currentCode.value?.id;
+
+            const graphAnchor = graphAnchors.value.find(
+                (item) => item.id === graphAnchorId
+            );
+
+            if (codeAnchorId && graphAnchorId && graphAnchor) {
+                loadGraphJsonAndExecutionResult(
+                    graphAnchorId,
+                    codeAnchorId
+                ).then((graph) => {
+                    if (graph) {
+                        graphAnchor.graph = graph;
+                    } else {
+                        console.debug(
+                            'the graph information is empty and might not be the intended behavior'
+                        );
+                    }
+                });
+            } else {
+                console.error(
+                    'cannot load graph information due to invalid input of graph anchor id and code anchor id'
+                );
+            }
+        }
+    );
+    eventBus.on('load-tutorial', ({ url, lang = LangCode.EN }) => {
+        loadTutorialContent(url, lang).then((tutorial) => {
+            if (tutorial) {
+                storage.tutorialContent = tutorial;
+            } else {
+                console.debug(
+                    'tutorial is null and might not be the intended behavior'
+                );
+            }
+        });
+    });
+    eventBus.on('load-code', ({ codeId, graphAnchorId }) => {
+        codeId = codeId || currentCode.value?.id;
+        graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
+
+        const codeRecord = codes.value.find((item) => item.id === codeId);
+
+        if (codeRecord && codeId && graphAnchorId) {
+            loadCode(codeId, graphAnchorId).then((code) => {
+                if (code) {
+                    codeRecord.code = code.code;
+                    codeRecord.executionResults = code.executionResults;
+                } else {
+                    console.debug(
+                        'the code information is empty and might not be the intended behavior'
+                    );
+                }
+            });
+        } else {
+            console.error(
+                'cannot load code due to invalid input of either code id or graph anchor id'
+            );
+        }
+    });
+    eventBus.on('reset-states', () => {
+        // reset steps
+        stepInfo.currentStep = 0;
+        // reset breakpoints
+        for (const line of stepInfo.breakpoints) {
+            eventBus.emit('remove-breakpoint', line);
+        }
+        // TODO variable area should be reset
     });
 
     return {

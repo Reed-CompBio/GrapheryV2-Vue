@@ -13,9 +13,15 @@ export interface EventDefTypes extends Record<EventType, unknown> {
     'replace-highlight': HighLightProtocol[];
     'remove-highlight': HighLightProtocol;
     'add-highlight': HighLightProtocol;
+    'load-graph': { graphAnchorId?: string; codeAnchorId?: string };
+    'load-code': { codeId?: string; graphAnchorId?: string };
+    'load-tutorial': { url: string; lang?: string };
+    'reset-states': undefined;
     // breakpoint jumping
     'jump-forward': undefined;
     'jump-backward': undefined;
+    'add-breakpoint': number;
+    'remove-breakpoint': number;
     // stepping
     'next-step': undefined;
     'previous-step': undefined;
