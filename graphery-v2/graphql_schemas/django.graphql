@@ -83,7 +83,8 @@ type OrderedGraphAnchorType {
 }
 
 type Query {
-    graph(anchorId: UUID): GraphType
+    code(codeId: UUID!): CodeType
+    graph(anchorId: UUID!): GraphType
     graphAnchors(filters: GraphAnchorFilter): [GraphAnchorType!]!
     graphContent(anchorId: UUID, lang: LangCode! = EN, url: String): GraphDescriptionType
     me: UserType

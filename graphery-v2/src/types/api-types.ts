@@ -1,13 +1,3 @@
-import { ApolloError } from '@apollo/client';
-
-export interface GraphQLLoadingType<N extends string, T> {
-    loading: boolean;
-    data: Record<N, T>;
-    errors?: object[];
-    error: ApolloError;
-}
-
-// TODO wait until strawberry is fixed, import types with https://transform.tools/graphql-to-typescript
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
     [K in keyof T]: T[K];
@@ -141,6 +131,7 @@ export type OrderedGraphAnchorType = {
 
 export type Query = {
     __typename?: 'Query';
+    code?: Maybe<CodeType>;
     graph?: Maybe<GraphType>;
     graphAnchors: Array<GraphAnchorType>;
     graphContent?: Maybe<GraphDescriptionType>;
@@ -150,8 +141,12 @@ export type Query = {
     tutorialContent?: Maybe<TutorialType>;
 };
 
+export type QueryCodeArgs = {
+    codeId: Scalars['UUID'];
+};
+
 export type QueryGraphArgs = {
-    anchorId?: Maybe<Scalars['UUID']>;
+    anchorId: Scalars['UUID'];
 };
 
 export type QueryGraphAnchorsArgs = {
