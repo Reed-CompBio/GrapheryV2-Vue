@@ -74,7 +74,7 @@ import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
 
 import type { PropType } from 'vue';
-import type GraphingSection from 'components/workspace/graph/GraphingSection.vue';
+import type GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
 import type { GraphAnchorType } from 'src/types/api-types';
 
 export default defineComponent({

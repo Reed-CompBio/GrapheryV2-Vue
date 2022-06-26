@@ -112,10 +112,10 @@ interface TutorialTextStyle {
 export default defineComponent({
     components: {
         MarkdownDisplay: defineAsyncComponent(
-            () => import('components/workspace/MarkdownDisplay.vue')
+            () => import('components/workspace/text-area/MarkdownDisplay.vue')
         ),
         LicenseCard: defineAsyncComponent(
-            () => import('src/components/general/LicenseCard.vue')
+            () => import('components/general/LicenseCard.vue')
         ),
     },
     props: {

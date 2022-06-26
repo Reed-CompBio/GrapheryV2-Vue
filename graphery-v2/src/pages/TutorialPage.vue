@@ -26,8 +26,8 @@
 
 <script lang="ts">
 import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
-import FullHeightSplitter from 'components/workspace/FullHeightSplitter.vue';
-import TextDisplay from 'components/workspace/TextDisplay.vue';
+import FullHeightSplitter from 'components/workspace/frames/FullHeightSplitter.vue';
+import TextDisplay from 'components/workspace/text-area/TextDisplay.vue';
 import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
 import { APILoader } from 'components/mixins/load-api';
 import { gql } from 'graphql-tag';
@@ -36,7 +36,7 @@ export default defineComponent({
     components: {
         WorkspaceHeadquarter,
         GraphDisplay: defineAsyncComponent(
-            () => import('components/workspace/graph/GraphDisplay.vue')
+            () => import('components/workspace/graph-area/GraphDisplay.vue')
         ),
         MonacoEditor: defineAsyncComponent(
             () => import('components/workspace/code-area/MonacoEditor.vue')

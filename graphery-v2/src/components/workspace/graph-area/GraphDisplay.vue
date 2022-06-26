@@ -12,8 +12,8 @@ import { defineComponent, ref } from 'vue';
 import type { PropType } from 'vue';
 import type { GraphAnchorType } from 'src/types/api-types';
 import type { SerializedGraph } from 'graphology-types';
-import GraphingSection from 'components/workspace/graph/GraphingSection.vue';
-import GraphControl from 'components/workspace/graph/GraphControl.vue';
+import GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
+import GraphControl from 'components/workspace/graph-area/GraphControl.vue';
 
 export default defineComponent({
     components: { GraphControl, GraphingSection },

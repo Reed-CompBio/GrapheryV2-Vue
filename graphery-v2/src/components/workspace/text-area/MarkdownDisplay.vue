@@ -8,12 +8,12 @@ import type { PropType } from 'vue';
 import type MDT from 'markdown-it';
 
 import MarkdownIt from 'markdown-it';
-import MDSub from '../mixins/markdown-it-plugins/markdown-it-sub';
-import MDSup from '../mixins/markdown-it-plugins/markdown-it-sup';
-import MDFootnote from '../mixins/markdown-it-plugins/markdown-it-footnote';
-import MDKatex from '../mixins/markdown-it-plugins/markdown-it-katex';
-import MDIns from '../mixins/markdown-it-plugins/markdown-it-ins';
-import MDMark from '../mixins/markdown-it-plugins/markdown-it-mark';
+import MDSub from '../../mixins/markdown-it-plugins/markdown-it-sub';
+import MDSup from '../../mixins/markdown-it-plugins/markdown-it-sup';
+import MDFootnote from '../../mixins/markdown-it-plugins/markdown-it-footnote';
+import MDKatex from '../../mixins/markdown-it-plugins/markdown-it-katex';
+import MDIns from '../../mixins/markdown-it-plugins/markdown-it-ins';
+import MDMark from '../../mixins/markdown-it-plugins/markdown-it-mark';
 
 import hljs from 'highlight.js/lib/core';
 import PythonLang from 'highlight.js/lib/languages/python';
@@ -336,8 +336,8 @@ export default defineComponent({
 </script>
 
 <style lang="sass">
-@import 'src/css/github-markdown-light'
-@import 'src/css/github-markdown-dark'
+@import '../../../css/github-markdown-light'
+@import '../../../css/github-markdown-dark'
 
 .footnote-backref
     display: inline-block
@@ -346,14 +346,14 @@ export default defineComponent({
 
 <style lang="scss">
 .markdown-body-light {
-    @import 'highlight.js/scss/github';
+    @import '../../../../node_modules/highlight.js/scss/github';
 }
 
 .markdown-body-dark {
-    @import 'highlight.js/scss/github-dark';
+    @import '../../../../node_modules/highlight.js/scss/github-dark';
 }
 </style>
 
 <style>
-@import 'katex/dist/katex.min.css';
+@import '../../../../node_modules/katex/dist/katex.min.css';
 </style>
