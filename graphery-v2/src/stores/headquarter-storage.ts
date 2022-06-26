@@ -333,7 +333,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
     // TODO: consider moving this to other places
     eventBus.on(
-        'load-graph',
+        'fetch-graph',
         ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
             graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
             codeAnchorId = codeAnchorId || currentCode.value?.id;
@@ -362,7 +362,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             }
         }
     );
-    eventBus.on('load-tutorial', ({ url, lang = LangCode.EN }) => {
+    eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
         loadTutorialContent(url, lang).then((tutorial) => {
             if (tutorial) {
                 storage.tutorialContent = tutorial;
@@ -373,7 +373,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             }
         });
     });
-    eventBus.on('load-code', ({ codeId, graphAnchorId }) => {
+    eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
         codeId = codeId || currentCode.value?.id;
         graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
 
