@@ -10,6 +10,7 @@
                     </template>
                     <template v-slot:after>
                         <div class="full-height" style="overflow: hidden">
+                            <!-- TODO fix this height of monaco -->
                             <WorkspaceHeadquarter />
                             <MonacoEditor />
                         </div>
@@ -27,7 +28,7 @@
 import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/FullHeightSplitter.vue';
 import TextDisplay from 'components/workspace/TextDisplay.vue';
-import WorkspaceHeadquarter from 'components/workspace/WorkspaceHeadquarter.vue';
+import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
 import { APILoader } from 'components/mixins/load-api';
 import { gql } from 'graphql-tag';
 
@@ -38,7 +39,7 @@ export default defineComponent({
             () => import('components/workspace/graph/GraphDisplay.vue')
         ),
         MonacoEditor: defineAsyncComponent(
-            () => import('components/workspace/MonacoEditor.vue')
+            () => import('components/workspace/code-area/MonacoEditor.vue')
         ),
         FullHeightSplitter,
         TextDisplay,
