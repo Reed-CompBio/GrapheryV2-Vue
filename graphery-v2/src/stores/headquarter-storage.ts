@@ -3,6 +3,7 @@ import { computed, reactive } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
 import { useBus } from 'components/mixins/controller/headquarter-bus';
+import { LangCode } from 'src/types/api-types';
 
 import type {
     HeadquarterStorageType,
@@ -16,7 +17,6 @@ import type {
     TutorialType,
 } from 'src/types/api-types';
 import type { RecordArrayType, RecordType } from 'src/types/execution-types';
-import { LangCode } from 'src/types/api-types';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -300,111 +300,125 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     }
 
     // event bus
-    const eventBus = useBus();
+    {
+        const eventBus = useBus();
 
-    // event bus actions
-    eventBus.on('step-changed-to', (step: number | null) => {
-        // change current step
-        if (step) {
-            stepInfo.currentStep = step;
-        }
-    });
-    eventBus.on('next-step', () => {
-        stepInfo.currentStep += 1;
-    });
-    eventBus.on('previous-step', () => {
-        if (stepInfo.currentStep > 0) {
-            stepInfo.currentStep -= 1;
-        }
-    });
-    eventBus.on('jump-forward', () => {
-        const nextBreakpoint = getNextBreakpoint.value();
-        eventBus.emit('step-changed-to', nextBreakpoint);
-    });
-    eventBus.on('jump-backward', () => {
-        const prevBreakpoint = getPrevBreakpoint.value();
-        eventBus.emit('step-changed-to', prevBreakpoint);
-    });
-    eventBus.on('add-breakpoint', (line: number) => {
-        stepInfo.breakpoints.add(line);
-    });
-    eventBus.on('remove-breakpoint', (line: number) => {
-        stepInfo.breakpoints.delete(line);
-    });
-    // TODO: consider moving this to other places
-    eventBus.on(
-        'fetch-graph',
-        ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
+        // event bus actions
+        eventBus.on('step-changed-to', (step: number | null) => {
+            // change current step
+            if (step) {
+                stepInfo.currentStep = step;
+            }
+        });
+        eventBus.on('next-step', () => {
+            stepInfo.currentStep += 1;
+        });
+        eventBus.on('previous-step', () => {
+            if (stepInfo.currentStep > 0) {
+                stepInfo.currentStep -= 1;
+            }
+        });
+        eventBus.on('jump-forward', () => {
+            const nextBreakpoint = getNextBreakpoint.value();
+            eventBus.emit('step-changed-to', nextBreakpoint);
+        });
+        eventBus.on('jump-backward', () => {
+            const prevBreakpoint = getPrevBreakpoint.value();
+            eventBus.emit('step-changed-to', prevBreakpoint);
+        });
+        eventBus.on('add-breakpoint', (line: number) => {
+            stepInfo.breakpoints.add(line);
+        });
+        eventBus.on('remove-breakpoint', (line: number) => {
+            stepInfo.breakpoints.delete(line);
+        });
+        // TODO: consider moving this to other places
+        eventBus.on(
+            'fetch-graph',
+            ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
+                graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
+                codeAnchorId = codeAnchorId || currentCode.value?.id;
+
+                const graphAnchor = graphAnchors.value.find(
+                    (item) => item.id === graphAnchorId
+                );
+
+                // if the content is already fetched, we do nothing
+                if (graphAnchor?.graph) {
+                    return;
+                }
+
+                if (codeAnchorId && graphAnchorId && graphAnchor) {
+                    loadGraphJsonAndExecutionResult(
+                        graphAnchorId,
+                        codeAnchorId
+                    ).then((graph) => {
+                        if (graph) {
+                            graphAnchor.graph = graph;
+                            eventBus.emit('load-graph', undefined);
+                        } else {
+                            console.debug(
+                                'the graph information is empty and might not be the intended behavior'
+                            );
+                        }
+                    });
+                } else {
+                    console.error(
+                        'cannot load graph information due to invalid input of graph anchor id and code anchor id'
+                    );
+                }
+            }
+        );
+        eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
+            loadTutorialContent(url, lang).then((tutorial) => {
+                if (tutorial) {
+                    storage.tutorialContent = tutorial;
+                } else {
+                    console.debug(
+                        'tutorial is null and might not be the intended behavior'
+                    );
+                }
+            });
+        });
+        eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
+            codeId = codeId || currentCode.value?.id;
             graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
-            codeAnchorId = codeAnchorId || currentCode.value?.id;
 
-            const graphAnchor = graphAnchors.value.find(
-                (item) => item.id === graphAnchorId
-            );
+            const codeRecord = codes.value.find((item) => item.id === codeId);
 
-            if (codeAnchorId && graphAnchorId && graphAnchor) {
-                loadGraphJsonAndExecutionResult(
-                    graphAnchorId,
-                    codeAnchorId
-                ).then((graph) => {
-                    if (graph) {
-                        graphAnchor.graph = graph;
+            // similar to fetching graph, we do nothing if the content is already fetched
+            if (codeRecord?.code && codeRecord?.executionResults) {
+                return;
+            }
+
+            if (codeRecord && codeId && graphAnchorId) {
+                loadCode(codeId, graphAnchorId).then((code) => {
+                    if (code) {
+                        codeRecord.code = code.code;
+                        codeRecord.executionResults = code.executionResults;
+                        eventBus.emit('load-code', undefined);
                     } else {
                         console.debug(
-                            'the graph information is empty and might not be the intended behavior'
+                            'the code information is empty and might not be the intended behavior'
                         );
                     }
                 });
             } else {
                 console.error(
-                    'cannot load graph information due to invalid input of graph anchor id and code anchor id'
-                );
-            }
-        }
-    );
-    eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
-        loadTutorialContent(url, lang).then((tutorial) => {
-            if (tutorial) {
-                storage.tutorialContent = tutorial;
-            } else {
-                console.debug(
-                    'tutorial is null and might not be the intended behavior'
+                    'cannot load code due to invalid input of either code id or graph anchor id'
                 );
             }
         });
-    });
-    eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
-        codeId = codeId || currentCode.value?.id;
-        graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
-
-        const codeRecord = codes.value.find((item) => item.id === codeId);
-
-        if (codeRecord && codeId && graphAnchorId) {
-            loadCode(codeId, graphAnchorId).then((code) => {
-                if (code) {
-                    codeRecord.code = code.code;
-                    codeRecord.executionResults = code.executionResults;
-                } else {
-                    console.debug(
-                        'the code information is empty and might not be the intended behavior'
-                    );
-                }
-            });
-        } else {
-            console.error(
-                'cannot load code due to invalid input of either code id or graph anchor id'
-            );
-        }
-    });
-    eventBus.on('reset-states', () => {
-        // reset steps
-        stepInfo.currentStep = 0;
-        // reset breakpoints
-        for (const line of stepInfo.breakpoints) {
-            eventBus.emit('remove-breakpoint', line);
-        }
-        // TODO variable area should be reset
-    });
+        eventBus.on('reset-states', () => {
+            // reset steps
+            stepInfo.currentStep = 0;
+            // reset breakpoints
+            for (const line of stepInfo.breakpoints) {
+                eventBus.emit('remove-breakpoint', line);
+            }
+            // TODO variable area should be reset
+        });
+    }
 
     return {
         // states

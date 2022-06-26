@@ -16,6 +16,8 @@ export interface EventDefTypes extends Record<EventType, unknown> {
     'fetch-graph': { graphAnchorId?: string; codeAnchorId?: string };
     'fetch-code': { codeId?: string; graphAnchorId?: string };
     'fetch-tutorial': { url: string; lang?: string };
+    'load-graph': undefined;
+    'load-code': undefined;
     'reset-states': undefined;
     // breakpoint jumping
     'jump-forward': undefined;
