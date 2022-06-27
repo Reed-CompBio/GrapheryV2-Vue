@@ -24,7 +24,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     // storage
     const storage = reactive<HeadquarterStorageType>({
-        currentGraphId: null,
+        currentGraphAnchorId: null,
         currentCodeId: null,
         tutorialContent: null,
         graphContent: null,
@@ -74,7 +74,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     const currentGraphAnchor = computed(() => {
         const findRes = graphAnchors.value.find(
-            (item) => item.id === storage.currentGraphId
+            (item) => item.id === storage.currentGraphAnchorId
         );
         return findRes || null;
     });
@@ -345,6 +345,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
                 // if the content is already fetched, we do nothing
                 if (graphAnchor?.graph) {
+                    eventBus.emit('load-graph-anchor', graphAnchorId as string);
                     return;
                 }
 
@@ -355,7 +356,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                     ).then((graph) => {
                         if (graph) {
                             graphAnchor.graph = graph;
-                            eventBus.emit('load-graph', undefined);
+                            eventBus.emit(
+                                'load-graph-anchor',
+                                graphAnchorId as string
+                            );
                         } else {
                             console.debug(
                                 'the graph information is empty and might not be the intended behavior'
@@ -388,6 +392,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
             // similar to fetching graph, we do nothing if the content is already fetched
             if (codeRecord?.code && codeRecord?.executionResults) {
+                eventBus.emit('load-code', codeId as string);
                 return;
             }
 
@@ -396,7 +401,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                     if (code) {
                         codeRecord.code = code.code;
                         codeRecord.executionResults = code.executionResults;
-                        eventBus.emit('load-code', undefined);
+                        eventBus.emit('load-code', codeId as string);
                     } else {
                         console.debug(
                             'the code information is empty and might not be the intended behavior'
@@ -417,6 +422,12 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                 eventBus.emit('remove-breakpoint', line);
             }
             // TODO variable area should be reset
+        });
+        eventBus.on('load-graph-anchor', (anchorId: string) => {
+            storage.currentGraphAnchorId = anchorId;
+        });
+        eventBus.on('load-code', (codeId: string) => {
+            storage.currentCodeId = codeId;
         });
     }
 

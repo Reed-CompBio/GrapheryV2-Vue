@@ -2,7 +2,7 @@ import type { GraphDescriptionType, TutorialType } from 'src/types/api-types';
 
 export interface HeadquarterStorageType {
     currentCodeId: string | null;
-    currentGraphId: string | null;
+    currentGraphAnchorId: string | null;
     tutorialContent: TutorialType | null;
     graphContent: GraphDescriptionType | null;
 }
