@@ -14,13 +14,17 @@
                     Choose Graph
                 </q-tooltip>
             </q-btn>
+            <!-- TODO: i18n -->
             <q-select
                 outlined
                 dense
                 rounded
+                label="Graph"
                 v-model="choice.choosingWhich"
-                :options="graphOptions"
-                v-if="choice.choosing"
+                :options="storage.graphAnchors"
+                :map-options="true"
+                :option-label="(x) => x.graphDescription.title"
+                v-show="choice.choosing"
                 style="z-index: 2"
             />
         </div>
@@ -72,6 +76,8 @@ import { toKebabCase } from 'src/utils/utils';
 import { useQuasar } from 'quasar';
 import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
+import { useHeadquarterStorage } from 'stores/headquarter-storage';
+import { useBus } from 'src/components/mixins/controller/headquarter-bus';
 
 import type { PropType } from 'vue';
 import type GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
@@ -94,22 +100,15 @@ export default defineComponent({
         graphing: {
             type: Object as PropType<InstanceType<typeof GraphingSection>>,
         },
-        modelValue: {
-            type: String,
-            default: undefined,
-        },
-        graphOptions: {
-            type: Array as PropType<GraphAnchorType[]>,
-            default: undefined,
-        },
     },
-    setup(props, ctx) {
+    setup(props) {
         const { zoomIn, zoomOut, reset } = useSigmaCamera({
             factor: props.zoomFactor,
             duration: props.animationDuration,
         });
 
         const { notify } = useQuasar();
+        const storage = useHeadquarterStorage();
 
         const buttons = [
             {
@@ -179,15 +178,18 @@ export default defineComponent({
         ];
 
         const layouts = useGraphLayouts();
+        const eventBus = useBus();
 
         const choice = ref({
             choosing: false,
             choosingWhich: computed({
                 get() {
-                    return props.modelValue;
+                    return storage.currentGraphAnchor;
                 },
-                set(n) {
-                    ctx.emit('update:modelValue', n);
+                set(anchorObj: GraphAnchorType | null) {
+                    eventBus.emit('fetch-graph', {
+                        graphAnchorId: anchorObj?.id,
+                    });
                 },
             }),
             changeChoosing() {
@@ -199,6 +201,7 @@ export default defineComponent({
             buttons,
             layouts,
             choice,
+            storage,
         };
     },
 });
