@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import { computed, reactive } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
 import { useBus } from 'components/mixins/controller/headquarter-bus';
 import { LangCode } from 'src/types/api-types';
+import { CHANGABLE_PROPERTIES } from 'src/types/execution-types';
 
 import type {
     HeadquarterStorageType,
@@ -33,6 +34,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     const stepInfo = reactive<StepInfoType>({
         currentStep: 0,
         breakpoints: new Set<number>(),
+        stepRecord: undefined,
     });
 
     // getters
@@ -79,6 +81,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         return findRes || null;
     });
 
+    const currentGraph = computed(() => {
+        return currentGraphAnchor.value?.graph || null;
+    });
+
     const currentCode = computed(() => {
         const findRes = codes.value.find(
             (item) => item && item.id === storage.currentCodeId
@@ -106,21 +112,33 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
 
     const currentStep = computed(() => stepInfo.currentStep);
-    const currentStepRecord = computed(() => {
-        if (currentRecordArray.value) {
-            let record = currentRecordArray.value[stepInfo.currentStep];
-            if (!record.variables && !record.accesses && !record.stdout) {
-                for (let i = stepInfo.currentStep; i >= 0; i--) {
-                    record = currentRecordArray.value[i];
-                    if (record.variables || record.accesses || record.stdout) {
-                        break;
-                    }
+    const refreshStepRecord = () => {
+        // TODO: need a better way to keep track of changes
+
+        const properties = new Set(CHANGABLE_PROPERTIES);
+        let step = stepInfo.currentStep;
+
+        if (
+            currentRecordArray.value === null ||
+            stepInfo.stepRecord === undefined
+        )
+            return;
+
+        while (properties.size !== 0 && step >= 0) {
+            const record = currentRecordArray.value[step];
+            for (const property of properties) {
+                if (record[property] !== undefined) {
+                    stepInfo.stepRecord[property] = record[property] as any;
+                    properties.delete(property);
                 }
             }
-            return record;
-        } else {
-            return null;
+            step -= 1;
         }
+
+        return stepInfo.stepRecord;
+    };
+    const currentStepRecord = computed(() => {
+        return refreshStepRecord();
     });
 
     const getNextBreakpoint = computed(() => {
@@ -299,137 +317,152 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         }
     }
 
+    function initStepRecord() {
+        stepInfo.currentStep = 0;
+
+        if (currentRecordArray.value) {
+            stepInfo.stepRecord = {
+                ...currentRecordArray.value[0],
+            };
+        } else {
+            stepInfo.stepRecord = undefined;
+        }
+    }
+
+    watch(currentRecordArray, () => {
+        eventBus.emit('reset-state');
+    });
+
     // event bus
-    {
-        const eventBus = useBus();
+    const eventBus = useBus();
 
-        // event bus actions
-        eventBus.on('step-changed-to', (step: number | null) => {
-            // change current step
-            if (step) {
-                stepInfo.currentStep = step;
-            }
-        });
-        eventBus.on('next-step', () => {
-            stepInfo.currentStep += 1;
-        });
-        eventBus.on('previous-step', () => {
-            if (stepInfo.currentStep > 0) {
-                stepInfo.currentStep -= 1;
-            }
-        });
-        eventBus.on('jump-forward', () => {
-            const nextBreakpoint = getNextBreakpoint.value();
-            eventBus.emit('step-changed-to', nextBreakpoint);
-        });
-        eventBus.on('jump-backward', () => {
-            const prevBreakpoint = getPrevBreakpoint.value();
-            eventBus.emit('step-changed-to', prevBreakpoint);
-        });
-        eventBus.on('add-breakpoint', (line: number) => {
-            stepInfo.breakpoints.add(line);
-        });
-        eventBus.on('remove-breakpoint', (line: number) => {
-            stepInfo.breakpoints.delete(line);
-        });
-        // TODO: consider moving this to other places
-        eventBus.on(
-            'fetch-graph',
-            ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
-                graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
-                codeAnchorId = codeAnchorId || currentCode.value?.id;
-
-                const graphAnchor = graphAnchors.value.find(
-                    (item) => item.id === graphAnchorId
-                );
-
-                // if the content is already fetched, we do nothing
-                if (graphAnchor?.graph) {
-                    eventBus.emit('load-graph-anchor', graphAnchorId as string);
-                    return;
-                }
-
-                if (codeAnchorId && graphAnchorId && graphAnchor) {
-                    loadGraphJsonAndExecutionResult(
-                        graphAnchorId,
-                        codeAnchorId
-                    ).then((graph) => {
-                        if (graph) {
-                            graphAnchor.graph = graph;
-                            eventBus.emit(
-                                'load-graph-anchor',
-                                graphAnchorId as string
-                            );
-                        } else {
-                            console.debug(
-                                'the graph information is empty and might not be the intended behavior'
-                            );
-                        }
-                    });
-                } else {
-                    console.error(
-                        'cannot load graph information due to invalid input of graph anchor id and code anchor id'
-                    );
-                }
-            }
-        );
-        eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
-            loadTutorialContent(url, lang).then((tutorial) => {
-                if (tutorial) {
-                    storage.tutorialContent = tutorial;
-                } else {
-                    console.debug(
-                        'tutorial is null and might not be the intended behavior'
-                    );
-                }
-            });
-        });
-        eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
-            codeId = codeId || currentCode.value?.id;
+    // event bus actions
+    eventBus.on('step-changed-to', (step: number | null) => {
+        // change current step
+        if (step) {
+            stepInfo.currentStep = step;
+        }
+    });
+    eventBus.on('next-step', () => {
+        stepInfo.currentStep += 1;
+    });
+    eventBus.on('previous-step', () => {
+        if (stepInfo.currentStep > 0) {
+            stepInfo.currentStep -= 1;
+        }
+    });
+    eventBus.on('jump-forward', () => {
+        const nextBreakpoint = getNextBreakpoint.value();
+        eventBus.emit('step-changed-to', nextBreakpoint);
+    });
+    eventBus.on('jump-backward', () => {
+        const prevBreakpoint = getPrevBreakpoint.value();
+        eventBus.emit('step-changed-to', prevBreakpoint);
+    });
+    eventBus.on('add-breakpoint', (line: number) => {
+        stepInfo.breakpoints.add(line);
+    });
+    eventBus.on('remove-breakpoint', (line: number) => {
+        stepInfo.breakpoints.delete(line);
+    });
+    // TODO: consider moving this to other places
+    eventBus.on(
+        'fetch-graph',
+        ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
             graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
+            codeAnchorId = codeAnchorId || currentCode.value?.id;
 
-            const codeRecord = codes.value.find((item) => item.id === codeId);
+            const graphAnchor = graphAnchors.value.find(
+                (item) => item.id === graphAnchorId
+            );
 
-            // similar to fetching graph, we do nothing if the content is already fetched
-            if (codeRecord?.code && codeRecord?.executionResults) {
-                eventBus.emit('load-code', codeId as string);
+            // if the content is already fetched, we do nothing
+            if (graphAnchor?.graph) {
+                eventBus.emit('load-graph-anchor', graphAnchorId as string);
                 return;
             }
 
-            if (codeRecord && codeId && graphAnchorId) {
-                loadCode(codeId, graphAnchorId).then((code) => {
-                    if (code) {
-                        codeRecord.code = code.code;
-                        codeRecord.executionResults = code.executionResults;
-                        eventBus.emit('load-code', codeId as string);
+            if (codeAnchorId && graphAnchorId && graphAnchor) {
+                loadGraphJsonAndExecutionResult(
+                    graphAnchorId,
+                    codeAnchorId
+                ).then((graph) => {
+                    if (graph) {
+                        graphAnchor.graph = graph;
+                        eventBus.emit(
+                            'load-graph-anchor',
+                            graphAnchorId as string
+                        );
                     } else {
                         console.debug(
-                            'the code information is empty and might not be the intended behavior'
+                            'the graph information is empty and might not be the intended behavior'
                         );
                     }
                 });
             } else {
                 console.error(
-                    'cannot load code due to invalid input of either code id or graph anchor id'
+                    'cannot load graph information due to invalid input of graph anchor id and code anchor id'
+                );
+            }
+        }
+    );
+    eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
+        loadTutorialContent(url, lang).then((tutorial) => {
+            if (tutorial) {
+                storage.tutorialContent = tutorial;
+            } else {
+                console.debug(
+                    'tutorial is null and might not be the intended behavior'
                 );
             }
         });
-        eventBus.on('reset-states', () => {
-            // reset steps
-            stepInfo.currentStep = 0;
-            // reset breakpoints
-            for (const line of stepInfo.breakpoints) {
-                eventBus.emit('remove-breakpoint', line);
-            }
-            // TODO variable area should be reset
-        });
-        eventBus.on('load-graph-anchor', (anchorId: string) => {
-            storage.currentGraphAnchorId = anchorId;
-        });
-        eventBus.on('load-code', (codeId: string) => {
-            storage.currentCodeId = codeId;
-        });
-    }
+    });
+    eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
+        codeId = codeId || currentCode.value?.id;
+        graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
+
+        const codeRecord = codes.value.find((item) => item.id === codeId);
+
+        // similar to fetching graph, we do nothing if the content is already fetched
+        if (codeRecord?.code && codeRecord?.executionResults) {
+            eventBus.emit('load-code', codeId as string);
+            return;
+        }
+
+        if (codeRecord && codeId && graphAnchorId) {
+            loadCode(codeId, graphAnchorId).then((code) => {
+                if (code) {
+                    codeRecord.code = code.code;
+                    codeRecord.executionResults = code.executionResults;
+                    eventBus.emit('load-code', codeId as string);
+                } else {
+                    console.debug(
+                        'the code information is empty and might not be the intended behavior'
+                    );
+                }
+            });
+        } else {
+            console.error(
+                'cannot load code due to invalid input of either code id or graph anchor id'
+            );
+        }
+    });
+    eventBus.on('reset-states', () => {
+        // reset steps
+        initStepRecord();
+        // reset breakpoints
+        for (const line of stepInfo.breakpoints) {
+            eventBus.emit('remove-breakpoint', line);
+        }
+        // TODO variable area should be reset
+        stepInfo.stepRecord = undefined;
+    });
+    eventBus.on('load-graph-anchor', (anchorId: string) => {
+        storage.currentGraphAnchorId = anchorId;
+    });
+    eventBus.on('load-code', (codeId: string) => {
+        storage.currentCodeId = codeId;
+    });
 
     return {
         // states
@@ -440,6 +473,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         codes,
         executionResultCollection,
         currentGraphAnchor,
+        currentGraph,
         currentCode,
         currentExecutionResult,
         currentRecordArray,

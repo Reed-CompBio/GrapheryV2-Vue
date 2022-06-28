@@ -26,8 +26,10 @@ export type ObjectIdentifierSeparator = '\u200b';
 export type ObjectIdentifierType =
     `${string}${ObjectIdentifierSeparator}${string}`;
 
-export interface CompositionalObjectIdentityType {
-    type: ObjectType;
+export interface CompositionalObjectIdentityType<
+    T extends ObjectType = ObjectType
+> {
+    type: T;
     color: string;
     repr: string;
     attributes?: {
@@ -42,10 +44,27 @@ export interface RecordType {
     variables?: Record<ObjectIdentifierType, CompositionalObjectIdentityType>;
     accesses?: CompositionalObjectIdentityType[];
     variableOrders?: string[]; // this is not supported for now
-    stdout?: string[];
+    stdout?: string[]; // TODO make this into string
 }
 
-export type RecordArrayType = RecordType[];
+export interface InitRecordType extends RecordType {
+    line: number;
+    variables: Record<
+        ObjectIdentifierSeparator,
+        CompositionalObjectIdentityType<'Init'>
+    >;
+    accesses: [];
+    variableOrders: [];
+    stdout: [];
+}
+
+export type RecordArrayType = [InitRecordType, ...RecordType[]];
+
+export type ChangableProperties<T extends keyof Omit<RecordType, 'line'>> = T;
+
+export const CHANGABLE_PROPERTIES = new Set<
+    ChangableProperties<'variables' | 'accesses' | 'stdout'>
+>(['variables', 'accesses', 'stdout']);
 
 export interface BreakPointType {
     [key: number]: string;

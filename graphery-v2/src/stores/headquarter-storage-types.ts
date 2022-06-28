@@ -1,4 +1,5 @@
 import type { GraphDescriptionType, TutorialType } from 'src/types/api-types';
+import type { RecordType } from 'src/types/execution-types';
 
 export interface HeadquarterStorageType {
     currentCodeId: string | null;
@@ -10,4 +11,5 @@ export interface HeadquarterStorageType {
 export interface StepInfoType {
     currentStep: number;
     breakpoints: Set<number>;
+    stepRecord?: Required<RecordType>;
 }
