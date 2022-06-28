@@ -4,16 +4,19 @@
 
 <script lang="ts">
 import { computed, defineComponent, markRaw, onMounted, ref, watch } from 'vue';
-import type { Ref } from 'vue';
 import Graph from 'graphology';
 import { initSigma, useSigma } from 'components/mixins/sigma/instance';
+import { initGraphLayouts } from 'components/mixins/sigma/layouts';
+import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { storeToRefs } from 'pinia';
+import { useBus } from 'src/components/mixins/controller/headquarter-bus';
 
+import type { Ref } from 'vue';
 import type Sigma from 'sigma';
 import type { PropType } from 'vue';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { SerializedGraph } from 'graphology-types';
 import type { GraphNodeAttributeType } from 'components/mixins/sigma/instance';
-import { initGraphLayouts } from 'components/mixins/sigma/layouts';
 
 type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
@@ -229,6 +232,39 @@ export default defineComponent({
                         );
                     }
                 });
+            }
+        });
+
+        const storage = useHeadquarterStorage();
+
+        const { currentGraph } = storeToRefs(storage);
+
+        watch(currentGraph, (newVal) => {
+            if (newVal && newVal.graphJson) {
+                toolBox.importGraph(newVal.graphJson);
+            } else {
+                toolBox.clearGraph();
+            }
+        });
+
+        const eventBus = useBus();
+
+        eventBus.on('clear-highlight', () => {
+            toolBox.cleanHighlightGraph();
+        });
+
+        eventBus.on('add-highlight', (protocol) => {
+            toolBox.addHighlight(protocol.id, protocol.highlightColor);
+        });
+
+        eventBus.on('remove-highlight', (protocol) => {
+            toolBox.removeHighlight(protocol.id, protocol.highlightColor);
+        });
+
+        eventBus.on('replace-highlight', (protocols) => {
+            for (const protocol of protocols) {
+                eventBus.emit('remove-highlight', protocol);
+                eventBus.emit('add-highlight', protocol);
             }
         });
 

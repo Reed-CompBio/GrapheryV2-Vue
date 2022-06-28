@@ -5,11 +5,12 @@ import { markRaw } from 'vue';
 export interface HighLightProtocol {
     id: string;
     highlight?: boolean;
-    highlightColor: Iterable<string>;
+    highlightColor: string[] | Set<string> | string;
 }
 
 export interface EventDefTypes extends Record<EventType, unknown> {
     // behind the scene
+    'clear-highlight': undefined;
     'replace-highlight': HighLightProtocol[];
     'remove-highlight': HighLightProtocol;
     'add-highlight': HighLightProtocol;
