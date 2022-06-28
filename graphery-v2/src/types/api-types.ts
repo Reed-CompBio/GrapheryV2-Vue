@@ -1,3 +1,13 @@
+import type { ApolloError } from '@apollo/client';
+
+export interface GraphQLLoadingType<N extends string, T> {
+    loading: boolean;
+    data: Record<N, T>;
+    errors?: object[];
+    error: ApolloError;
+}
+
+// https://transform.tools/graphql-to-typescript
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
     [K in keyof T]: T[K];
