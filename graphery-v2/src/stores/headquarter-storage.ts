@@ -368,7 +368,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     // TODO: consider moving this to other places
     eventBus.on(
         'fetch-graph',
-        ({ graphAnchorId = undefined, codeAnchorId = undefined }) => {
+        ({ graphAnchorId = undefined, codeAnchorId = undefined, state }) => {
             graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
             codeAnchorId = codeAnchorId || currentCode.value?.id;
 
@@ -378,7 +378,13 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
             // if the content is already fetched, we do nothing
             if (graphAnchor?.graph) {
-                eventBus.emit('load-graph-anchor', graphAnchorId as string);
+                eventBus.emit('fetched-graph', {
+                    anchorId: graphAnchorId,
+                    state: {
+                        fetchSuccess: true,
+                        ...state,
+                    },
+                });
                 return;
             }
 
@@ -389,24 +395,45 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                 ).then((graph) => {
                     if (graph) {
                         graphAnchor.graph = graph;
-                        eventBus.emit(
-                            'load-graph-anchor',
-                            graphAnchorId as string
-                        );
                     } else {
                         console.debug(
                             'the graph information is empty and might not be the intended behavior'
                         );
                     }
+
+                    eventBus.emit('fetched-graph', {
+                        anchorId: graphAnchorId,
+                        state: {
+                            fetchSuccess: Boolean(graph),
+                            ...state,
+                        },
+                    });
                 });
             } else {
                 console.error(
                     'cannot load graph information due to invalid input of graph anchor id and code anchor id'
                 );
+                eventBus.emit('fetched-graph', {
+                    anchorId: undefined,
+                    state: {
+                        fetchSuccess: false,
+                        ...state,
+                    },
+                });
             }
         }
     );
-    eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN }) => {
+
+    eventBus.on('fetched-graph', ({ anchorId, state }) => {
+        if (state.fetchSuccess && anchorId) {
+            if (state.fetchSuccessCall) state.fetchSuccessCall();
+            eventBus.emit('load-graph-anchor', anchorId);
+        } else {
+            if (state.fetchFailedCall) state.fetchFailedCall();
+        }
+    });
+
+    eventBus.on('fetch-tutorial', ({ url, lang = LangCode.EN, state }) => {
         loadTutorialContent(url, lang).then((tutorial) => {
             if (tutorial) {
                 storage.tutorialContent = tutorial;
@@ -415,9 +442,27 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                     'tutorial is null and might not be the intended behavior'
                 );
             }
+
+            eventBus.emit('fetched-tutorial', {
+                anchorId: tutorial?.tutorialAnchor.id,
+                state: {
+                    fetchSuccess: Boolean(tutorial),
+                    ...state,
+                },
+            });
         });
     });
-    eventBus.on('fetch-code', ({ codeId, graphAnchorId }) => {
+
+    eventBus.on('fetched-tutorial', ({ state }) => {
+        if (state.fetchSuccess) {
+            if (state.fetchSuccessCall) state.fetchSuccessCall();
+            eventBus.emit('load-code', codes.value[0].id);
+        } else {
+            if (state.fetchFailedCall) state.fetchFailedCall();
+        }
+    });
+
+    eventBus.on('fetch-code', ({ codeId, graphAnchorId, state }) => {
         codeId = codeId || currentCode.value?.id;
         graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
 
@@ -425,7 +470,13 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
         // similar to fetching graph, we do nothing if the content is already fetched
         if (codeRecord?.code && codeRecord?.executionResults) {
-            eventBus.emit('load-code', codeId as string);
+            eventBus.emit('fetched-code', {
+                codeId: codeRecord.id,
+                state: {
+                    fetchSuccess: true,
+                    ...state,
+                },
+            });
             return;
         }
 
@@ -434,19 +485,42 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                 if (code) {
                     codeRecord.code = code.code;
                     codeRecord.executionResults = code.executionResults;
-                    eventBus.emit('load-code', codeId as string);
                 } else {
                     console.debug(
                         'the code information is empty and might not be the intended behavior'
                     );
                 }
+                eventBus.emit('fetched-code', {
+                    codeId: code?.id,
+                    state: {
+                        fetchSuccess: Boolean(code),
+                        ...state,
+                    },
+                });
             });
         } else {
             console.error(
                 'cannot load code due to invalid input of either code id or graph anchor id'
             );
+            eventBus.emit('fetched-code', {
+                codeId: undefined,
+                state: {
+                    fetchSuccess: false,
+                    ...state,
+                },
+            });
         }
     });
+
+    eventBus.on('fetched-code', ({ codeId, state }) => {
+        if (state.fetchSuccess && codeId) {
+            if (state.fetchSuccessCall) state.fetchSuccessCall();
+            eventBus.emit('load-code', codeId);
+        } else {
+            if (state.fetchFailedCall) state.fetchFailedCall();
+        }
+    });
+
     eventBus.on('reset-states', () => {
         // reset steps
         initStepRecord();
@@ -457,9 +531,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         // TODO variable area should be reset
         stepInfo.stepRecord = undefined;
     });
+
     eventBus.on('load-graph-anchor', (anchorId: string) => {
         storage.currentGraphAnchorId = anchorId;
     });
+
     eventBus.on('load-code', (codeId: string) => {
         storage.currentCodeId = codeId;
     });

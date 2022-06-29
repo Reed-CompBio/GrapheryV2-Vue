@@ -70,7 +70,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useSigmaCamera } from 'components/mixins/sigma/instance';
 import { toKebabCase } from 'src/utils/utils';
 import { useQuasar } from 'quasar';
@@ -78,6 +78,7 @@ import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
 import { useBus } from 'src/components/mixins/controller/headquarter-bus';
+import { storeToRefs } from 'pinia';
 
 import type { PropType } from 'vue';
 import type GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
@@ -195,6 +196,11 @@ export default defineComponent({
             changeChoosing() {
                 this.choosing = !this.choosing;
             },
+        });
+
+        const { graphAnchors } = storeToRefs(storage);
+        watch(graphAnchors, () => {
+            choice.value.choosingWhich = graphAnchors.value[0];
         });
 
         return {
