@@ -75,6 +75,6 @@ export type EventTypes = keyof EventDefTypes;
 
 export const bus = markRaw(mitt<EventDefTypes>());
 
-export function useBus() {
+export function useHeadquarterBus() {
     return bus;
 }

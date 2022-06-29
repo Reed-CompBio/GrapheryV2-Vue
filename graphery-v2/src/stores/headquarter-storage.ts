@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, reactive, watch } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
-import { useBus } from 'components/mixins/controller/headquarter-bus';
+import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { LangCode } from 'src/types/api-types';
 import { CHANGABLE_PROPERTIES } from 'src/types/execution-types';
 
@@ -334,7 +334,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
 
     // event bus
-    const eventBus = useBus();
+    const eventBus = useHeadquarterBus();
 
     // event bus actions
     eventBus.on('step-changed-to', (step: number | null) => {

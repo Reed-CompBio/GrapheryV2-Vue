@@ -97,12 +97,12 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
-import { useBus } from 'components/mixins/controller/headquarter-bus';
+import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 
 export default defineComponent({
     setup() {
         const headquarterStorage = useHeadquarterStorage();
-        const eventBus = useBus();
+        const eventBus = useHeadquarterBus();
         const step = computed({
             get() {
                 return headquarterStorage.stepInfo.currentStep;
