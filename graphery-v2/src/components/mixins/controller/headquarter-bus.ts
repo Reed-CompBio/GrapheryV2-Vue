@@ -2,12 +2,6 @@ import mitt from 'mitt';
 import type { EventType } from 'mitt';
 import { markRaw } from 'vue';
 
-export interface HighLightProtocol {
-    id: string;
-    highlight?: boolean;
-    highlightColor: string[] | Set<string> | string;
-}
-
 /**
  * <event>Success is used to indicate if an event is successfully executed or not
  * The type is boolean | undefined and there could be three possible states
@@ -28,11 +22,6 @@ export interface CallbackInput<T extends Function = () => void> {
 }
 
 export interface EventDefTypes extends Record<EventType, unknown> {
-    // behind the scene
-    'clear-highlight': undefined;
-    'replace-highlight': HighLightProtocol[];
-    'remove-highlight': HighLightProtocol;
-    'add-highlight': HighLightProtocol;
     // graph
     'fetch-graph': {
         graphAnchorId?: string;

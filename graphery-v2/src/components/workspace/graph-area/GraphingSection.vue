@@ -9,7 +9,7 @@ import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 import { initGraphLayouts } from 'components/mixins/sigma/layouts';
 import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
 import { storeToRefs } from 'pinia';
-import { useHeadquarterBus } from 'src/components/mixins/controller/headquarter-bus';
+import { useGraphBus } from 'components/mixins/controller/graph-bus';
 
 import type { Ref } from 'vue';
 import type Sigma from 'sigma';
@@ -247,7 +247,7 @@ export default defineComponent({
             }
         });
 
-        const eventBus = useHeadquarterBus();
+        const eventBus = useGraphBus();
 
         eventBus.on('clear-highlight', () => {
             toolBox.cleanHighlightGraph();
