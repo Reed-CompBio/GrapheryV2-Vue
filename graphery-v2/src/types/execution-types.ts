@@ -1,30 +1,69 @@
-export type GraphObjectType =
-    | 'Node'
-    | 'Edge'
-    | 'DataEdge'
-    | 'MultiEdge'
-    | 'MultiDataEdge';
+export const GRAPH_NODE_TYPES = ['Node'] as const;
+export type GraphNodeType = typeof GRAPH_NODE_TYPES[number];
 
-export type PythonObjectType =
-    | 'Number'
-    | 'String'
-    | 'List'
-    | 'Tuple'
-    | 'Deque'
-    | 'None'
-    | 'Set'
-    | 'Mapping'
-    | 'Sequence'
-    | 'Object';
+export const GRAPH_EDGE_TYPES = [
+    'Edge',
+    'DataEdge',
+    'MultiEdge',
+    'MultiDataEdge',
+] as const;
+export type GraphEdgeType = typeof GRAPH_EDGE_TYPES[number];
 
-export type SpecialObjectType = 'Init' | 'Ref';
+export const GRAPH_OBJECT_TYPES = [
+    ...GRAPH_NODE_TYPES,
+    ...GRAPH_EDGE_TYPES,
+] as const;
+export type GraphObjectType = typeof GRAPH_OBJECT_TYPES[number];
 
-export type ObjectType = GraphObjectType | PythonObjectType | SpecialObjectType;
+export const PYTHON_OBJECT_TYPES = [
+    'Number',
+    'String',
+    'List',
+    'Tuple',
+    'Deque',
+    'None',
+    'Set',
+    'Counter',
+    'Mapping',
+    'Sequence',
+    'Object',
+] as const;
+export type PythonObjectType = typeof PYTHON_OBJECT_TYPES[number];
 
-export type ObjectIdentifierSeparator = '\u200b';
+export const SINGULAR_TYPES = [
+    'Number',
+    'String',
+    ...GRAPH_OBJECT_TYPES,
+    'None',
+    'Object',
+] as const;
+export type SingularType = typeof SINGULAR_TYPES[number];
+
+export const LINEAR_CONTAINER_TYPES = [
+    'List',
+    'Tuple',
+    'Deque',
+    'Set',
+    'Sequence',
+] as const;
+export type LinearContainerType = typeof LINEAR_CONTAINER_TYPES[number];
+
+export const PAIR_CONTAINER_TYPES = ['Counter', 'Mapping'] as const;
+
+export const SPECIAL_OBJECT_TYPES = ['Init', 'Ref'] as const;
+export type SpecialObjectType = typeof SPECIAL_OBJECT_TYPES[number];
+
+export const OBJECT_TYPES = [
+    ...GRAPH_OBJECT_TYPES,
+    ...PYTHON_OBJECT_TYPES,
+    ...SPECIAL_OBJECT_TYPES,
+] as const;
+export type ObjectType = typeof OBJECT_TYPES[number];
+
+export const ObjectIdentifierSeparator = '\u200b@' as const;
 
 export type ObjectIdentifierType =
-    `${string}${ObjectIdentifierSeparator}${string}`;
+    `${string}${typeof ObjectIdentifierSeparator}${string}`;
 
 export interface CompositionalObjectIdentityType<
     T extends ObjectType = ObjectType
@@ -50,7 +89,7 @@ export interface RecordType {
 export interface InitRecordType extends RecordType {
     line: number;
     variables: Record<
-        ObjectIdentifierSeparator,
+        typeof ObjectIdentifierSeparator,
         CompositionalObjectIdentityType<'Init'>
     >;
     accesses: [];
