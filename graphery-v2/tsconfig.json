@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "ESNext",
+    "lib": ["esnext"],
     "strict": true
   }
 }
