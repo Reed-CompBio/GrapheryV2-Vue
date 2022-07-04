@@ -41,8 +41,10 @@ export const SINGULAR_TYPES = [
     'Object',
 ] as const;
 export type SingularType = typeof SINGULAR_TYPES[number];
-export function isSingularType(type: string): type is SingularType {
-    return (SINGULAR_TYPES as ReadonlyArray<string>).includes(type);
+export function isSingularType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<SingularType> {
+    return (SINGULAR_TYPES as ReadonlyArray<string>).includes(variable.type);
 }
 
 export const LINEAR_CONTAINER_TYPES = [
@@ -54,15 +56,21 @@ export const LINEAR_CONTAINER_TYPES = [
 ] as const;
 export type LinearContainerType = typeof LINEAR_CONTAINER_TYPES[number];
 export function isLinearContainerType(
-    type: string
-): type is LinearContainerType {
-    return (LINEAR_CONTAINER_TYPES as ReadonlyArray<string>).includes(type);
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<LinearContainerType> {
+    return (LINEAR_CONTAINER_TYPES as ReadonlyArray<string>).includes(
+        variable.type
+    );
 }
 
 export const PAIR_CONTAINER_TYPES = ['Counter', 'Mapping'] as const;
 export type PairContainerType = typeof PAIR_CONTAINER_TYPES[number];
-export function isPairContainerType(type: string): type is PairContainerType {
-    return (PAIR_CONTAINER_TYPES as ReadonlyArray<string>).includes(type);
+export function isPairContainerType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<PairContainerType> {
+    return (PAIR_CONTAINER_TYPES as ReadonlyArray<string>).includes(
+        variable.type
+    );
 }
 export type PairContainerRepr = {
     key: CompositionalObjectIdentityType;
@@ -71,14 +79,26 @@ export type PairContainerRepr = {
 
 export const SPECIAL_OBJECT_TYPES = ['Init', 'Ref'] as const;
 export type SpecialObjectType = typeof SPECIAL_OBJECT_TYPES[number];
-export function isSpecialObjectType(type: string): type is SpecialObjectType {
-    return (SPECIAL_OBJECT_TYPES as ReadonlyArray<string>).includes(type);
+export type InitType = typeof SPECIAL_OBJECT_TYPES[0];
+export type RefType = typeof SPECIAL_OBJECT_TYPES[1];
+
+export function isSpecialObjectType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<SpecialObjectType> {
+    return (SPECIAL_OBJECT_TYPES as ReadonlyArray<string>).includes(
+        variable.type
+    );
 }
-export function isInitType(type: string): type is 'Init' {
-    return type === 'Init';
+export function isInitType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<InitType> {
+    return variable.type === 'Init';
 }
-export function isRefType(type: string): type is 'Ref' {
-    return type === 'Ref';
+
+export function isRefType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<RefType> {
+    return variable.type === 'Ref';
 }
 
 export const OBJECT_TYPES = [
