@@ -1,7 +1,11 @@
 import type {
     CompositionalObjectIdentityType,
+    InitType,
+    LinearContainerType,
     ObjectType,
     PairContainerRepr,
+    RefType,
+    SingularType,
 } from 'src/types/execution-types';
 import {
     isInitType,
@@ -16,6 +20,10 @@ import {
 import type { ComputedRef } from 'vue';
 import { computed } from 'vue';
 
+export type CompoType<T> = T extends CompositionalObjectIdentityType<infer U>
+    ? U
+    : never;
+
 export interface VariableInfo {
     stack: [
         CompositionalObjectIdentityType,
@@ -25,7 +33,21 @@ export interface VariableInfo {
     baseLabel: ComputedRef<string>;
     fullLabel: ComputedRef<string>;
     toggled: number;
-    variable: ComputedRef<CompositionalObjectIdentityType>;
+    variable: ComputedRef<
+        CompositionalObjectIdentityType<
+            VariableInfo['isSingular']['value'] extends true
+                ? SingularType
+                : VariableInfo['isLinearContainer']['value'] extends true
+                ? LinearContainerType
+                : VariableInfo['isPairContainer']['value'] extends true
+                ? PairContainerRepr
+                : VariableInfo['isInit']['value'] extends true
+                ? InitType
+                : VariableInfo['isRef']['value'] extends true
+                ? RefType
+                : ObjectType
+        >
+    >;
     isSingular: ComputedRef<boolean>;
     isLinearContainer: ComputedRef<boolean>;
     isPairContainer: ComputedRef<boolean>;
@@ -47,7 +69,21 @@ export class VariableWrapper implements VariableInfo {
     baseLabel: ComputedRef<string>;
     fullLabel: ComputedRef<string>;
     toggled: number;
-    variable: ComputedRef<CompositionalObjectIdentityType>;
+    variable: ComputedRef<
+        CompositionalObjectIdentityType<
+            VariableInfo['isSingular']['value'] extends true
+                ? SingularType
+                : VariableInfo['isLinearContainer']['value'] extends true
+                ? LinearContainerType
+                : VariableInfo['isPairContainer']['value'] extends true
+                ? PairContainerRepr
+                : VariableInfo['isInit']['value'] extends true
+                ? InitType
+                : VariableInfo['isRef']['value'] extends true
+                ? RefType
+                : ObjectType
+        >
+    >;
     isSingular: ComputedRef<boolean>;
     isLinearContainer: ComputedRef<boolean>;
     isPairContainer: ComputedRef<boolean>;
@@ -64,24 +100,23 @@ export class VariableWrapper implements VariableInfo {
         this.fullLabel = computed(() => this.stackLabels.join(''));
 
         this.toggled = 0;
-        this.variable = computed<CompositionalObjectIdentityType>(
-            () => this.stack.at(-1) as CompositionalObjectIdentityType
+        this.variable = computed(() => {
+            const ele = this.stack.at(-1);
+            if (ele) {
+                return ele;
+            } else {
+                throw new Error('No variable found');
+            }
+        });
+        this.isSingular = computed(() => isSingularType(this.variable.value));
+        this.isLinearContainer = computed(() =>
+            isLinearContainerType(this.variable.value)
         );
-        this.isSingular = computed<boolean>(() =>
-            isSingularType(this.variable.value.type)
+        this.isPairContainer = computed(() =>
+            isPairContainerType(this.variable.value)
         );
-        this.isLinearContainer = computed<boolean>(() =>
-            isLinearContainerType(this.variable.value.type)
-        );
-        this.isPairContainer = computed<boolean>(() =>
-            isPairContainerType(this.variable.value.type)
-        );
-        this.isInit = computed<boolean>(() =>
-            isInitType(this.variable.value.type)
-        );
-        this.isRef = computed<boolean>(() =>
-            isRefType(this.variable.value.type)
-        );
+        this.isInit = computed(() => isInitType(this.variable.value));
+        this.isRef = computed(() => isRefType(this.variable.value));
         this.stackBottom = computed<boolean>(() => this.stack.length === 1);
         this.typeIcon = computed(() => {
             return getTypeIcon(this.variable.value.type);
@@ -128,7 +163,7 @@ export class VariableWrapper implements VariableInfo {
             );
         }
 
-        if (isRefType(variable.type)) {
+        if (isRefType(variable)) {
             variable = this.stack.find(
                 (v) => v.pythonId === variable.pythonId
             ) as CompositionalObjectIdentityType;
