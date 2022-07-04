@@ -1,12 +1,3 @@
-import type {
-    CompositionalObjectIdentityType,
-    InitType,
-    LinearContainerType,
-    ObjectType,
-    PairContainerRepr,
-    RefType,
-    SingularType,
-} from 'src/types/execution-types';
 import {
     isInitType,
     isLinearContainerType,
@@ -17,14 +8,24 @@ import {
     PAIR_CONTAINER_TYPES,
     SINGULAR_TYPES,
 } from 'src/types/execution-types';
-import type { ComputedRef } from 'vue';
 import { computed } from 'vue';
+
+import type {
+    CompositionalObjectIdentityType,
+    InitType,
+    LinearContainerType,
+    ObjectType,
+    PairContainerRepr,
+    RefType,
+    SingularType,
+} from 'src/types/execution-types';
+import type { ComputedRef } from 'vue';
 
 export type CompoType<T> = T extends CompositionalObjectIdentityType<infer U>
     ? U
     : never;
 
-export interface VariableInfo {
+export interface VariableInfo<T extends ObjectType = ObjectType> {
     stack: [
         CompositionalObjectIdentityType,
         ...CompositionalObjectIdentityType[]
@@ -45,7 +46,7 @@ export interface VariableInfo {
                 ? InitType
                 : VariableInfo['isRef']['value'] extends true
                 ? RefType
-                : ObjectType
+                : T
         >
     >;
     isSingular: ComputedRef<boolean>;
@@ -53,6 +54,7 @@ export interface VariableInfo {
     isPairContainer: ComputedRef<boolean>;
     isInit: ComputedRef<boolean>;
     isRef: ComputedRef<boolean>;
+    isEmpty: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
@@ -89,6 +91,7 @@ export class VariableWrapper implements VariableInfo {
     isPairContainer: ComputedRef<boolean>;
     isInit: ComputedRef<boolean>;
     isRef: ComputedRef<boolean>;
+    isEmpty: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
@@ -117,6 +120,17 @@ export class VariableWrapper implements VariableInfo {
         );
         this.isInit = computed(() => isInitType(this.variable.value));
         this.isRef = computed(() => isRefType(this.variable.value));
+        this.isEmpty = computed(() => {
+            if (
+                this.isSingular.value ||
+                this.isRef.value ||
+                this.isEmpty.value
+            ) {
+                return false;
+            } else {
+                return this.variable.value.repr.length === 0;
+            }
+        });
         this.stackBottom = computed<boolean>(() => this.stack.length === 1);
         this.typeIcon = computed(() => {
             return getTypeIcon(this.variable.value.type);
