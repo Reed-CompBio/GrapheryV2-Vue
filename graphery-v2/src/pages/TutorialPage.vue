@@ -2,13 +2,13 @@
     <div class="full-size">
         <!--   Left and Right splitter    -->
         <FullHeightSplitter v-model="leftRightSplitterPos">
-            <template v-slot:before>
+            <template #before>
                 <!--       Top and Down splitter         -->
                 <FullHeightSplitter v-model="upDownSplitterPos" horizontal>
-                    <template v-slot:before>
+                    <template #before>
                         <GraphDisplay />
                     </template>
-                    <template v-slot:after>
+                    <template #after>
                         <div class="full-height" style="overflow: hidden">
                             <!-- TODO fix this height of monaco -->
                             <WorkspaceHeadquarter />
@@ -17,7 +17,7 @@
                     </template>
                 </FullHeightSplitter>
             </template>
-            <template v-slot:after>
+            <template #after>
                 <TextDisplay :info="tutorialTextResult" />
             </template>
         </FullHeightSplitter>

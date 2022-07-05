@@ -1,9 +1,9 @@
 <template>
     <div class="var-display-wrapper">
         <div
-            class="var-display-variable"
             v-for="(variable, index) in variables"
             :key="index"
+            class="var-display-variable"
         >
             <VariableCard :info="variable" />
         </div>

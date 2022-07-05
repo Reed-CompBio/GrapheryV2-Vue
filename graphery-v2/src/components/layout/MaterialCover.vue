@@ -1,6 +1,6 @@
 <template>
     <div class="cover-wrapper flex justify-between">
-        <div class="text-bold cover-text" v-if="mediumAndLarger">
+        <div v-if="mediumAndLarger" class="text-bold cover-text">
             {{ coverTitle }}
         </div>
         <div>
@@ -18,8 +18,10 @@ export default defineComponent({
     props: {
         coverTitle: {
             type: String,
+            required: true,
         },
         logoPath: {
+            type: String,
             default: require('src/assets/images/compbio-lab-white.png'),
         },
     },

@@ -310,6 +310,7 @@ export default defineComponent({
         },
         options: {
             type: Object as PropType<MDT.Options>,
+            default: () => ({}),
         },
     },
     setup(props) {

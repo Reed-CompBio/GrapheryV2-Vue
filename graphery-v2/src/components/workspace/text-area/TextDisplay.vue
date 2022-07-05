@@ -9,7 +9,7 @@
             ref="tutorial-text-scroll"
             class="fit"
         >
-            <div id="tutorial-text-wrapper" v-if="showTutorial">
+            <div v-if="showTutorial" id="tutorial-text-wrapper">
                 <div id="tutorial-summary-wrapper" class="text-center">
                     <div id="tutorial-title-wrapper">
                         <h1 id="tutorial-title">
@@ -61,7 +61,7 @@
                     <LicenseCard />
                 </div>
             </div>
-            <div id="tutorial-absent-wrapper" v-else>
+            <div v-else id="tutorial-absent-wrapper">
                 <q-inner-loading
                     showing
                     transition-show="fade"
@@ -69,13 +69,13 @@
                 >
                     <div class="text-center">
                         <h2>Tutorial Text Is Missing</h2>
-                        <div id="tutorial-text-loading" v-if="info?.loading">
+                        <div v-if="info?.loading" id="tutorial-text-loading">
                             <h3>Trying To Load</h3>
                             <q-spinner-pie size="64px" color="primary" />
                         </div>
                         <div
-                            id="tutorial-text-failing"
                             v-if="info?.loading && (info.errors || info.error)"
+                            id="tutorial-text-failing"
                         >
                             <h3>Cannot Load Tutorial Text</h3>
                             <h3>

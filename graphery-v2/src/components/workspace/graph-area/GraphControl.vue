@@ -5,9 +5,9 @@
                 rounded
                 outline
                 size="sm"
-                @click="choice.changeChoosing()"
                 icon="mdi-graph-outline"
                 style="margin-right: 5px"
+                @click="choice.changeChoosing()"
             >
                 <q-tooltip anchor="top middle" self="bottom middle">
                     <!-- TODO i18n-->
@@ -16,15 +16,15 @@
             </q-btn>
             <!-- TODO: i18n -->
             <q-select
+                v-show="choice.choosing"
+                v-model="choice.choosingWhich"
                 outlined
                 dense
                 rounded
                 label="Graph"
-                v-model="choice.choosingWhich"
                 :options="storage.graphAnchors"
                 :map-options="true"
                 :option-label="(x) => x.graphDescription.title"
-                v-show="choice.choosing"
                 style="z-index: 2"
             />
         </div>
@@ -35,10 +35,10 @@
         >
             <q-btn
                 :icon="button.icon"
-                @click="button.callBack"
                 rounded
                 outline
                 size="sm"
+                @click="button.callBack"
             >
                 <q-tooltip anchor="center right" self="center left">
                     {{ button.tooltip }}
@@ -100,6 +100,7 @@ export default defineComponent({
         },
         graphing: {
             type: Object as PropType<InstanceType<typeof GraphingSection>>,
+            default: null,
         },
     },
     setup(props) {

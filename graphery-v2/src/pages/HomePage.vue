@@ -33,8 +33,8 @@
                 style="justify-content: space-between"
             >
                 <div
-                    :key="index"
                     v-for="(item, index) in featureList"
+                    :key="index"
                     :class="['feature', colControl]"
                 >
                     <div class="icon">

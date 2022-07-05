@@ -5,9 +5,9 @@
         </div>
         <div v-else class="var-linear-container">
             <div
-                class="var-linear-container-element"
                 v-for="(element, index) in repr"
                 :key="index"
+                class="var-linear-container-element"
             >
                 <VariableWrapper :info="element" :index="index" />
             </div>

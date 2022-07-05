@@ -71,6 +71,7 @@ export default defineComponent({
             default: 200,
         },
     },
+    emits: { 'update:modelValue': String },
     setup(props, ctx) {
         const _editorID = 'monaco-editor';
         const info = reactive<EditorInfo>({

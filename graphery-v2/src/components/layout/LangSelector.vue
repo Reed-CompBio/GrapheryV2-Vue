@@ -10,8 +10,8 @@
             <q-item
                 v-for="lang in availableLocales"
                 :key="lang"
-                clickable
                 v-close-popup
+                clickable
                 @click="changeCallback(lang)"
             >
                 <q-item-section thumbnail class="q-px-sm">

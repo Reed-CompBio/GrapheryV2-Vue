@@ -1,21 +1,21 @@
 <template>
     <div class="var-body">
         <div
-            class="var-body-singular"
             v-if="info.isSingular.value || info.isInit.value"
+            class="var-body-singular"
         >
             <SingularElement :info="info" />
         </div>
         <div
-            class="var-body-linear-container"
             v-if="info.isLinearContainer.value"
+            class="var-body-linear-container"
         >
             <LinearContainer :info="info" />
         </div>
-        <div class="var-body-pair-container" v-if="info.isPairContainer.value">
+        <div v-if="info.isPairContainer.value" class="var-body-pair-container">
             <PairContainer :info="info" />
         </div>
-        <div class="var-body-init" v-if="info.isInit">
+        <div v-if="info.isInit" class="var-body-init">
             <InitElement :info="info" />
         </div>
     </div>

@@ -18,7 +18,7 @@ import type { QTooltipProps } from 'quasar';
 
 export default defineComponent({
     props: {
-        text: { type: String },
+        text: { type: String, default: undefined },
         translate: {
             type: Boolean,
         },

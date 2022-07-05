@@ -1,10 +1,10 @@
 <template>
     <q-drawer
+        v-model="drawerState"
         overlay
         behavior="mobile"
         side="right"
         :persistent="false"
-        v-model="drawerState"
     >
         <q-list>
             <q-card class="q-py-lg" to="/">

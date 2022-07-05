@@ -1,8 +1,8 @@
 <template>
     <div id="graph-wrapper" class="full-height">
         <div id="graph-display-section" class="full-height">
-            <GraphControl :graphing="graphing" ref="graph-control" />
-            <GraphingSection :graph-data="graphData" ref="graphing" />
+            <GraphControl ref="graph-control" :graphing="graphing" />
+            <GraphingSection ref="graphing" :graph-data="graphData" />
         </div>
     </div>
 </template>

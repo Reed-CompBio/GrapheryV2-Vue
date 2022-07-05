@@ -7,13 +7,13 @@
         :separator-class="separatorClassS"
         :horizontal="horizontal"
     >
-        <template v-slot:before>
+        <template #before>
             <slot name="before" />
         </template>
-        <template v-slot:separator>
+        <template #separator>
             <SplitterSeparator :horizontal="horizontal" />
         </template>
-        <template v-slot:after>
+        <template #after>
             <slot name="after" />
         </template>
     </q-splitter>
@@ -47,6 +47,7 @@ export default defineComponent({
             default: () => [],
         },
     },
+    emits: { 'update:modelValue': Number },
     setup(props, ctx) {
         const splitterPos = computed({
             get() {

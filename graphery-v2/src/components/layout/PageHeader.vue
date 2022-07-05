@@ -13,9 +13,9 @@
             <div v-if="$q.screen.gt.sm">
                 <!-- page buttons -->
                 <q-btn
-                    flat
                     v-for="button in buttons"
                     :key="button.name"
+                    flat
                     :to="{ name: button.name }"
                     class="q-ml-sm"
                     size="16px"
@@ -27,7 +27,7 @@
             <div id="language-switcher">
                 <LangSelector :change-callback="changeLang" />
             </div>
-            <q-btn flat round dense v-if="$q.screen.lt.md" size="20px">
+            <q-btn v-if="$q.screen.lt.md" flat round dense size="20px">
                 <q-icon name="mdi-menu" @click="showDrawer" />
             </q-btn>
         </q-toolbar>

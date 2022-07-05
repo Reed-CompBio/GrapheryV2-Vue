@@ -1,9 +1,9 @@
 <template>
     <FullHeightSplitter v-model="pos">
-        <template v-slot:before>
+        <template #before>
             <MonacoEditor />
         </template>
-        <template v-slot:after>
+        <template #after>
             <VariableDisplay />
         </template>
     </FullHeightSplitter>
@@ -18,7 +18,7 @@ import VariableDisplay from 'components/workspace/code-area/variable-area/Variab
 export default defineComponent({
     components: { VariableDisplay, MonacoEditor, FullHeightSplitter },
     setup() {
-        const pos = ref(0.8);
+        const pos = ref(80);
         return {
             pos,
         };

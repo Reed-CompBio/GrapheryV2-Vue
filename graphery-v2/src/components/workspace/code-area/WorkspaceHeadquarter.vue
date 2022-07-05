@@ -23,7 +23,7 @@
                 :min="1"
             />
         </div>
-        <q-btn-group dense flat id="step-buttons">
+        <q-btn-group id="step-buttons" dense flat>
             <q-btn
                 dense
                 icon="mdi-skip-backward"
@@ -45,7 +45,7 @@
                 @click="eventBus.emit('jump-forward')"
             />
         </q-btn-group>
-        <q-btn-group dense flat id="execution-buttons">
+        <q-btn-group id="execution-buttons" dense flat>
             <q-btn
                 dense
                 icon="mdi-console-network"
@@ -57,7 +57,7 @@
                 @click="eventBus.emit('execute-locally')"
             />
         </q-btn-group>
-        <q-btn-group dense flat id="vcs-buttons">
+        <q-btn-group id="vcs-buttons" dense flat>
             <q-btn
                 dense
                 icon="mdi-content-save-all-outline"
@@ -69,7 +69,7 @@
                 @click="eventBus.emit('save-current-to-vcs')"
             />
         </q-btn-group>
-        <q-btn-group dense flat id="editor-buttons">
+        <q-btn-group id="editor-buttons" dense flat>
             <q-btn
                 dense
                 icon="mdi-content-copy"

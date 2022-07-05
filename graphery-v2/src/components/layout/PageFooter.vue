@@ -4,9 +4,9 @@
             <div class="left-section">
                 <div class="logo flex no-wrap justify-start">
                     <div
-                        class="logo-text"
                         v-for="(letter, index) in logoTextList"
                         :key="index"
+                        class="logo-text"
                     >
                         {{ letter }}
                     </div>
