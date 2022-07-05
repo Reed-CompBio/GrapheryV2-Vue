@@ -9,7 +9,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import VariableCardHeader from 'components/workspace/code-area/variable-area/VariableCardHeader.vue';
-import VariableDisplay from 'components/workspace/code-area/variable-area/VariableDisplay.vue';
+import VariableDisplay from 'components/workspace/code-area/variable-area/VariableBody.vue';
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';

@@ -14,8 +14,12 @@ export const GRAPH_OBJECT_TYPES = [
     ...GRAPH_EDGE_TYPES,
 ] as const;
 export type GraphObjectType = typeof GRAPH_OBJECT_TYPES[number];
-export function isGraphObjectType(type: string): type is GraphObjectType {
-    return (GRAPH_OBJECT_TYPES as ReadonlyArray<string>).includes(type);
+export function isGraphObjectType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<GraphObjectType> {
+    return (GRAPH_OBJECT_TYPES as ReadonlyArray<string>).includes(
+        variable.type
+    );
 }
 
 export const PYTHON_OBJECT_TYPES = [
