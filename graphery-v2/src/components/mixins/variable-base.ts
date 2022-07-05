@@ -104,12 +104,8 @@ export class VariableInfoWrapper implements VariableInfo {
 
         this.toggled = 0;
         this.variable = computed(() => {
-            const ele = this.stack.at(-1);
-            if (ele) {
-                return ele;
-            } else {
-                throw new Error('No variable found');
-            }
+            // const ele = this.stack.at(-1);
+            return this.stack[this.stack.length - 1];
         });
         this.isSingular = computed(() => isSingularType(this.variable.value));
         this.isLinearContainer = computed(() =>
