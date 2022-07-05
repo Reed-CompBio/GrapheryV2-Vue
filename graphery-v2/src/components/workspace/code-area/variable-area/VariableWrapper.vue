@@ -22,7 +22,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
 import SwitchTooltip from 'components/workspace/frames/SwitchTooltip.vue';
-import { VariableWrapper } from 'components/mixins/variable-base';
+import { VariableInfoWrapper } from 'components/mixins/variable-base';
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';
@@ -48,10 +48,10 @@ export default defineComponent({
         return {
             refAbbrString: REF_ABBR_STRING,
             wrappedInfo: computed(() => {
-                if (props.info instanceof VariableWrapper) {
+                if (props.info instanceof VariableInfoWrapper) {
                     return props.info;
                 } else {
-                    return new VariableWrapper(
+                    return new VariableInfoWrapper(
                         props.info as CompositionalObjectIdentityType,
                         ''
                     );

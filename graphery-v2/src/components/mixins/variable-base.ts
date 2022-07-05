@@ -62,7 +62,7 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     popStack: () => void;
 }
 
-export class VariableWrapper implements VariableInfo {
+export class VariableInfoWrapper implements VariableInfo {
     stack: [
         CompositionalObjectIdentityType,
         ...CompositionalObjectIdentityType[]
