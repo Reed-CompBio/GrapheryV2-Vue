@@ -555,7 +555,8 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentRecordArray,
         currentStep,
         currentStepRecord,
-        nextBreakpoint: getNextBreakpoint,
+        refreshStepRecord,
+        getNextBreakpoint,
         // actions
         loadTutorialContent,
         loadGraphJsonAndExecutionResult,
