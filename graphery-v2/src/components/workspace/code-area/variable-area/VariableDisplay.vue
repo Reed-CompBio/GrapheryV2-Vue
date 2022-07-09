@@ -25,17 +25,26 @@ export default defineComponent({
         const { currentStepRecord } = storeToRefs(storage);
         const variables = computed<VariableInfoWrapper[]>(() => {
             return [
+                ...(currentStepRecord.value?.accesses ?? []).map((access) => {
+                    return new VariableInfoWrapper(access, 'returned variable');
+                }),
                 ...Object.entries(currentStepRecord.value?.variables ?? {}).map(
                     ([key, value]) => {
                         return new VariableInfoWrapper(value, key);
                     }
                 ),
-                ...(currentStepRecord.value?.accesses ?? []).map((access) => {
-                    return new VariableInfoWrapper(access, 'accessed variable');
-                }),
             ];
         });
         return { variables };
     },
 });
 </script>
+
+<style lang="sass">
+.var-display-wrapper
+    display: grid
+    grid-template-columns: 1fr
+    grid-template-rows: auto
+    grid-gap: 20px
+    padding: 15px 5px
+</style>

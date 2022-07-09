@@ -21,10 +21,6 @@ import type {
 } from 'src/types/execution-types';
 import type { ComputedRef } from 'vue';
 
-export type CompoType<T> = T extends CompositionalObjectIdentityType<infer U>
-    ? U
-    : never;
-
 export interface VariableInfo<T extends ObjectType = ObjectType> {
     stack: [
         CompositionalObjectIdentityType,
@@ -58,6 +54,7 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
+    get typeDescription(): string;
     pushStack: (target: number) => void;
     popStack: () => void;
 }
@@ -150,6 +147,10 @@ export class VariableInfoWrapper implements VariableInfo {
             }
             return 'mdi-close-circle-outline';
         });
+    }
+
+    get typeDescription() {
+        return getObjectTypeDescription(this.variable.value.type);
     }
 
     pushStack(target: number) {
@@ -260,10 +261,37 @@ export const TYPE_ICON_MAPPING = {
     ...SINGULAR_TYPE_ICON_MAPPING,
     ...LINEAR_CONTAINER_TYPE_ICON_MAPPING,
     ...PAIR_CONTAINER_TYPE_ICON_MAPPING,
-    Init: 'mdi-selection-ellipse',
-    Ref: 'mdi-selection-ellipse',
+    Init: 'mdi-help-circle-outline',
+    Ref: 'mdi-swap-vertical-variant',
 } as const;
 
 export function getTypeIcon(type: ObjectType) {
     return TYPE_ICON_MAPPING[type];
+}
+
+// TODO: i18n
+export const OBJECT_DESCRIPTION = {
+    Node: 'This is a node object in the graph.',
+    Edge: 'This is a edge object in the graph.',
+    DataEdge: 'This is a edge object carrying its attributes.',
+    MultiEdge: 'This is a edge object in the multi graph.',
+    MultiDataEdge:
+        'This is a edge object carrying its attributes in the multi graph.',
+    Number: 'This is a number, either a float or an integer.',
+    String: 'This is a string.',
+    List: 'This is a list of objects.',
+    Tuple: 'This is a tuple of objects.',
+    Deque: 'This is a deque of objects.',
+    None: 'This is a the special entity None.',
+    Set: 'This is a set of objects.',
+    Counter: 'This is a counter object.',
+    Mapping: 'This is a mapping of objects.',
+    Sequence: 'This is a sequence of objects.',
+    Object: 'This is a (custom) object.',
+    Init: "This is a variable placeholder for some object that's not yet initialized.",
+    Ref: 'This is a reference to an object.',
+} as const;
+
+export function getObjectTypeDescription(type: ObjectType) {
+    return OBJECT_DESCRIPTION[type];
 }

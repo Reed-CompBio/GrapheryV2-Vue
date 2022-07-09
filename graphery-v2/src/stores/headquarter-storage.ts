@@ -127,6 +127,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         return currentExecutionResultInfo.value?.result ?? null;
     });
 
+    const currentRecordArrayMaxLength = computed(() => {
+        return (currentRecordArray.value?.length ?? 0) - 1;
+    });
+
     const currentStep = computed(() => stepInfo.currentStep);
 
     const currentStepRecord = computed(() => {
@@ -140,7 +144,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         while (properties.size !== 0 && step >= 0) {
             const record = currentRecordArray.value[step];
             for (const property of properties) {
-                if (record[property] !== undefined) {
+                if (record[property]) {
                     stepInfo.stepRecord[property] = record[property] as any;
                     properties.delete(property);
                 }
@@ -404,7 +408,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     // event bus actions
     eventBus.on('step-changed-to', (step: number | null) => {
         // change current step
-        if (step) {
+        if (
+            step !== null &&
+            step >= 0 &&
+            step <= currentRecordArrayMaxLength.value
+        ) {
             stepInfo.currentStep = step;
         }
     });
@@ -412,9 +420,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         eventBus.emit('step-changed-to', currentStep.value + 1);
     });
     eventBus.on('previous-step', () => {
-        if (stepInfo.currentStep > 0) {
-            eventBus.emit('step-changed-to', currentStep.value - 1);
-        }
+        eventBus.emit('step-changed-to', currentStep.value - 1);
     });
     eventBus.on('jump-forward', () => {
         const nextBreakpoint = getNextBreakpoint.value();
@@ -632,6 +638,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentExecutionResult,
         currentExecutionResultInfo,
         currentRecordArray,
+        currentRecordArrayMaxLength,
         currentStep,
         currentStepRecord,
         getNextBreakpoint,

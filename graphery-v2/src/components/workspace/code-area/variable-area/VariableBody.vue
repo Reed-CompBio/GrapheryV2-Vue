@@ -1,9 +1,9 @@
 <template>
     <div class="var-body">
-        <div
-            v-if="info.isSingular.value || info.isInit.value"
-            class="var-body-singular"
-        >
+        <div v-if="info.isInit.value" class="var-body-init">
+            <InitElement :info="info" />
+        </div>
+        <div v-if="info.isSingular.value" class="var-body-singular">
             <SingularElement :info="info" />
         </div>
         <div
@@ -14,9 +14,6 @@
         </div>
         <div v-if="info.isPairContainer.value" class="var-body-pair-container">
             <PairContainer :info="info" />
-        </div>
-        <div v-if="info.isInit" class="var-body-init">
-            <InitElement :info="info" />
         </div>
     </div>
 </template>

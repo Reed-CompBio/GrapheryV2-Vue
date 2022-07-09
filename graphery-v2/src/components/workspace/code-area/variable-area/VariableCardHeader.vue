@@ -1,6 +1,6 @@
 <template>
     <div class="var-header">
-        <div class="var-header-wrapper row justify-center">
+        <div class="var-header-wrapper">
             <div class="var-header-left">
                 <q-btn
                     :flat="info.stackBottom.value"
@@ -39,6 +39,7 @@
                         :icon="info.typeIcon.value"
                         @click="typeButtonClickHandler"
                     >
+                        <SwitchTooltip :text="info.typeDescription" />
                     </q-btn>
                 </div>
             </div>
@@ -52,10 +53,13 @@ import { useVariableBus } from 'components/mixins/controller/variable-bus';
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';
+import { useQuasar } from 'quasar';
+import SwitchTooltip from '../../frames/SwitchTooltip.vue';
 
 const buttonSize = 'md' as const;
 
 export default defineComponent({
+    components: { SwitchTooltip },
     props: {
         info: {
             type: Object as PropType<VariableInfo>,
@@ -64,21 +68,20 @@ export default defineComponent({
     },
     setup(props) {
         const bus = useVariableBus();
-
+        const { notify } = useQuasar();
         function emitBackAction() {
             bus.emit('prop-var-stack', props.info.baseLabel);
         }
-
         function highlightAction() {
             // TODO
             return null;
         }
-
         function typeButtonClickHandler() {
-            // TODO
-            return null;
+            notify({
+                message: props.info.typeDescription,
+                type: 'info',
+            });
         }
-
         return {
             emitBackAction,
             buttonSize,
@@ -88,3 +91,17 @@ export default defineComponent({
     },
 });
 </script>
+
+<style lang="sass">
+.var-header-wrapper
+    display: grid
+    grid-template-columns: 1fr auto 1fr
+    grid-gap: 8px
+    justify-items: center
+
+    .var-header-left
+        margin-right: auto
+
+    .var-header-right
+        margin-left: auto
+</style>
