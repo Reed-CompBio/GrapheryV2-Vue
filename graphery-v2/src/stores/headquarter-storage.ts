@@ -40,7 +40,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     const stepInfo = reactive<StepInfoType>({
         currentStep: 0,
         breakpoints: new Set<number>(),
-        stepRecord: undefined,
+        stepRecord: {},
     });
 
     // getters
@@ -71,7 +71,13 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     const executionResultCollection = computed<ExecutionResultType[] | null>(
         () => {
             if (storage.tutorialContent) {
-                return currentGraphAnchor.value?.executionResults || null;
+                return (
+                    (graphAnchors.value
+                        .map((val) => val.graph?.graphAnchor.executionResult)
+                        .filter((val) =>
+                            Boolean(val)
+                        ) as ExecutionResultType[]) || null
+                );
             } else if (storage.graphContent) {
                 return currentCode.value?.executionResults || null;
             } else {
@@ -122,17 +128,14 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
 
     const currentStep = computed(() => stepInfo.currentStep);
-    const refreshStepRecord = () => {
+
+    const currentStepRecord = computed(() => {
         // TODO: need a better way to keep track of changes
 
         const properties = new Set(CHANGABLE_PROPERTIES);
         let step = stepInfo.currentStep;
 
-        if (
-            currentRecordArray.value === null ||
-            stepInfo.stepRecord === undefined
-        )
-            return;
+        if (currentRecordArray.value === null) return;
 
         while (properties.size !== 0 && step >= 0) {
             const record = currentRecordArray.value[step];
@@ -146,9 +149,6 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         }
 
         return stepInfo.stepRecord;
-    };
-    const currentStepRecord = computed(() => {
-        return refreshStepRecord();
     });
 
     const getNextBreakpoint = computed(() => {
@@ -292,6 +292,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                 JSON.stringify(queryResult.data.tutorialContent)
             );
         } else {
+            console.error('cannot load tutorial since');
             console.error(queryResult.error);
             console.error(queryResult.errors);
             result = null;
@@ -389,19 +390,12 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     }
 
     function initStepRecord() {
-        stepInfo.currentStep = 0;
-
-        if (currentRecordArray.value) {
-            stepInfo.stepRecord = {
-                ...currentRecordArray.value[0],
-            };
-        } else {
-            stepInfo.stepRecord = undefined;
-        }
+        stepInfo.stepRecord = {};
+        eventBus.emit('step-changed-to', 0);
     }
 
     watch(currentRecordArray, () => {
-        eventBus.emit('reset-state');
+        eventBus.emit('reset-states');
     });
 
     // event bus
@@ -415,11 +409,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         }
     });
     eventBus.on('next-step', () => {
-        stepInfo.currentStep += 1;
+        eventBus.emit('step-changed-to', currentStep.value + 1);
     });
     eventBus.on('previous-step', () => {
         if (stepInfo.currentStep > 0) {
-            stepInfo.currentStep -= 1;
+            eventBus.emit('step-changed-to', currentStep.value - 1);
         }
     });
     eventBus.on('jump-forward', () => {
@@ -614,8 +608,6 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         for (const line of stepInfo.breakpoints) {
             eventBus.emit('remove-breakpoint', line);
         }
-        // TODO variable area should be reset
-        stepInfo.stepRecord = undefined;
     });
 
     eventBus.on('load-graph-anchor', (anchorId: string) => {
@@ -638,10 +630,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentGraph,
         currentCode,
         currentExecutionResult,
+        currentExecutionResultInfo,
         currentRecordArray,
         currentStep,
         currentStepRecord,
-        refreshStepRecord,
         getNextBreakpoint,
         currentTutorialContent,
         isLoadingTutorialContnet,

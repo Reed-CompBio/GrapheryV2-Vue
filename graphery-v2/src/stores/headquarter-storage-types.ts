@@ -16,5 +16,5 @@ export interface HeadquarterStorageType {
 export interface StepInfoType {
     currentStep: number;
     breakpoints: Set<number>;
-    stepRecord?: Required<RecordType>;
+    stepRecord: Omit<RecordType, 'line'>;
 }
