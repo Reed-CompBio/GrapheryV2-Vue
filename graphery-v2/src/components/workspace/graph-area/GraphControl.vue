@@ -25,6 +25,8 @@
                 :options="storage.graphAnchors"
                 :map-options="true"
                 :option-label="(x) => x.graphDescription.title"
+                :loading="isLoadingGraph"
+                :disable="isLoadingGraph"
                 style="z-index: 2"
             />
         </div>
@@ -99,18 +101,49 @@ export default defineComponent({
             default: 1.5,
         },
         graphing: {
-            type: Object as PropType<InstanceType<typeof GraphingSection>>,
+            type: Object as PropType<InstanceType<
+                typeof GraphingSection
+            > | null>,
             default: null,
         },
     },
     setup(props) {
+        const storage = useHeadquarterStorage();
+        const eventBus = useHeadquarterBus();
+
+        const choice = ref({
+            choosing: false,
+            choosingWhich: computed({
+                get() {
+                    return storage.currentGraphAnchor;
+                },
+                set(anchorObj: GraphAnchorType | null) {
+                    eventBus.emit('fetch-graph', {
+                        graphAnchorId: anchorObj?.id,
+                    });
+                },
+            }),
+            changeChoosing() {
+                this.choosing = !this.choosing;
+            },
+        });
+
+        const { graphAnchors, isLoadingGraph } = storeToRefs(storage);
+        if (graphAnchors) {
+            console.debug('init graph anchors: ', graphAnchors);
+            choice.value.choosingWhich = graphAnchors.value[0];
+        }
+        watch(graphAnchors, (val) => {
+            console.debug('graph anchors changed: ', val);
+            choice.value.choosingWhich = graphAnchors.value[0];
+        });
+
         const { zoomIn, zoomOut, reset } = useSigmaCamera({
             factor: props.zoomFactor,
             duration: props.animationDuration,
         });
 
         const { notify } = useQuasar();
-        const storage = useHeadquarterStorage();
 
         const buttons = [
             {
@@ -180,35 +213,13 @@ export default defineComponent({
         ];
 
         const layouts = useGraphLayouts();
-        const eventBus = useHeadquarterBus();
-
-        const choice = ref({
-            choosing: false,
-            choosingWhich: computed({
-                get() {
-                    return storage.currentGraphAnchor;
-                },
-                set(anchorObj: GraphAnchorType | null) {
-                    eventBus.emit('fetch-graph', {
-                        graphAnchorId: anchorObj?.id,
-                    });
-                },
-            }),
-            changeChoosing() {
-                this.choosing = !this.choosing;
-            },
-        });
-
-        const { graphAnchors } = storeToRefs(storage);
-        watch(graphAnchors, () => {
-            choice.value.choosingWhich = graphAnchors.value[0];
-        });
 
         return {
             buttons,
             layouts,
             choice,
             storage,
+            isLoadingGraph,
         };
     },
 });

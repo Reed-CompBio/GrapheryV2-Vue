@@ -17,7 +17,8 @@ import type {
     GraphType,
     TutorialType,
 } from 'src/types/api-types';
-import type { RecordArrayType, RecordType } from 'src/types/execution-types';
+import type { RecordType } from 'src/types/execution-types';
+import { ResponseInfoType } from 'src/types/execution-comm-type';
 
 export const useHeadquarterStorage = defineStore('headquarter', () => {
     // type definition see below
@@ -29,6 +30,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentCodeId: null,
         tutorialContent: null,
         graphContent: null,
+        state: {
+            loadingTutorial: null,
+            loadingGraph: null,
+            loadingCode: null,
+        },
     });
 
     const stepInfo = reactive<StepInfoType>({
@@ -102,13 +108,17 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         );
     });
 
-    // I regret using Json instead of JSON, but ....
-    const currentRecordArray = computed(() => {
-        if (currentExecutionResult.value?.resultJson)
+    const currentExecutionResultInfo = computed(() => {
+        if (currentExecutionResult.value)
             return JSON.parse(
                 currentExecutionResult.value?.resultJson
-            ) as RecordArrayType;
+            ) as ResponseInfoType;
         else return null;
+    });
+
+    // I regret using Json instead of JSON, but ....
+    const currentRecordArray = computed(() => {
+        return currentExecutionResultInfo.value?.result ?? null;
     });
 
     const currentStep = computed(() => stepInfo.currentStep);
@@ -175,8 +185,43 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         };
     });
 
+    const currentTutorialContent = computed(() => storage.tutorialContent);
+
+    const isLoadingTutorialContnet = computed(
+        () => storage.state.loadingTutorial
+    );
+
+    const isLoadingGraph = computed(() => storage.state.loadingGraph);
+
+    const isLoadingCode = computed(() => storage.state.loadingCode);
+
     // actions
+
+    function changeContentState(
+        type: 'code' | 'graph' | 'tutorial',
+        state: boolean | null
+    ) {
+        switch (type) {
+            case 'code': {
+                storage.state.loadingCode = state;
+                break;
+            }
+            case 'graph': {
+                storage.state.loadingGraph = state;
+                break;
+            }
+            case 'tutorial': {
+                storage.state.loadingTutorial = state;
+                break;
+            }
+        }
+    }
+
     async function loadTutorialContent(url: string, lang: string) {
+        console.debug('run loading tutorial on url', url, lang);
+
+        changeContentState('tutorial', true);
+
         const queryResult = await apolloClient.query<{
             tutorialContent: TutorialType;
         }>({
@@ -193,6 +238,8 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                         modifiedTime
                         itemStatus
                         tutorialAnchor {
+                            rank
+                            itemStatus
                             graphAnchors {
                                 id
                                 url
@@ -234,19 +281,33 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             },
         });
 
+        let result;
+
         if (queryResult.data && !queryResult.errors && !queryResult.error) {
-            return queryResult.data.tutorialContent;
+            console.debug(
+                `run loading tutorial on ${url} successfully, the result is `,
+                queryResult.data
+            );
+            result = JSON.parse(
+                JSON.stringify(queryResult.data.tutorialContent)
+            );
         } else {
             console.error(queryResult.error);
             console.error(queryResult.errors);
-            return null;
+            result = null;
         }
+
+        return result;
     }
 
     async function loadGraphJsonAndExecutionResult(
         anchorId: string,
         codeId: string
     ) {
+        console.debug('start fetching graph', anchorId, codeId);
+
+        changeContentState('graph', true);
+
         // TODO figure out loading execution result with a specific code id
         const result = await apolloClient.query<{ graph: GraphType }>({
             query: gql`
@@ -274,16 +335,23 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             },
         });
 
+        let res;
         if (result.data && !result.errors && !result.error) {
-            return result.data.graph;
+            res = JSON.parse(JSON.stringify(result.data.graph));
+            console.debug('fetched graph', res);
         } else {
             console.error(result.error);
             console.error(result.errors);
-            return null;
+            res = null;
         }
+
+        return res;
     }
 
     async function loadCode(codeId: string, graphAnchorId: string) {
+        console.debug('start fetching code', codeId, graphAnchorId);
+        changeContentState('code', true);
+
         const result = await apolloClient.query<{ code: CodeType }>({
             query: gql`
                 query ($codeId: UUID!, $graphAnchorId: UUID!) {
@@ -308,13 +376,16 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             },
         });
 
+        let res;
         if (result.data && !result.errors && !result.error) {
-            return result.data.code;
+            res = JSON.parse(JSON.stringify(result.data.code));
+            console.debug('fetched code', res);
         } else {
             console.error(result.error);
             console.error(result.errors);
-            return null;
+            res = null;
         }
+        return res;
     }
 
     function initStepRecord() {
@@ -411,7 +482,9 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
                 });
             } else {
                 console.error(
-                    'cannot load graph information due to invalid input of graph anchor id and code anchor id'
+                    'cannot load graph information due to invalid input of graph anchor id and code anchor id',
+                    graphAnchorId,
+                    codeAnchorId
                 );
                 eventBus.emit('fetched-graph', {
                     anchorId: undefined,
@@ -425,10 +498,13 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     );
 
     eventBus.on('fetched-graph', ({ anchorId, state }) => {
+        console.debug('fetched graph', anchorId);
         if (state.fetchSuccess && anchorId) {
+            changeContentState('graph', false);
             if (state.fetchSuccessCall) state.fetchSuccessCall();
             eventBus.emit('load-graph-anchor', anchorId);
         } else {
+            changeContentState('graph', null);
             if (state.fetchFailedCall) state.fetchFailedCall();
         }
     });
@@ -437,6 +513,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         loadTutorialContent(url, lang).then((tutorial) => {
             if (tutorial) {
                 storage.tutorialContent = tutorial;
+                console.debug(
+                    'stored tutorial loading result',
+                    storage.tutorialContent
+                );
             } else {
                 console.debug(
                     'tutorial is null and might not be the intended behavior'
@@ -456,13 +536,17 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     eventBus.on('fetched-tutorial', ({ state }) => {
         if (state.fetchSuccess) {
             if (state.fetchSuccessCall) state.fetchSuccessCall();
+            changeContentState('tutorial', false);
             eventBus.emit('load-code', codes.value[0].id);
         } else {
             if (state.fetchFailedCall) state.fetchFailedCall();
+            changeContentState('tutorial', null);
         }
     });
 
     eventBus.on('fetch-code', ({ codeId, graphAnchorId, state }) => {
+        changeContentState('code', true);
+
         codeId = codeId || currentCode.value?.id;
         graphAnchorId = graphAnchorId || currentGraphAnchor.value?.id;
 
@@ -515,9 +599,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     eventBus.on('fetched-code', ({ codeId, state }) => {
         if (state.fetchSuccess && codeId) {
             if (state.fetchSuccessCall) state.fetchSuccessCall();
+            changeContentState('code', false);
             eventBus.emit('load-code', codeId);
         } else {
             if (state.fetchFailedCall) state.fetchFailedCall();
+            changeContentState('code', null);
         }
     });
 
@@ -557,6 +643,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentStepRecord,
         refreshStepRecord,
         getNextBreakpoint,
+        currentTutorialContent,
+        isLoadingTutorialContnet,
+        isLoadingGraph,
+        isLoadingCode,
         // actions
         loadTutorialContent,
         loadGraphJsonAndExecutionResult,

@@ -26,41 +26,6 @@ type SigmaInfo = {
     isDragging: boolean;
 };
 
-function initDefaultGraph(graph: GraphType) {
-    graph.addNode('n1', {
-        x: 0,
-        y: 0,
-        size: 10,
-        highlightColor: new Set(['#59351F']),
-        // color: chroma.random().hex(),
-    });
-    graph.addNode('n2', {
-        x: -5,
-        y: 5,
-        size: 10,
-        highlightColor: new Set(['#763C28', '#F54021', '#955F20', '#E4A010']),
-        // color: chroma.random().hex(),
-    });
-    graph.addNode('n3', {
-        x: 5,
-        y: 5,
-        size: 10,
-        highlightColor: new Set(['#FF2301', '#D53032', '#2F4538']),
-        // color: chroma.random().hex(),
-    });
-    graph.addNode('n4', {
-        x: 0,
-        y: 10,
-        size: 10,
-        highlightColor: new Set(['#063971', '#FF7514']),
-        // color: chroma.random().hex(),
-    });
-    graph.addEdge('n1', 'n2');
-    graph.addEdge('n2', 'n4');
-    graph.addEdge('n4', 'n3');
-    graph.addEdge('n3', 'n1');
-}
-
 function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
     return {
         addHighlight(nodeId: string, color: string | string[] | Set<string>) {
@@ -125,10 +90,6 @@ function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
 
 export default defineComponent({
     props: {
-        graphData: {
-            type: Object as PropType<Partial<SerializedGraph> | string>,
-            default: undefined,
-        },
         settings: {
             type: Object as PropType<Partial<SpecialHighlightSettings>>,
             default: undefined,
@@ -152,25 +113,7 @@ export default defineComponent({
         // graph tools
         const toolBox = markRaw(graphToolBoxCreator(graph, sigma));
 
-        // init data
-        if (props.graphData) {
-            // import graph from props
-            toolBox.importGraph(props.graphData);
-        } else {
-            // otherwise load the default graph
-            initDefaultGraph(graph);
-        }
-        // watch prop graph data change and import if change happens
-        watch(
-            () => props.graphData,
-            (newVal) => {
-                toolBox.clearGraph();
-                if (newVal) {
-                    toolBox.importGraph(newVal);
-                }
-            }
-        );
-
+        // TODO: force layout performance issue
         const layouts = initGraphLayouts(graph);
         layouts.value.forceLayout.toggle();
 
@@ -184,11 +127,19 @@ export default defineComponent({
 
             sigmaInfo.value.sigma = useSigma();
 
+            if (currentGraph.value) {
+                toolBox.importGraph(currentGraph.value.graphJson);
+            }
+
             // dragging
             {
                 sigmaInfo.value.sigma?.on('downNode', (e) => {
                     sigmaInfo.value.isDragging = true;
                     sigmaInfo.value.draggedNode = e.node;
+                });
+
+                sigmaInfo.value.sigma?.on('clickNode', (e) => {
+                    graph.setNodeAttribute(e.node, 'highlighted', true);
                 });
 
                 sigmaInfo.value.sigma
@@ -235,11 +186,13 @@ export default defineComponent({
             }
         });
 
-        const storage = useHeadquarterStorage();
-
-        const { currentGraph } = storeToRefs(storage);
+        const { currentGraph } = storeToRefs(useHeadquarterStorage());
 
         watch(currentGraph, (newVal) => {
+            console.debug(
+                'preparing loading new graph since current graph is changed to',
+                newVal
+            );
             if (newVal && newVal.graphJson) {
                 toolBox.importGraph(newVal.graphJson);
             } else {

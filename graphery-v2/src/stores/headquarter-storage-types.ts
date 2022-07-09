@@ -6,6 +6,11 @@ export interface HeadquarterStorageType {
     currentGraphAnchorId: string | null;
     tutorialContent: TutorialType | null;
     graphContent: GraphDescriptionType | null;
+    state: {
+        loadingTutorial: null | boolean;
+        loadingGraph: null | boolean;
+        loadingCode: null | boolean;
+    };
 }
 
 export interface StepInfoType {

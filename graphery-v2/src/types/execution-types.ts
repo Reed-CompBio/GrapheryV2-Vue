@@ -132,7 +132,7 @@ export interface CompositionalObjectIdentityType<
         ? string // TODO: undefined or string?
         : never;
     attributes?: {
-        graphId: string;
+        key: string;
         [key: string]: string | number;
     };
     pythonId: number;

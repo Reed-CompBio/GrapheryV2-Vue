@@ -42,7 +42,11 @@
                     <div id="tutorial-time-wrapper">
                         <q-chip>
                             Modified at:
-                            {{ new Date(tutorialData?.modifiedTime) }}
+                            {{
+                                tutorialData?.modifiedTime
+                                    ? new Date(tutorialData?.modifiedTime)
+                                    : 'No Time Info'
+                            }}
                         </q-chip>
                     </div>
                     <div id="tutorial-abstract-wrapper">
@@ -69,12 +73,15 @@
                 >
                     <div class="text-center">
                         <h2>Tutorial Text Is Missing</h2>
-                        <div v-if="info?.loading" id="tutorial-text-loading">
+                        <div
+                            v-if="isLoadingTutorial"
+                            id="tutorial-text-loading"
+                        >
                             <h3>Trying To Load</h3>
                             <q-spinner-pie size="64px" color="primary" />
                         </div>
                         <div
-                            v-if="info?.loading && (info.errors || info.error)"
+                            v-if="cannotLoadTutorial"
                             id="tutorial-text-failing"
                         >
                             <h3>Cannot Load Tutorial Text</h3>
@@ -97,10 +104,8 @@ import { computed, defineAsyncComponent, defineComponent } from 'vue';
 import { Status } from 'src/types/api-types';
 
 import type { PropType } from 'vue';
-import type { GraphQLLoadingType, TutorialType } from 'src/types/api-types';
-
-const queryName = 'tutorialContent' as const;
-type TutorialText = GraphQLLoadingType<typeof queryName, [TutorialType]>;
+import type { TutorialType } from 'src/types/api-types';
+import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
 
 interface TutorialTextStyle {
     titleFont?: string;
@@ -119,25 +124,27 @@ export default defineComponent({
         ),
     },
     props: {
-        info: {
-            type: Object as PropType<TutorialText | undefined>,
-            default: undefined,
-        },
         style: {
             type: Object as PropType<TutorialTextStyle>,
             default: undefined,
         },
     },
     setup(props) {
+        const storage = useHeadquarterStorage();
         const style = computed(() => {
             return { ...props.style };
         });
         // TODO: add separate styles for different sections, and add a general style for
 
-        const tutorialData = computed<TutorialType | undefined>(() => {
-            return props.info?.data
-                ? props.info?.data[queryName][0]
-                : undefined;
+        const isLoadingTutorial = computed(
+            () => storage.isLoadingTutorialContnet
+        );
+        const cannotLoadTutorial = computed(
+            () => storage.isLoadingTutorialContnet === false
+        );
+
+        const tutorialData = computed<TutorialType | null>(() => {
+            return storage.currentTutorialContent;
         });
 
         const tutorialPublished = computed(() => {
@@ -152,7 +159,7 @@ export default defineComponent({
         });
 
         const showTutorial = computed(() => {
-            return tutorialData.value !== undefined;
+            return Boolean(tutorialData.value);
         });
 
         return {
@@ -161,6 +168,8 @@ export default defineComponent({
             tutorialData,
             tutorialPublished,
             translationPublished,
+            isLoadingTutorial,
+            cannotLoadTutorial,
         };
     },
 });

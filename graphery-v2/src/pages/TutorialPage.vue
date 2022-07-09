@@ -9,28 +9,28 @@
                         <GraphDisplay />
                     </template>
                     <template #after>
-                        <div class="full-height" style="overflow: hidden">
-                            <!-- TODO fix this height of monaco -->
+                        <div class="full-height">
                             <WorkspaceHeadquarter />
-                            <MonacoEditor />
+                            <CodeDisplay :style="editorStyle" />
                         </div>
                     </template>
                 </FullHeightSplitter>
             </template>
             <template #after>
-                <TextDisplay :info="tutorialTextResult" />
+                <TextDisplay />
             </template>
         </FullHeightSplitter>
     </div>
 </template>
 
 <script lang="ts">
-import { defineAsyncComponent, defineComponent, markRaw, ref } from 'vue';
+import { computed, defineAsyncComponent, defineComponent, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/frames/FullHeightSplitter.vue';
 import TextDisplay from 'components/workspace/text-area/TextDisplay.vue';
 import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
-import { APILoader } from 'components/mixins/load-api';
-import { gql } from 'graphql-tag';
+import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
+import { useRoute } from 'vue-router';
+import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
 
 export default defineComponent({
     components: {
@@ -38,8 +38,8 @@ export default defineComponent({
         GraphDisplay: defineAsyncComponent(
             () => import('components/workspace/graph-area/GraphDisplay.vue')
         ),
-        MonacoEditor: defineAsyncComponent(
-            () => import('components/workspace/code-area/MonacoEditor.vue')
+        CodeDisplay: defineAsyncComponent(
+            () => import('components/workspace/code-area/CodeDisplay.vue')
         ),
         FullHeightSplitter,
         TextDisplay,
@@ -48,46 +48,22 @@ export default defineComponent({
         const leftRightSplitterPos = ref(50);
         const upDownSplitterPos = ref(50);
 
-        const loader = markRaw(
-            new APILoader(gql`
-                query {
-                    tutorialContent(
-                        filters: {
-                            tutorialAnchor: {
-                                id: {
-                                    exact: "47404139-7fdb-438d-9f58-fdc77cf04303"
-                                }
-                            }
-                        }
-                    ) {
-                        tutorialAnchor {
-                            itemStatus
-                            rank
-                        }
-                        title
-                        abstract
-                        authors {
-                            displayedName
-                        }
-                        itemStatus
-                        contentMarkdown
-                        modifiedTime
-                    }
-                }
-            `)
-        );
-
-        loader.load().then((res) => {
-            console.log(res);
-            tutorialTextResult.value = res;
+        const bus = useHeadquarterBus();
+        const route = useRoute();
+        useHeadquarterStorage();
+        bus.emit('fetch-tutorial', {
+            url: route.params.url as string,
         });
-        const tutorialTextResult = ref({});
+
+        const appBarSize = '32px';
+        const editorStyle = computed(() => ({
+            height: `calc(100% - ${appBarSize}) !important`,
+        }));
 
         return {
             leftRightSplitterPos,
             upDownSplitterPos,
-            tutorialTextResult,
-            loader,
+            editorStyle,
         };
     },
 });
