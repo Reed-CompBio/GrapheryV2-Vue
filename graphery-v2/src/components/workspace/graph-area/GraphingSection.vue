@@ -116,6 +116,7 @@ export default defineComponent({
         // TODO: force layout performance issue
         const layouts = initGraphLayouts(graph);
         layouts.value.forceLayout.toggle();
+        // layouts.value.forceAtlas.toggle();
 
         onMounted(() => {
             // load sigma when the element is mounted
