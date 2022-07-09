@@ -1,7 +1,7 @@
 <template>
     <div class="var-linear-container-wrapper">
         <div v-if="info.isEmpty.value" class="var-empty-linear-container">
-            <VariableWrapper :info="info" />
+            <ElementWrapper :info="info" />
         </div>
         <div v-else class="var-linear-container">
             <div
@@ -9,7 +9,7 @@
                 :key="index"
                 class="var-linear-container-element"
             >
-                <VariableWrapper :info="element" :index="index" />
+                <ElementWrapper :info="element" :index="index" />
             </div>
         </div>
     </div>
@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import VariableWrapper from 'components/workspace/code-area/variable-area/VariableWrapper.vue';
+import ElementWrapper from 'components/workspace/code-area/variable-area/ElementWrapper.vue';
 
 import type { VariableInfo } from 'components/mixins/variable-base';
 import type { PropType } from 'vue';
@@ -27,7 +27,7 @@ import type {
 } from 'src/types/execution-types';
 
 export default defineComponent({
-    components: { VariableWrapper },
+    components: { ElementWrapper },
     props: {
         info: {
             type: Object as PropType<VariableInfo<LinearContainerType>>,
