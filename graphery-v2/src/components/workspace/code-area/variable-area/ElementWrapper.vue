@@ -1,5 +1,5 @@
 <template>
-    <q-card flat class="var-variable-wrapper">
+    <div class="var-variable-wrapper">
         <div
             v-if="
                 wrappedInfo.isLinearContainer.value ||
@@ -16,7 +16,7 @@
         <div v-else class="var-variable-wrapper-singular-repr">
             {{ wrappedInfo.variable.value.repr }}
         </div>
-    </q-card>
+    </div>
 </template>
 
 <script lang="ts">
@@ -61,3 +61,8 @@ export default defineComponent({
     },
 });
 </script>
+
+<style lang="sass">
+.var-variable-wrapper
+    font-size: 1.2rem
+</style>

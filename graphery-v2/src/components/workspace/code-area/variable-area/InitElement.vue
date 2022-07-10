@@ -27,12 +27,8 @@ export default defineComponent({
 
 <style lang="sass">
 .init-element-wrapper
-    height: 75px
-    display: flex
-    justify-content: center
-    align-items: center
     font-size: 1.2em
-    color: #999
+    color: #979797
     p
         margin: auto
 </style>

@@ -1,16 +1,19 @@
 <template>
     <q-bar id="workspace-headquarter">
-        <div id="workspace-headquarter-wrapper" style="flex: 1">
-            <q-btn
-                dense
-                flat
-                :icon="
-                    true ? 'mdi-lock-outline' : 'mdi-lock-open-variant-outline'
-                "
-                @click="eventBus.emit('toggleEditorLock')"
-            />
-            <div class="q-ml-xs">Workspace</div>
-            <q-space />
+        <div id="workspace-headquarter-wrapper">
+            <div id="workspace-headquarter-title">
+                <q-btn
+                    dense
+                    flat
+                    :icon="
+                        true
+                            ? 'mdi-lock-outline'
+                            : 'mdi-lock-open-variant-outline'
+                    "
+                    @click="eventBus.emit('toggleEditorLock')"
+                />
+                <div class="q-ml-xs">Workspace</div>
+            </div>
             <div id="progress-wrapper">
                 <!-- TODO fix flickering bug -->
                 <q-badge id="progress-percentage" color="primary">
@@ -81,16 +84,16 @@
                     icon="mdi-content-copy"
                     @click="eventBus.emit('copy-editor-code')"
                 />
-                <q-btn
-                    dense
-                    icon="mdi-content-paste"
-                    @click="eventBus.emit('paste-editor-code')"
-                />
-                <q-btn
-                    dense
-                    icon="mdi-arrow-collapse-horizontal"
-                    @click="eventBus.emit('toggle-var-list')"
-                />
+                <!--                <q-btn-->
+                <!--                    dense-->
+                <!--                    icon="mdi-content-paste"-->
+                <!--                    @click="eventBus.emit('paste-editor-code')"-->
+                <!--                />-->
+                <!--                <q-btn-->
+                <!--                    dense-->
+                <!--                    icon="mdi-arrow-collapse-horizontal"-->
+                <!--                    @click="eventBus.emit('toggle-var-list')"-->
+                <!--                />-->
                 <q-btn
                     dense
                     icon="mdi-cog-outline"
@@ -144,9 +147,6 @@ export default defineComponent({
 </script>
 
 <style lang="sass" scoped>
-.q-btn-group
-    margin-right: 15px
-
 .q-btn-group:last-child
     margin-right: 8px
 
@@ -168,7 +168,13 @@ export default defineComponent({
     opacity: 100 !important
 
 #workspace-headquarter-wrapper
+    flex: 1
     display: grid
-    grid-template-columns: 1fr 1fr 1fr 30fr 4fr 2fr 2fr 4fr
-    grid-gap: 10px
+    grid-template-columns: 1fr 35fr 4fr 2fr 2fr 4fr
+    grid-gap: 15px
+
+    #workspace-headquarter-title
+        display: grid
+        grid-template-columns: 1fr 1fr
+        grid-gap: 2px
 </style>

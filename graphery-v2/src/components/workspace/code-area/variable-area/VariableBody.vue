@@ -43,3 +43,14 @@ export default defineComponent({
     },
 });
 </script>
+
+<style lang="sass">
+@use 'src/css/quasar.variables' as vars
+
+.var-body
+    min-height: vars.$variable-body-min-height
+    text-align: center
+    display: flex
+    justify-content: center
+    align-items: center
+</style>

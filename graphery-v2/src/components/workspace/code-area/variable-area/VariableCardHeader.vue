@@ -56,7 +56,7 @@ import type { VariableInfo } from 'components/mixins/variable-base';
 import { useQuasar } from 'quasar';
 import SwitchTooltip from '../../frames/SwitchTooltip.vue';
 
-const buttonSize = 'md' as const;
+const buttonSize = 'sm' as const;
 
 export default defineComponent({
     components: { SwitchTooltip },
@@ -98,6 +98,7 @@ export default defineComponent({
     grid-template-columns: 1fr auto 1fr
     grid-gap: 8px
     justify-items: center
+    padding: 4px 0
 
     .var-header-left
         margin-right: auto

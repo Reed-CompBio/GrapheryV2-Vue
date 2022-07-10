@@ -46,5 +46,5 @@ export default defineComponent({
     grid-template-columns: 1fr
     grid-template-rows: auto
     grid-gap: 20px
-    padding: 15px 5px
+    padding: 20px 5px
 </style>
