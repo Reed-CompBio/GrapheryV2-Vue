@@ -79,7 +79,7 @@ import { useQuasar } from 'quasar';
 import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
-import { useHeadquarterBus } from 'src/components/mixins/controller/headquarter-bus';
+import { useStorageBus } from 'src/components/mixins/controller/storage-bus';
 import { storeToRefs } from 'pinia';
 
 import type { PropType } from 'vue';
@@ -109,7 +109,7 @@ export default defineComponent({
     },
     setup(props) {
         const storage = useHeadquarterStorage();
-        const eventBus = useHeadquarterBus();
+        const eventBus = useStorageBus();
 
         const choice = ref({
             choosing: false,

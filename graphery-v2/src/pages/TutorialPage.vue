@@ -28,7 +28,7 @@ import { computed, defineAsyncComponent, defineComponent, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/frames/FullHeightSplitter.vue';
 import TextDisplay from 'components/workspace/text-area/TextDisplay.vue';
 import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
-import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
+import { useStorageBus } from 'components/mixins/controller/storage-bus';
 import { useRoute } from 'vue-router';
 import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
 
@@ -48,7 +48,7 @@ export default defineComponent({
         const leftRightSplitterPos = ref(50);
         const upDownSplitterPos = ref(50);
 
-        const bus = useHeadquarterBus();
+        const bus = useStorageBus();
         const route = useRoute();
         useHeadquarterStorage();
         bus.emit('fetch-tutorial', {

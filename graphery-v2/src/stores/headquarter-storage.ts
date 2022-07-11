@@ -2,7 +2,8 @@ import { defineStore } from 'pinia';
 import { computed, reactive, watch } from 'vue';
 import { apolloClient } from 'src/utils/graphql-client';
 import { gql } from 'graphql-tag';
-import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
+import { useStorageBus } from 'components/mixins/controller/storage-bus';
+import { useHeadquarterBus } from 'src/components/mixins/controller/headquarter-bus';
 import { LangCode } from 'src/types/api-types';
 import { CHANGABLE_PROPERTIES } from 'src/types/execution-types';
 
@@ -403,10 +404,11 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
     });
 
     // event bus
-    const eventBus = useHeadquarterBus();
+    const eventBus = useStorageBus();
+    const headquarterBus = useHeadquarterBus();
 
     // event bus actions
-    eventBus.on('step-changed-to', (step: number | null) => {
+    headquarterBus.on('step-changed-to', (step: number | null) => {
         // change current step
         if (
             step !== null &&
@@ -416,24 +418,24 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
             stepInfo.currentStep = step;
         }
     });
-    eventBus.on('next-step', () => {
+    headquarterBus.on('next-step', () => {
         eventBus.emit('step-changed-to', currentStep.value + 1);
     });
-    eventBus.on('previous-step', () => {
+    headquarterBus.on('previous-step', () => {
         eventBus.emit('step-changed-to', currentStep.value - 1);
     });
-    eventBus.on('jump-forward', () => {
+    headquarterBus.on('jump-forward', () => {
         const nextBreakpoint = getNextBreakpoint.value();
         eventBus.emit('step-changed-to', nextBreakpoint);
     });
-    eventBus.on('jump-backward', () => {
+    headquarterBus.on('jump-backward', () => {
         const prevBreakpoint = getPrevBreakpoint.value();
         eventBus.emit('step-changed-to', prevBreakpoint);
     });
-    eventBus.on('add-breakpoint', (line: number) => {
+    headquarterBus.on('add-breakpoint', (line: number) => {
         stepInfo.breakpoints.add(line);
     });
-    eventBus.on('remove-breakpoint', (line: number) => {
+    headquarterBus.on('remove-breakpoint', (line: number) => {
         stepInfo.breakpoints.delete(line);
     });
     // TODO: consider moving this to other places
