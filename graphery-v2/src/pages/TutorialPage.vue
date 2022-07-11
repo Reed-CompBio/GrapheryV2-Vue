@@ -10,7 +10,7 @@
                     </template>
                     <template #after>
                         <div class="full-height">
-                            <WorkspaceHeadquarter />
+                            <WorkspaceHeadquarter :style="barStyle" />
                             <CodeDisplay :style="editorStyle" />
                         </div>
                     </template>
@@ -56,6 +56,9 @@ export default defineComponent({
         });
 
         const appBarSize = '32px';
+        const barStyle = computed(() => ({
+            height: appBarSize,
+        }));
         const editorStyle = computed(() => ({
             height: `calc(100% - ${appBarSize}) !important`,
         }));
@@ -63,6 +66,7 @@ export default defineComponent({
         return {
             leftRightSplitterPos,
             upDownSplitterPos,
+            barStyle,
             editorStyle,
         };
     },

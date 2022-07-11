@@ -1,13 +1,24 @@
+$exec-line-color: #ff6200
+
 .exec-line-content-box
-    border: 2px solid #ff6200
+    border: 1.5px solid $exec-line-color
+.exec-line-pointer:before
+    content: "\27A1"
+    position: absolute
+    color: $exec-line-color
+    font-size: 40px
+    left: calc(12px)
 
-.exec-line-pointer
+.breakpoint-dot-hint:before
+    color: #bf171770
+
+.breakpoint-dot:before
+    color: #bf1717
+
+.breakpoint-dot:before, .breakpoint-dot-hint:before
+    content: "●"
     display: block
-    margin: 0 0 0 10px
-    background-image: url("src/assets/icons/line_pointer.svg")
-    background-size: contain
-    background-repeat: no-repea
+    margin-left: 8px
 
-.breakpoint-dot
-    background-color: #bf1717
-    border-radius: 50%
+.breakpoint-dot, .breakpoint-dot-hint
+    cursor: pointer

@@ -156,6 +156,10 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         return stepInfo.stepRecord;
     });
 
+    const currentLine = computed(
+        () => currentRecordArray.value?.[currentStep.value].line ?? -1
+    );
+
     const getNextBreakpoint = computed(() => {
         // TODO, this is going to be a problem if you have stacks
 
@@ -419,18 +423,18 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         }
     });
     headquarterBus.on('next-step', () => {
-        eventBus.emit('step-changed-to', currentStep.value + 1);
+        headquarterBus.emit('step-changed-to', currentStep.value + 1);
     });
     headquarterBus.on('previous-step', () => {
-        eventBus.emit('step-changed-to', currentStep.value - 1);
+        headquarterBus.emit('step-changed-to', currentStep.value - 1);
     });
     headquarterBus.on('jump-forward', () => {
         const nextBreakpoint = getNextBreakpoint.value();
-        eventBus.emit('step-changed-to', nextBreakpoint);
+        headquarterBus.emit('step-changed-to', nextBreakpoint);
     });
     headquarterBus.on('jump-backward', () => {
         const prevBreakpoint = getPrevBreakpoint.value();
-        eventBus.emit('step-changed-to', prevBreakpoint);
+        headquarterBus.emit('step-changed-to', prevBreakpoint);
     });
     headquarterBus.on('add-breakpoint', (line: number) => {
         stepInfo.breakpoints.add(line);
@@ -643,6 +647,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentRecordArrayMaxLength,
         currentStep,
         currentStepRecord,
+        currentLine,
         getNextBreakpoint,
         currentTutorialContent,
         isLoadingTutorialContnet,
