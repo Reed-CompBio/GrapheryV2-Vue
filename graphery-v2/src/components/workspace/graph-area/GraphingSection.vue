@@ -3,7 +3,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, markRaw, onMounted, ref, watch } from 'vue';
+import {
+    computed,
+    defineComponent,
+    markRaw,
+    onMounted,
+    reactive,
+    ref,
+    watch,
+} from 'vue';
 import Graph from 'graphology';
 import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 import { initGraphLayouts } from 'components/mixins/sigma/layouts';
@@ -22,8 +30,6 @@ type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
 type SigmaInfo = {
     sigma: Sigma | undefined;
-    draggedNode: string | undefined;
-    isDragging: boolean;
 };
 
 function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
@@ -40,6 +46,7 @@ function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
                     'highlightColor',
                     highlightColor
                 );
+                graph.setNodeAttribute(nodeId, 'highlighted', true);
             }
             if (typeof color === 'string') {
                 highlightColor.add(color);
@@ -99,16 +106,12 @@ export default defineComponent({
         // graph object
         const graph = markRaw(new Graph());
         // sigma container
-        const sigmaInfo = ref<SigmaInfo>({
+        const sigmaInfo = reactive<SigmaInfo>({
             sigma: undefined,
-            draggedNode: undefined,
-            isDragging: false,
         });
 
         // sigma instance
-        const sigma = computed(
-            () => sigmaInfo.value.sigma as Sigma | undefined
-        );
+        const sigma = computed(() => sigmaInfo.sigma as Sigma | undefined);
 
         // graph tools
         const toolBox = markRaw(graphToolBoxCreator(graph, sigma));
@@ -126,64 +129,10 @@ export default defineComponent({
                 props.settings
             );
 
-            sigmaInfo.value.sigma = useSigma();
+            sigmaInfo.sigma = useSigma();
 
             if (currentGraph.value) {
                 toolBox.importGraph(currentGraph.value.graphJson);
-            }
-
-            // dragging
-            {
-                sigmaInfo.value.sigma?.on('downNode', (e) => {
-                    sigmaInfo.value.isDragging = true;
-                    sigmaInfo.value.draggedNode = e.node;
-                });
-
-                sigmaInfo.value.sigma?.on('clickNode', (e) => {
-                    graph.setNodeAttribute(e.node, 'highlighted', true);
-                });
-
-                sigmaInfo.value.sigma
-                    ?.getMouseCaptor()
-                    .on('mousemovebody', (e) => {
-                        if (
-                            !sigmaInfo.value.isDragging ||
-                            !sigmaInfo.value.draggedNode
-                        )
-                            return;
-
-                        const pos = sigmaInfo.value.sigma?.viewportToGraph(e);
-
-                        if (pos) {
-                            graph.setNodeAttribute(
-                                sigmaInfo.value.draggedNode,
-                                'x',
-                                pos.x
-                            );
-                            graph.setNodeAttribute(
-                                sigmaInfo.value.draggedNode,
-                                'y',
-                                pos.y
-                            );
-                        }
-
-                        e.preventSigmaDefault();
-                        e.original.preventDefault();
-                        e.original.stopPropagation();
-                    });
-
-                sigmaInfo.value.sigma?.getMouseCaptor().on('mouseup', () => {
-                    sigmaInfo.value.isDragging = false;
-                    sigmaInfo.value.draggedNode = undefined;
-                });
-
-                sigmaInfo.value.sigma?.getMouseCaptor().on('mousedown', () => {
-                    if (sigmaInfo.value.sigma?.getCustomBBox()) {
-                        sigmaInfo.value.sigma?.setCustomBBox(
-                            sigmaInfo.value.sigma?.getBBox()
-                        );
-                    }
-                });
             }
         });
 

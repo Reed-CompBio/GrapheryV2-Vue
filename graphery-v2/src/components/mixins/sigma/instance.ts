@@ -16,12 +16,54 @@ export interface GraphNodeAttributeType
     weight?: number;
 }
 
+const draggedNodeSupport: { draggedNode?: unknown; isDragging: boolean } = {
+    draggedNode: undefined,
+    isDragging: false,
+};
+
 export function initSigma(
     graph: Graph,
     container: HTMLElement,
     settings: Partial<SpecialHighlightSettings> = SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS
 ) {
     sigma = new Sigma(graph, container, settings as Settings);
+
+    // dragging
+    sigma.on('downNode', (e) => {
+        draggedNodeSupport.isDragging = true;
+        draggedNodeSupport.draggedNode = e.node;
+    });
+
+    sigma.on('clickNode', (e) => {
+        graph.setNodeAttribute(e.node, 'highlighted', true);
+    });
+
+    sigma.getMouseCaptor().on('mousemovebody', (e) => {
+        if (!draggedNodeSupport.isDragging || !draggedNodeSupport.draggedNode)
+            return;
+
+        const pos = sigma?.viewportToGraph(e);
+
+        if (pos) {
+            graph.setNodeAttribute(draggedNodeSupport.draggedNode, 'x', pos.x);
+            graph.setNodeAttribute(draggedNodeSupport.draggedNode, 'y', pos.y);
+        }
+
+        e.preventSigmaDefault();
+        e.original.preventDefault();
+        e.original.stopPropagation();
+    });
+
+    sigma.getMouseCaptor().on('mouseup', () => {
+        draggedNodeSupport.isDragging = false;
+        draggedNodeSupport.draggedNode = undefined;
+    });
+
+    sigma.getMouseCaptor().on('mousedown', () => {
+        if (sigma?.getCustomBBox()) {
+            sigma?.setCustomBBox(sigma?.getBBox());
+        }
+    });
 }
 
 export function useSigma() {
