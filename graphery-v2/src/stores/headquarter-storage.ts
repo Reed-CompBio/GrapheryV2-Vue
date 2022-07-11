@@ -400,7 +400,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     function initStepRecord() {
         stepInfo.stepRecord = {};
-        eventBus.emit('step-changed-to', 0);
+        headquarterBus.emit('step-changed-to', 0);
     }
 
     watch(currentRecordArray, () => {
