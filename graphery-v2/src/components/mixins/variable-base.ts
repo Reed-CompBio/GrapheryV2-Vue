@@ -24,7 +24,6 @@ import type {
     SingularType,
 } from 'src/types/execution-types';
 import type { ComputedRef } from 'vue';
-import { isSelectionNode } from 'graphql';
 
 const graphBus = useGraphBus();
 
@@ -211,8 +210,7 @@ export class VariableInfoWrapper implements VariableInfo {
             const graphId = this.variable.value.attributes?.key;
             if (graphId) {
                 graphBus.emit('add-highlight', {
-                    id: graphId,
-                    highlightColor: this.variable.value.color,
+                    variable: this.variable.value,
                 });
             } else {
                 console.error(

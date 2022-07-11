@@ -1,10 +1,10 @@
 import { markRaw } from 'vue';
 import mitt from 'mitt';
 import type { EventType } from 'mitt';
+import { CompositionalObjectIdentityType } from 'src/types/execution-types';
 
 export interface HighLightProtocol {
-    id: string;
-    highlightColor: string[] | Set<string> | string;
+    variable: CompositionalObjectIdentityType;
 }
 
 export interface EventDefTypes extends Record<EventType, unknown> {

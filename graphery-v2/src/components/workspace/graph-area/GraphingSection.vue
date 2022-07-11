@@ -25,6 +25,11 @@ import type { PropType } from 'vue';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { SerializedGraph } from 'graphology-types';
 import type { GraphNodeAttributeType } from 'components/mixins/sigma/instance';
+import {
+    CompositionalObjectIdentityType,
+    isEdgeType,
+    isNodeType,
+} from 'src/types/execution-types';
 
 type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
@@ -34,40 +39,44 @@ type SigmaInfo = {
 
 function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
     return {
-        addHighlight(nodeId: string, color: string | string[] | Set<string>) {
-            let highlightColor = graph.getNodeAttribute(
-                nodeId,
-                'highlightColor'
-            );
-            if (!highlightColor) {
-                highlightColor = new Set();
-                graph.setNodeAttribute(
+        addVariableHighlight(variable: CompositionalObjectIdentityType) {
+            if (isNodeType(variable)) {
+                const nodeId = variable.attributes?.key;
+                const color = variable.color;
+
+                let highlightColor = graph.getNodeAttribute(
                     nodeId,
-                    'highlightColor',
-                    highlightColor
+                    'highlightColor'
                 );
-                graph.setNodeAttribute(nodeId, 'highlighted', true);
-            }
-            if (typeof color === 'string') {
+                if (!highlightColor) {
+                    highlightColor = new Set();
+                    graph.setNodeAttribute(
+                        nodeId,
+                        'highlightColor',
+                        highlightColor
+                    );
+                    // always set node to highlighted
+                    graph.setNodeAttribute(nodeId, 'highlighted', true);
+                }
                 highlightColor.add(color);
-            } else {
-                color.forEach(highlightColor.add, highlightColor);
+            } else if (isEdgeType(variable)) {
             }
         },
-        removeHighlight(
-            nodeId: string,
-            color: string | string[] | Set<string>
-        ) {
-            const highlightColor = graph.getNodeAttribute(
-                nodeId,
-                'highlightColor'
-            );
-            if (highlightColor) {
-                if (typeof color === 'string') {
-                    highlightColor.delete(color);
-                } else {
-                    color.forEach(highlightColor.delete, highlightColor);
+        removeVariableHighlight(variable: CompositionalObjectIdentityType) {
+            if (isNodeType(variable)) {
+                const nodeId = variable.attributes?.key;
+                const color = variable.color;
+
+                const highlightColor = graph.getNodeAttribute(
+                    nodeId,
+                    'highlightColor'
+                );
+                if (highlightColor) {
+                    if (typeof color === 'string') {
+                        highlightColor.delete(color);
+                    }
                 }
+            } else if (isEdgeType(variable)) {
             }
         },
         cleanHighlightGraph() {
@@ -76,9 +85,7 @@ function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
                     item,
                     'highlightColor'
                 );
-                if (highlightColor) {
-                    this.removeHighlight(item, highlightColor);
-                }
+                highlightColor?.clear();
             });
         },
         clearGraph() {
@@ -157,11 +164,11 @@ export default defineComponent({
         });
 
         eventBus.on('add-highlight', (protocol) => {
-            toolBox.addHighlight(protocol.id, protocol.highlightColor);
+            toolBox.addVariableHighlight(protocol.variable);
         });
 
         eventBus.on('remove-highlight', (protocol) => {
-            toolBox.removeHighlight(protocol.id, protocol.highlightColor);
+            toolBox.addVariableHighlight(protocol.variable);
         });
 
         eventBus.on('replace-highlight', (protocols) => {
