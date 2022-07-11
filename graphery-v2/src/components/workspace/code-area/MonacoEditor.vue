@@ -5,64 +5,18 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, markRaw, reactive, watch } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import type { PropType, ComputedRef } from 'vue';
 import type monaco from 'monaco-editor';
 import { debounce } from 'quasar';
 import { storeToRefs } from 'pinia';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
-
-function initEditor(editorId: string, info: EditorInfo) {
-    return import('monaco-editor').then((monacoEditor) => {
-        const anchorEle = document.getElementById(editorId);
-        if (anchorEle) {
-            const { options } = info;
-            if (info.isDiffEditor) {
-                info.diffEditor = markRaw(
-                    monacoEditor.editor.createDiffEditor(anchorEle, {
-                        fontSize: options?.fontSize,
-                        foldingStrategy: 'indentation', // fold text by indentation
-                        automaticLayout: true, // auto resize
-                        overviewRulerBorder: false, // scroll bar no boarder
-                        scrollBeyondLastLine: false, // remove blank space at the end of the editor
-                        readOnly: options?.readOnly,
-                        theme: options?.theme ? 'vs-dark' : 'vs',
-                        wordWrap: options?.wordWrap,
-                        minimap: options?.minimap,
-                        glyphMargin: true,
-                    })
-                );
-            } else {
-                info.editor = markRaw(
-                    monacoEditor.editor.create(anchorEle, {
-                        fontSize: options?.fontSize,
-                        foldingStrategy: 'indentation', // fold text by indentation
-                        automaticLayout: true, // auto resize
-                        overviewRulerBorder: false, // scroll bar no boarder
-                        scrollBeyondLastLine: false, // remove blank space at the end of the editor
-                        readOnly: options?.readOnly,
-                        theme: options?.theme ? 'vs-dark' : 'vs',
-                        language: options?.language ?? 'python',
-                        wordWrap: options?.wordWrap,
-                        minimap: options?.minimap,
-                        glyphMargin: true,
-                        value: '# Hello there :)',
-                    })
-                );
-            }
-        }
-
-        return info;
-    });
-}
-
-interface EditorInfo<T extends boolean = boolean> {
-    isDiffEditor?: T;
-    editor?: monaco.editor.IStandaloneCodeEditor;
-    diffEditor?: monaco.editor.IStandaloneDiffEditor;
-    options?: monaco.editor.IStandaloneEditorConstructionOptions;
-    diffEditorOriginal?: string;
-}
+import {
+    EditorInfo,
+    EditorInfoContainer,
+    getEditorInfo,
+    initEditor,
+} from 'src/components/mixins/editor-base';
 
 export default defineComponent({
     props: {
@@ -90,11 +44,7 @@ export default defineComponent({
     emits: { 'update:modelValue': String },
     setup(props, ctx) {
         const _editorID = 'monaco-editor';
-        const info = reactive<EditorInfo>({
-            options: { ...props.options },
-            isDiffEditor: props.isDiffEditor,
-            diffEditorOriginal: props.original,
-        });
+        const info = ref(getEditorInfo());
 
         type EditorComputedRef<T extends EditorInfo = EditorInfo> = ComputedRef<
             T['isDiffEditor'] extends true
@@ -102,10 +52,30 @@ export default defineComponent({
                 : monaco.editor.IStandaloneCodeEditor | undefined
         >;
 
-        const editorInstance = computed(() => info.editor) as EditorComputedRef;
+        const editorInstance = computed(
+            () => info.value?.editor
+        ) as EditorComputedRef;
 
-        initEditor(_editorID, info).then(() => {
-            if (!info.isDiffEditor) {
+        const { currentCode } = storeToRefs(useHeadquarterStorage());
+        watch(currentCode, (newVal) => {
+            if (info.value && !info.value.isDiffEditor && newVal) {
+                info.value?.editor?.getModel()?.setValue(newVal.code);
+            }
+        });
+
+        onMounted(() => {
+            const editorElement = document.getElementById(
+                _editorID
+            ) as HTMLElement;
+            console.assert(editorElement !== null);
+
+            info.value = initEditor(
+                editorElement,
+                props.isDiffEditor,
+                props.options
+            );
+
+            if (info.value && !info.value.isDiffEditor) {
                 const editor =
                     editorInstance.value as monaco.editor.IStandaloneCodeEditor;
                 editor.getModel()?.onDidChangeContent(
@@ -123,13 +93,6 @@ export default defineComponent({
             }
         });
 
-        const { currentCode } = storeToRefs(useHeadquarterStorage());
-        watch(currentCode, (newVal) => {
-            if (!info.isDiffEditor && newVal) {
-                info.editor?.getModel()?.setValue(newVal.code);
-            }
-        });
-
         return {
             editorID: _editorID,
             editorInfo: info,
@@ -138,3 +101,7 @@ export default defineComponent({
     },
 });
 </script>
+
+<style lang="sass">
+@import 'src/css/editor'
+</style>
