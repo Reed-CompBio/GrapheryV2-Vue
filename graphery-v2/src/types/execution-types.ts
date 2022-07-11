@@ -143,7 +143,7 @@ export interface RecordType {
     variables?: Record<ObjectIdentifierType, CompositionalObjectIdentityType>;
     accesses?: CompositionalObjectIdentityType[];
     variableOrders?: string[]; // this is not supported for now
-    stdout?: string[]; // TODO make this into string
+    stdout?: string; // TODO make this into string
 }
 
 export interface InitRecordType extends RecordType {
@@ -154,7 +154,7 @@ export interface InitRecordType extends RecordType {
     >;
     accesses: [];
     variableOrders: [];
-    stdout: [];
+    stdout: '';
 }
 
 export type RecordArrayType = [InitRecordType, ...RecordType[]];
