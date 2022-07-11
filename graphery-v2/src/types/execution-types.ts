@@ -1,5 +1,10 @@
 export const GRAPH_NODE_TYPES = ['Node'] as const;
 export type GraphNodeType = typeof GRAPH_NODE_TYPES[number];
+export function isNodeType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<GraphNodeType> {
+    return (GRAPH_NODE_TYPES as ReadonlyArray<string>).includes(variable.type);
+}
 
 export const GRAPH_EDGE_TYPES = [
     'Edge',
@@ -8,6 +13,11 @@ export const GRAPH_EDGE_TYPES = [
     'MultiDataEdge',
 ] as const;
 export type GraphEdgeType = typeof GRAPH_EDGE_TYPES[number];
+export function isEdgeType(
+    variable: CompositionalObjectIdentityType
+): variable is CompositionalObjectIdentityType<GraphEdgeType> {
+    return (GRAPH_EDGE_TYPES as ReadonlyArray<string>).includes(variable.type);
+}
 
 export const GRAPH_OBJECT_TYPES = [
     ...GRAPH_NODE_TYPES,

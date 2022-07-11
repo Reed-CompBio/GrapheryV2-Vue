@@ -11,11 +11,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, watch } from 'vue';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
 import { storeToRefs } from 'pinia';
 import { VariableInfoWrapper } from 'components/mixins/variable-base';
 import VariableCard from 'components/workspace/code-area/variable-area/VariableCard.vue';
+import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 export default defineComponent({
     components: { VariableCard },
@@ -34,6 +35,15 @@ export default defineComponent({
                     }
                 ),
             ];
+        });
+        const graphBus = useGraphBus();
+
+        watch(variables, (newVal) => {
+            graphBus.emit('clear-highlight');
+
+            for (const variable of newVal) {
+                variable.requestHighlight();
+            }
         });
         return { variables };
     },

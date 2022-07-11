@@ -52,7 +52,7 @@ export function drawHighlight(
     >,
     settings: SpecialHighlightSettings
 ): void {
-    if (data.highlighted && data.highlightColor) {
+    if (data.highlightColor && data.highlightColor.size > 0) {
         const size = settings.labelSize,
             font = settings.labelFont,
             weight = settings.labelWeight;

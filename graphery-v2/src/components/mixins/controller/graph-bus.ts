@@ -4,7 +4,6 @@ import type { EventType } from 'mitt';
 
 export interface HighLightProtocol {
     id: string;
-    highlight?: boolean;
     highlightColor: string[] | Set<string> | string;
 }
 

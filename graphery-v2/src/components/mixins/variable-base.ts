@@ -1,6 +1,9 @@
 import {
+    isEdgeType,
+    isGraphObjectType,
     isInitType,
     isLinearContainerType,
+    isNodeType,
     isPairContainerType,
     isRefType,
     isSingularType,
@@ -9,6 +12,7 @@ import {
     SINGULAR_TYPES,
 } from 'src/types/execution-types';
 import { computed } from 'vue';
+import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 import type {
     CompositionalObjectIdentityType,
@@ -20,6 +24,9 @@ import type {
     SingularType,
 } from 'src/types/execution-types';
 import type { ComputedRef } from 'vue';
+import { isSelectionNode } from 'graphql';
+
+const graphBus = useGraphBus();
 
 export interface VariableInfo<T extends ObjectType = ObjectType> {
     stack: [
@@ -51,12 +58,16 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     isInit: ComputedRef<boolean>;
     isRef: ComputedRef<boolean>;
     isEmpty: ComputedRef<boolean>;
+    isGraphObject: ComputedRef<boolean>;
+    isNodeObject: ComputedRef<boolean>;
+    isEdgeObject: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
     get typeDescription(): string;
     pushStack: (target: number) => void;
     popStack: () => void;
+    requestHighlight: () => void;
 }
 
 export class VariableInfoWrapper implements VariableInfo {
@@ -89,6 +100,9 @@ export class VariableInfoWrapper implements VariableInfo {
     isInit: ComputedRef<boolean>;
     isRef: ComputedRef<boolean>;
     isEmpty: ComputedRef<boolean>;
+    isGraphObject: ComputedRef<boolean>;
+    isNodeObject: ComputedRef<boolean>;
+    isEdgeObject: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
@@ -124,6 +138,11 @@ export class VariableInfoWrapper implements VariableInfo {
                 return this.variable.value.repr.length === 0;
             }
         });
+        this.isGraphObject = computed(() => {
+            return isGraphObjectType(this.variable.value);
+        });
+        this.isNodeObject = computed(() => isNodeType(this.variable.value));
+        this.isEdgeObject = computed(() => isEdgeType(this.variable.value));
         this.stackBottom = computed<boolean>(() => this.stack.length === 1);
         this.typeIcon = computed(() => {
             return getTypeIcon(this.variable.value.type);
@@ -185,6 +204,23 @@ export class VariableInfoWrapper implements VariableInfo {
         if (!this.stackBottom.value) {
             this.stack.pop();
             this.stackLabels.pop();
+        }
+    }
+    requestHighlight() {
+        if (this.variable.value && this.isNodeObject.value) {
+            const graphId = this.variable.value.attributes?.key;
+            if (graphId) {
+                graphBus.emit('add-highlight', {
+                    id: graphId,
+                    highlightColor: this.variable.value.color,
+                });
+            } else {
+                console.error(
+                    'cannot add highlight since ',
+                    graphId,
+                    ' is not defined'
+                );
+            }
         }
     }
 }
