@@ -6501,10 +6501,9 @@ side-channel@^1.0.4:
     get-intrinsic "^1.0.2"
     object-inspect "^1.9.0"
 
-sigma@^2.3.1:
+"sigma@https://github.com/FlickerSoul/sigma.js":
   version "2.3.1"
-  resolved "https://registry.yarnpkg.com/sigma/-/sigma-2.3.1.tgz#69fd9165479fa49ed84348afcd0432215fdf935f"
-  integrity sha512-YfQsVZf78CeIUv8EYLqp/yvhMwwBXGrbpy+rD1N2X9IqtJ11+VfQRjWfVqHDhjM8oPfWPsaJMtpWFQ8pIflvCA==
+  resolved "https://github.com/FlickerSoul/sigma.js#9f9e529ba445e0bbc7a4cc75ce19777cf308ae2b"
   dependencies:
     "@yomguithereal/helpers" "^1.1.1"
     events "^3.3.0"
