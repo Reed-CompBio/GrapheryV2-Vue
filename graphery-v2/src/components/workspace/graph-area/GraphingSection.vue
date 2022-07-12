@@ -9,7 +9,6 @@ import {
     markRaw,
     onMounted,
     reactive,
-    ref,
     watch,
 } from 'vue';
 import Graph from 'graphology';
@@ -40,48 +39,87 @@ type SigmaInfo = {
 function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
     return {
         addVariableHighlight(variable: CompositionalObjectIdentityType) {
+            let highlightColor: Set<string> | undefined;
+            const color = variable.color;
+
             if (isNodeType(variable)) {
                 const nodeId = variable.attributes?.key;
-                const color = variable.color;
 
-                let highlightColor = graph.getNodeAttribute(
+                highlightColor = graph.getNodeAttribute(
                     nodeId,
                     'highlightColor'
                 );
+
                 if (!highlightColor) {
-                    highlightColor = new Set();
                     graph.setNodeAttribute(
                         nodeId,
                         'highlightColor',
-                        highlightColor
+                        (highlightColor = new Set())
                     );
                     // always set node to highlighted
                     graph.setNodeAttribute(nodeId, 'highlighted', true);
                 }
-                highlightColor.add(color);
             } else if (isEdgeType(variable)) {
+                const edgeKey = graph.edge(
+                    variable.repr.source.attributes?.key,
+                    variable.repr.target.attributes?.key
+                );
+                highlightColor = graph.getEdgeAttribute(
+                    edgeKey,
+                    'highlightColor'
+                );
+                if (!highlightColor) {
+                    graph.setEdgeAttribute(
+                        edgeKey,
+                        'highlightColor',
+                        (highlightColor = new Set())
+                    );
+                    // always set node to highlighted
+                    graph.setEdgeAttribute(edgeKey, 'highlighted', true);
+                }
+            } else {
+                return;
             }
+
+            highlightColor.add(color);
         },
         removeVariableHighlight(variable: CompositionalObjectIdentityType) {
+            let highlightColor;
+            const color = variable.color;
+
             if (isNodeType(variable)) {
                 const nodeId = variable.attributes?.key;
-                const color = variable.color;
-
-                const highlightColor = graph.getNodeAttribute(
+                highlightColor = graph.getNodeAttribute(
                     nodeId,
                     'highlightColor'
                 );
-                if (highlightColor) {
-                    if (typeof color === 'string') {
-                        highlightColor.delete(color);
-                    }
-                }
             } else if (isEdgeType(variable)) {
+                const edgeKey = graph.edge(
+                    variable.repr.source.attributes?.key,
+                    variable.repr.target.attributes?.key
+                );
+                highlightColor = graph.getEdgeAttribute(
+                    edgeKey,
+                    'highlightColor'
+                );
+            }
+
+            if (highlightColor) {
+                if (typeof color === 'string') {
+                    highlightColor.delete(color);
+                }
             }
         },
         cleanHighlightGraph() {
             graph.nodes().forEach((item) => {
                 const highlightColor = graph.getNodeAttribute(
+                    item,
+                    'highlightColor'
+                );
+                highlightColor?.clear();
+            });
+            graph.edges().forEach((item) => {
+                const highlightColor = graph.getEdgeAttribute(
                     item,
                     'highlightColor'
                 );

@@ -127,12 +127,20 @@ export const ObjectIdentifierSeparator = '\u200b@' as const;
 export type ObjectIdentifierType =
     `${string}${typeof ObjectIdentifierSeparator}${string}`;
 
+export type EdgeRepr = {
+    source: CompositionalObjectIdentityType<GraphNodeType>;
+    target: CompositionalObjectIdentityType<GraphNodeType>;
+    is_directed?: boolean;
+};
+
 export interface CompositionalObjectIdentityType<
     T extends ObjectType = ObjectType
 > {
     type: T;
     color: string;
-    repr: T extends SingularType
+    repr: T extends GraphEdgeType
+        ? EdgeRepr
+        : T extends SingularType
         ? string
         : T extends LinearContainerType
         ? CompositionalObjectIdentityType[]
@@ -141,10 +149,12 @@ export interface CompositionalObjectIdentityType<
         : T extends SpecialObjectType
         ? string // TODO: undefined or string?
         : never;
-    attributes?: {
-        key: string;
-        [key: string]: string | number;
-    };
+    attributes?: T extends GraphObjectType
+        ? {
+              key: string;
+              [key: string]: string | number;
+          }
+        : undefined;
     pythonId: number;
 }
 

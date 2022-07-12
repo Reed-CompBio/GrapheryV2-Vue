@@ -23,6 +23,7 @@ export const SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS: SpecialHighlightSettings = {
     highlightWidth: 3,
     highlightTransparency: 0.8,
     hoverRenderer: drawHighlight,
+    enableEdgeHoverEvents: true,
 };
 
 function drawArc(
@@ -70,39 +71,10 @@ export function drawHighlight(
         // context.shadowColor = '#000';
 
         const PADDING = 2;
-        let fillRadius: number, fillStart: number, fillEnd: number; // record circle style for later use
+        let fillStart = 0; // record circle style for later use
+        const [fillRadius, fillEnd] = [data.size + PADDING, Math.PI * 2];
 
-        if (typeof data.label === 'string') {
-            const textWidth = context.measureText(data.label).width,
-                boxWidth = Math.round(textWidth + 5),
-                boxHeight = Math.round(size + 2 * PADDING),
-                radius = Math.max(data.size, size / 2) + PADDING;
-
-            const angleRadian = Math.asin(boxHeight / 2 / radius);
-            const xDeltaCoord = Math.sqrt(
-                Math.abs(Math.pow(radius, 2) - Math.pow(boxHeight / 2, 2))
-            );
-
-            context.beginPath();
-            context.moveTo(data.x + xDeltaCoord, data.y + boxHeight / 2);
-            context.lineTo(data.x + radius + boxWidth, data.y + boxHeight / 2);
-            context.lineTo(data.x + radius + boxWidth, data.y - boxHeight / 2);
-            context.lineTo(data.x + xDeltaCoord, data.y - boxHeight / 2);
-            context.fill();
-            context.closePath();
-            [fillRadius, fillStart, fillEnd] = [
-                radius,
-                angleRadian,
-                Math.PI * 2 - angleRadian, // make it positive so that we can compute chunks
-            ];
-        } else {
-            context.beginPath();
-            [fillRadius, fillStart, fillEnd] = [
-                data.size + PADDING,
-                0,
-                Math.PI * 2,
-            ];
-        }
+        context.beginPath();
 
         // compute segment arc radian
         const arcRadian =

@@ -134,7 +134,9 @@ export class VariableInfoWrapper implements VariableInfo {
             ) {
                 return false;
             } else {
-                return this.variable.value.repr.length === 0;
+                return (
+                    (<{ length: number }>this.variable.value.repr).length === 0
+                );
             }
         });
         this.isGraphObject = computed(() => {
@@ -206,19 +208,10 @@ export class VariableInfoWrapper implements VariableInfo {
         }
     }
     requestHighlight() {
-        if (this.variable.value && this.isNodeObject.value) {
-            const graphId = this.variable.value.attributes?.key;
-            if (graphId) {
-                graphBus.emit('add-highlight', {
-                    variable: this.variable.value,
-                });
-            } else {
-                console.error(
-                    'cannot add highlight since ',
-                    graphId,
-                    ' is not defined'
-                );
-            }
+        if (this.variable.value) {
+            graphBus.emit('add-highlight', {
+                variable: this.variable.value,
+            });
         }
     }
 }

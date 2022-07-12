@@ -34,10 +34,6 @@ export function initSigma(
         draggedNodeSupport.draggedNode = e.node;
     });
 
-    sigma.on('clickNode', (e) => {
-        graph.setNodeAttribute(e.node, 'highlighted', true);
-    });
-
     sigma.getMouseCaptor().on('mousemovebody', (e) => {
         if (!draggedNodeSupport.isDragging || !draggedNodeSupport.draggedNode)
             return;
