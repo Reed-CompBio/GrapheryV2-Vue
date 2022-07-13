@@ -107,12 +107,16 @@ export class EditorInfoContainer<T extends boolean = boolean>
                     value: '# Hello there :)',
                 })
             );
-            this._initCodeEditorEvents(this.editor);
+            this._initCodeEditorEvents();
         }
     }
 
-    _initCodeEditorEvents(codeEditor: editor.IStandaloneCodeEditor) {
-        codeEditor.onMouseDown((event) => {
+    _initCodeEditorEvents() {
+        if (!this.editor) {
+            return;
+        }
+
+        this.editor.onMouseDown((event) => {
             if (
                 event.target.type === editor.MouseTargetType.GUTTER_GLYPH_MARGIN
             ) {
@@ -121,7 +125,7 @@ export class EditorInfoContainer<T extends boolean = boolean>
             }
         });
 
-        codeEditor.onMouseMove((event) => {
+        this.editor.onMouseMove((event) => {
             let showBreakpointHintAtLineNumber = -1;
 
             if (
@@ -137,8 +141,15 @@ export class EditorInfoContainer<T extends boolean = boolean>
 
             this.handleBreakpintHint(showBreakpointHintAtLineNumber);
         });
-        codeEditor.onMouseLeave(() => {
+        this.editor.onMouseLeave(() => {
             this.handleBreakpintHint(-1);
+        });
+
+        document.addEventListener('keyup', (e: KeyboardEvent) => {
+            console.log(e.key);
+            if (e.key === 'Escape') {
+                this.editor?.focus();
+            }
         });
 
         const { currentLine } = storeToRefs(useHeadquarterStorage());
