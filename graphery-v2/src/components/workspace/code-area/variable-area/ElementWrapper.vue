@@ -2,9 +2,9 @@
     <div class="var-variable-wrapper">
         <div
             v-if="
-                wrappedInfo.isLinearContainer.value ||
-                wrappedInfo.isPairContainer.value ||
-                wrappedInfo.isRef.value
+                wrappedInfo.isLinearContainer ||
+                wrappedInfo.isPairContainer ||
+                wrappedInfo.isRef
             "
             class="var-variable-wrapper-ref-repr"
         >
@@ -14,7 +14,7 @@
             </q-btn>
         </div>
         <div v-else class="var-variable-wrapper-singular-repr">
-            <code>{{ wrappedInfo.variable.value.repr }}</code>
+            <code>{{ wrappedInfo.variable.repr }}</code>
         </div>
     </div>
 </template>
@@ -61,14 +61,14 @@ export default defineComponent({
         });
 
         function handleRef() {
-            if (wrappedInfo.value.isRef.value) {
+            if (wrappedInfo.value.isRef) {
                 props.parent.pushStack({
-                    refId: wrappedInfo.value.variable.value.pythonId,
+                    refId: wrappedInfo.value.variable.pythonId,
                     label: props.index,
                 });
             } else {
                 props.parent.pushStack({
-                    variable: wrappedInfo.value.variable.value,
+                    variable: wrappedInfo.value.variable,
                     label: props.index,
                 });
             }

@@ -5,6 +5,7 @@ import { CompositionalObjectIdentityType } from 'src/types/execution-types';
 
 export interface HighLightProtocol {
     variable: CompositionalObjectIdentityType;
+    color?: string;
 }
 
 export interface EventDefTypes extends Record<EventType, unknown> {

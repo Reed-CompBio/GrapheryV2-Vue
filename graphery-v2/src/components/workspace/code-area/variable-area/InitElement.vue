@@ -2,9 +2,7 @@
     <div class="init-element-wrapper">
         <p>
             {{
-                info.variable.value.repr
-                    ? info.variable.value.repr
-                    : 'Not Initialized Yet'
+                info.variable.repr ? info.variable.repr : 'Not Initialized Yet'
             }}
         </p>
     </div>

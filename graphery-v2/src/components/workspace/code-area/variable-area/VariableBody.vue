@@ -1,24 +1,21 @@
 <template>
     <div class="var-body">
-        <div v-if="info.isInit.value" class="var-body-init">
+        <div v-if="info.isInit" class="var-body-init">
             <InitElement :info="info" />
         </div>
-        <div v-else-if="info.isEdgeObject.value" class="var-body-edge">
+        <div v-else-if="info.isEdgeObject" class="var-body-edge">
             <EdgeElement :info="info" />
         </div>
-        <div v-else-if="info.isSingular.value" class="var-body-singular">
+        <div v-else-if="info.isSingular" class="var-body-singular">
             <ElementWrapper :info="info" :parent="info" />
         </div>
         <div
-            v-else-if="info.isLinearContainer.value"
+            v-else-if="info.isLinearContainer"
             class="var-body-linear-container"
         >
             <LinearContainer :info="info" />
         </div>
-        <div
-            v-else-if="info.isPairContainer.value"
-            class="var-body-pair-container"
-        >
+        <div v-else-if="info.isPairContainer" class="var-body-pair-container">
             <PairContainer :info="info" />
         </div>
     </div>

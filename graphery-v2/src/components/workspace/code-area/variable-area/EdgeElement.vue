@@ -35,11 +35,9 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const source = computed(() => props.info.variable.value.repr.source);
-        const target = computed(() => props.info.variable.value.repr.target);
-        const directed = computed(
-            () => props.info.variable.value.repr.is_directed
-        );
+        const source = computed(() => props.info.variable.repr.source);
+        const target = computed(() => props.info.variable.repr.target);
+        const directed = computed(() => props.info.variable.repr.is_directed);
         const directionIndicator = computed(() =>
             directed.value ? '->' : '-'
         );

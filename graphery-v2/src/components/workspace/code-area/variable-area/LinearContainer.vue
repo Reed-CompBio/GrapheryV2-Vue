@@ -1,6 +1,6 @@
 <template>
     <div class="var-linear-container-wrapper">
-        <div v-if="info.isEmpty.value" class="var-empty-linear-container">
+        <div v-if="info.isEmpty" class="var-empty-linear-container">
             <ElementWrapper :info="info" :parent="info" />
         </div>
         <div v-else class="var-linear-container var-element-iterable">
@@ -41,7 +41,7 @@ export default defineComponent({
     },
     setup(props) {
         const repr = computed<CompositionalObjectIdentityType[]>(
-            () => props.info.variable.value.repr
+            () => props.info.variable.repr
         );
 
         function linearIndexFormatter(

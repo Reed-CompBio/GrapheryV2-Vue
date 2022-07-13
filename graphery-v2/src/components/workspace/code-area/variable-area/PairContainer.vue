@@ -1,6 +1,6 @@
 <template>
     <div class="var-pair-container-wrapper">
-        <div v-if="info.isEmpty.value" class="var-pair-container-empty">
+        <div v-if="info.isEmpty" class="var-pair-container-empty">
             <ElementWrapper :info="info" :parent="info" />
         </div>
         <div v-else class="var-pair-container var-element-iterable">
@@ -55,7 +55,7 @@ export default defineComponent({
             }
         }
         return {
-            repr: computed(() => props.info.variable.value.repr),
+            repr: computed(() => props.info.variable.repr),
             keyValueSeparator: ':',
             pairIndexFormatter,
         };

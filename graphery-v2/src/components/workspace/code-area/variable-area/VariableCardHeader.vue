@@ -3,11 +3,11 @@
         <div class="var-header-wrapper">
             <div class="var-header-left">
                 <q-btn
-                    :flat="info.stackBottom.value"
-                    :outline="!info.stackBottom.value"
+                    :flat="info.stackBottom"
+                    :outline="!info.stackBottom"
                     dense
                     :size="buttonSize"
-                    :disable="info.stackBottom.value"
+                    :disable="info.stackBottom"
                     icon="mdi-backburger"
                     @click="backAction"
                 ></q-btn>
@@ -16,7 +16,7 @@
                 <div class="row justify-center">
                     <div class="var-header-title" :style="titleStyle">
                         <code>
-                            {{ info.fullLabel.value }}
+                            {{ info.fullLabel }}
                         </code>
                     </div>
                 </div>
@@ -24,19 +24,19 @@
             <div class="var-header-right">
                 <div class="row justify-right no-wrap">
                     <q-btn
-                        :flat="info.isInit.value"
-                        :outline="!info.isInit.value"
+                        :flat="info.isInit"
+                        :outline="!info.isInit"
                         dense
-                        :disable="info.isInit.value"
+                        :disable="info.isInit"
                         :size="buttonSize"
-                        :icon="info.highlightToggleIcon.value"
+                        :icon="info.highlightToggleIcon"
                         @click="highlightAction"
                     ></q-btn>
                     <q-btn
                         flat
                         dense
                         :size="buttonSize"
-                        :icon="info.typeIcon.value"
+                        :icon="info.typeIcon"
                         @click="typeButtonClickHandler"
                     >
                         <SwitchTooltip :text="info.typeDescription" />
@@ -81,7 +81,7 @@ export default defineComponent({
             });
         }
         const titleStyle = computed(() => ({
-            'background-color': `${props.info.variable.value.color}${titleColorAlpha}`,
+            'background-color': `${props.info.variable.color}${titleColorAlpha}`,
         }));
         return {
             backAction,

@@ -1,4 +1,6 @@
 import {
+    GraphEdgeType,
+    GraphNodeType,
     isEdgeType,
     isGraphObjectType,
     isInitType,
@@ -8,7 +10,7 @@ import {
     isRefType,
     isSingularType,
 } from 'src/types/execution-types';
-import { watch, computed, reactive, ref } from 'vue';
+import { watch, reactive, ref } from 'vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 import type {
@@ -20,7 +22,8 @@ import type {
     RefType,
     SingularType,
 } from 'src/types/execution-types';
-import type { ComputedRef, Ref } from 'vue';
+import type { Ref } from 'vue';
+import { isNode } from 'graphql/language/ast';
 
 const graphBus = useGraphBus();
 
@@ -37,39 +40,41 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
         ...CompositionalObjectIdentityType[]
     ];
     stackLabels: [string, ...string[]];
-    baseLabel: ComputedRef<string>;
-    fullLabel: ComputedRef<string>;
+    get baseLabel(): string;
+    get fullLabel(): string;
     toggled: Ref<number>;
-    variable: ComputedRef<
-        CompositionalObjectIdentityType<
-            VariableInfo['isSingular']['value'] extends true
-                ? SingularType
-                : VariableInfo['isLinearContainer']['value'] extends true
-                ? LinearContainerType
-                : VariableInfo['isPairContainer']['value'] extends true
-                ? PairContainerRepr
-                : VariableInfo['isInit']['value'] extends true
-                ? InitType
-                : VariableInfo['isRef']['value'] extends true
-                ? RefType
-                : T
-        >
+    get variable(): CompositionalObjectIdentityType<
+        VariableInfo['isNodeObject'] extends true
+            ? GraphNodeType
+            : VariableInfo['isEdgeObject'] extends true
+            ? GraphEdgeType
+            : VariableInfo['isSingular'] extends true
+            ? SingularType
+            : VariableInfo['isLinearContainer'] extends true
+            ? LinearContainerType
+            : VariableInfo['isPairContainer'] extends true
+            ? PairContainerRepr
+            : VariableInfo['isInit'] extends true
+            ? InitType
+            : VariableInfo['isRef'] extends true
+            ? RefType
+            : T
     >;
-    isSingular: ComputedRef<boolean>;
-    isLinearContainer: ComputedRef<boolean>;
-    isPairContainer: ComputedRef<boolean>;
-    isInit: ComputedRef<boolean>;
-    isRef: ComputedRef<boolean>;
-    isEmpty: ComputedRef<boolean>;
-    isGraphObject: ComputedRef<boolean>;
-    isNodeObject: ComputedRef<boolean>;
-    isEdgeObject: ComputedRef<boolean>;
-    stackBottom: ComputedRef<boolean>;
-    typeIcon: ComputedRef<string>;
-    highlightStatus: ComputedRef<HighlightStatusType>;
-    highlightToggleIcon: ComputedRef<string>;
-    toggleHighlight: () => void;
+    get isSingular(): boolean;
+    get isLinearContainer(): boolean;
+    get isPairContainer(): boolean;
+    get isInit(): boolean;
+    get isRef(): boolean;
+    get isEmpty(): boolean;
+    get isGraphObject(): boolean;
+    get isNodeObject(): boolean;
+    get isEdgeObject(): boolean;
+    get stackBottom(): boolean;
+    get typeIcon(): string;
+    get highlightStatus(): HighlightStatusType;
+    get highlightToggleIcon(): string;
     get typeDescription(): string;
+    toggleHighlight: () => void;
     pushStack: (
         value:
             | {
@@ -91,37 +96,92 @@ export class VariableInfoWrapper implements VariableInfo {
         ...CompositionalObjectIdentityType[]
     ];
     stackLabels: [string, ...string[]];
-    baseLabel: ComputedRef<string>;
-    fullLabel: ComputedRef<string>;
+    get baseLabel(): string {
+        return this.stackLabels[0];
+    }
+    get fullLabel(): string {
+        return this.stackLabels.join('');
+    }
     toggled: Ref<number>;
-    variable: ComputedRef<
-        CompositionalObjectIdentityType<
-            VariableInfo['isSingular']['value'] extends true
-                ? SingularType
-                : VariableInfo['isLinearContainer']['value'] extends true
-                ? LinearContainerType
-                : VariableInfo['isPairContainer']['value'] extends true
-                ? PairContainerRepr
-                : VariableInfo['isInit']['value'] extends true
-                ? InitType
-                : VariableInfo['isRef']['value'] extends true
-                ? RefType
-                : ObjectType
-        >
-    >;
-    isSingular: ComputedRef<boolean>;
-    isLinearContainer: ComputedRef<boolean>;
-    isPairContainer: ComputedRef<boolean>;
-    isInit: ComputedRef<boolean>;
-    isRef: ComputedRef<boolean>;
-    isEmpty: ComputedRef<boolean>;
-    isGraphObject: ComputedRef<boolean>;
-    isNodeObject: ComputedRef<boolean>;
-    isEdgeObject: ComputedRef<boolean>;
-    stackBottom: ComputedRef<boolean>;
-    typeIcon: ComputedRef<string>;
-    highlightStatus: ComputedRef<HighlightStatusType>;
-    highlightToggleIcon: ComputedRef<string>;
+    get isSingular(): boolean {
+        return isSingularType(this.variable);
+    }
+    get isLinearContainer(): boolean {
+        return isLinearContainerType(this.variable);
+    }
+    get isPairContainer(): boolean {
+        return isPairContainerType(this.variable);
+    }
+    get isInit(): boolean {
+        return isInitType(this.variable);
+    }
+    get isRef(): boolean {
+        return isRefType(this.variable);
+    }
+    get isEmpty(): boolean {
+        if (
+            this.isEdgeObject ||
+            this.isNodeObject ||
+            this.isSingular ||
+            this.isRef
+        ) {
+            return false;
+        } else {
+            return (<{ length: number }>this.variable.repr).length === 0;
+        }
+    }
+    get isGraphObject(): boolean {
+        return isGraphObjectType(this.variable);
+    }
+    get isNodeObject(): boolean {
+        return isNodeType(this.variable);
+    }
+    get isEdgeObject(): boolean {
+        return isEdgeType(this.variable);
+    }
+    get stackBottom(): boolean {
+        return this.stack.length === 1;
+    }
+    get typeIcon(): string {
+        return getTypeIcon(this.variable.type);
+    }
+    get highlightStatus(): HighlightStatusType {
+        if (this.isSingular || this.isLinearContainer) {
+            if (this.toggled.value) {
+                return 'highlight-on';
+            } else {
+                return 'highlight-off';
+            }
+        } else if (this.isPairContainer) {
+            switch (this.toggled.value) {
+                case 1:
+                    return 'highlight-key-on';
+                case 2:
+                    return 'highlight-value-on';
+                case 0:
+                    return 'highlight-off';
+            }
+        }
+        return 'highlight-error';
+    }
+    get highlightToggleIcon(): string {
+        switch (this.highlightStatus) {
+            case 'highlight-on':
+                return 'mdi-lightbulb-on-10';
+            case 'highlight-off':
+                return 'mdi-lightbulb-off-outline';
+            case 'highlight-key-on':
+                return 'mdi-alpha-k';
+            case 'highlight-value-on':
+                return 'mdi-alpha-v';
+            default:
+                return 'mdi-lightbulb-alert-outline';
+        }
+    }
+
+    get variable() {
+        return this.stack[this.stack.length - 1];
+    }
 
     constructor(
         variable: CompositionalObjectIdentityType,
@@ -130,86 +190,18 @@ export class VariableInfoWrapper implements VariableInfo {
     ) {
         this.stack = reactive([variable]);
         this.stackLabels = reactive([label]);
-        this.baseLabel = computed(() => label);
-        this.fullLabel = computed(() => this.stackLabels.join(''));
-
         this.toggled = ref(defaultToggled);
-        this.variable = computed(() => {
-            // const ele = this.stack.at(-1);
-            return this.stack[this.stack.length - 1];
-        });
-        this.isSingular = computed(() => isSingularType(this.variable.value));
-        this.isLinearContainer = computed(() =>
-            isLinearContainerType(this.variable.value)
-        );
-        this.isPairContainer = computed(() =>
-            isPairContainerType(this.variable.value)
-        );
-        this.isInit = computed(() => isInitType(this.variable.value));
-        this.isRef = computed(() => isRefType(this.variable.value));
-        this.isEmpty = computed(() => {
-            if (
-                this.isSingular.value ||
-                this.isRef.value ||
-                this.isEmpty.value
-            ) {
-                return false;
-            } else {
-                return (
-                    (<{ length: number }>this.variable.value.repr).length === 0
-                );
-            }
-        });
-        this.isGraphObject = computed(() => {
-            return isGraphObjectType(this.variable.value);
-        });
-        this.isNodeObject = computed(() => isNodeType(this.variable.value));
-        this.isEdgeObject = computed(() => isEdgeType(this.variable.value));
-        this.stackBottom = computed<boolean>(() => this.stack.length === 1);
-        this.typeIcon = computed(() => {
-            return getTypeIcon(this.variable.value.type);
-        });
-        this.highlightStatus = computed(() => {
-            if (this.isSingular.value || this.isLinearContainer.value) {
-                if (this.toggled.value) {
-                    return 'highlight-on';
-                } else {
-                    return 'highlight-off';
-                }
-            } else if (this.isPairContainer.value) {
-                switch (this.toggled.value) {
-                    case 1:
-                        return 'highlight-key-on';
-                    case 2:
-                        return 'highlight-value-on';
-                    case 0:
-                        return 'highlight-off';
-                }
-            }
-            return 'highlight-error';
-        });
-        this.highlightToggleIcon = computed(() => {
-            switch (this.highlightStatus.value) {
-                case 'highlight-on':
-                    return 'mdi-lightbulb-on-10';
-                case 'highlight-off':
-                    return 'mdi-lightbulb-off-outline';
-                case 'highlight-key-on':
-                    return 'mdi-alpha-k';
-                case 'highlight-value-on':
-                    return 'mdi-alpha-v';
-                default:
-                    return 'mdi-lightbulb-alert-outline';
-            }
-        });
 
-        watch(this.highlightStatus, () => {
-            this.handleHighlight();
-        });
+        watch(
+            () => this.highlightStatus,
+            () => {
+                this.handleHighlight();
+            }
+        );
     }
 
     get typeDescription() {
-        return getObjectTypeDescription(this.variable.value.type);
+        return getObjectTypeDescription(this.variable.type);
     }
 
     pushStack(
@@ -239,7 +231,7 @@ export class VariableInfoWrapper implements VariableInfo {
         }
     }
     popStack() {
-        if (!this.stackBottom.value) {
+        if (!this.stackBottom) {
             this.stack.pop();
             this.stackLabels.pop();
         }
@@ -247,42 +239,47 @@ export class VariableInfoWrapper implements VariableInfo {
 
     toggleHighlight() {
         const factor =
-            this.isSingular.value || this.isLinearContainer.value
+            this.isSingular || this.isLinearContainer
                 ? 2
-                : this.isPairContainer.value
+                : this.isPairContainer
                 ? 3
                 : 1;
         this.toggled.value = (this.toggled.value + 1) % factor;
     }
 
-    handleHighlight() {
-        if (!this.variable.value) {
+    handleHighlight(variable?: CompositionalObjectIdentityType) {
+        variable = variable ?? this.variable;
+
+        if (!variable) {
             return;
         }
 
-        if (this.isEdgeObject.value || this.isNodeObject.value) {
+        if (isEdgeType(variable) || isNode(variable)) {
             const eventType =
-                this.highlightStatus.value === 'highlight-on'
+                this.highlightStatus === 'highlight-on'
                     ? 'add-highlight'
                     : 'remove-highlight';
 
             graphBus.emit(eventType, {
-                variable: this.variable.value,
+                variable: variable,
+                color: this.variable.color,
             });
-        } else if (this.isLinearContainer.value) {
-            const eventType =
-                this.highlightStatus.value === 'highlight-on'
-                    ? 'add-highlight'
-                    : 'remove-highlight';
-            for (const element of this.variable.value
-                .repr as CompositionalObjectIdentityType[]) {
-                graphBus.emit(eventType, { variable: element });
+        } else if (isLinearContainerType(variable)) {
+            for (const element of variable.repr as CompositionalObjectIdentityType[]) {
+                this.handleHighlight(element);
             }
-        } else if (this.isPairContainer.value) {
+        } else if (isPairContainerType(variable)) {
         }
     }
     requestHighlight() {
         this.handleHighlight();
+    }
+
+    updateBase(variable: CompositionalObjectIdentityType) {
+        this.stack = [variable];
+        while (this.stackLabels.length !== 1) {
+            this.stackLabels.pop();
+        }
     }
 }
 
