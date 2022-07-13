@@ -1,5 +1,6 @@
 import { editor, Range } from 'monaco-editor';
 import { storeToRefs } from 'pinia';
+import { useQuasar } from 'quasar';
 import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
 import { markRaw, watch } from 'vue';
 import { useHeadquarterBus } from './controller/headquarter-bus';
@@ -154,6 +155,45 @@ export class EditorInfoContainer<T extends boolean = boolean>
         const { currentLine } = storeToRefs(useHeadquarterStorage());
         watch(currentLine, (newVal) => {
             this.moveToLine(newVal);
+        });
+
+        const { notify } = useQuasar();
+
+        eventBus.on('copy-editor-code', () => {
+            if ('clipboard' in navigator) {
+                const text = this.editor?.getValue();
+                if (text) {
+                    const type = 'text/plain';
+                    const blob = new Blob([text], { type });
+                    navigator.clipboard
+                        .write([new ClipboardItem({ [type]: blob })])
+                        .then(
+                            () => {
+                                notify({
+                                    type: 'positive',
+                                    message: 'Copied code successfully',
+                                });
+                            },
+                            () => {
+                                notify({
+                                    type: 'negative',
+                                    message: 'Copying code failed',
+                                });
+                            }
+                        );
+                } else {
+                    notify({
+                        type: 'negative',
+                        message: 'Copying code failed due to editor failure',
+                    });
+                }
+            } else {
+                notify({
+                    type: 'negative',
+                    message:
+                        'Cannot copy code due to the lack of browser support',
+                });
+            }
         });
     }
 
