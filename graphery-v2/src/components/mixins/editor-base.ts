@@ -182,7 +182,12 @@ export class EditorInfoContainer<T extends boolean = boolean>
                         newDecoration ? [newDecoration] : []
                     );
             }
+            this.focusAtLine(line);
         }
+    }
+
+    focusAtLine(line: number) {
+        this.editor?.revealLine(line);
     }
 
     toggleBreakpiont(line: number) {
