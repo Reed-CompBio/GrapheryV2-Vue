@@ -14,7 +14,7 @@
             </div>
             <div class="var-header-center">
                 <div class="row justify-center">
-                    <div>
+                    <div class="var-header-title" :style="titleStyle">
                         <code>
                             {{ info.fullLabel.value }}
                         </code>
@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';
@@ -56,6 +56,7 @@ import { useQuasar } from 'quasar';
 import SwitchTooltip from '../../frames/SwitchTooltip.vue';
 
 const buttonSize = 'sm' as const;
+const titleColorAlpha = 60 as const;
 
 export default defineComponent({
     components: { SwitchTooltip },
@@ -79,11 +80,15 @@ export default defineComponent({
                 type: 'info',
             });
         }
+        const titleStyle = computed(() => ({
+            'background-color': `${props.info.variable.value.color}${titleColorAlpha}`,
+        }));
         return {
             backAction,
             buttonSize,
             highlightAction,
             typeButtonClickHandler,
+            titleStyle,
         };
     },
 });
@@ -92,14 +97,18 @@ export default defineComponent({
 <style lang="sass">
 .var-header-wrapper
     display: grid
-    grid-template-columns: 1fr auto 1fr
+    grid-template-columns: 1fr 97fr 2fr
     grid-gap: 8px
     justify-items: center
-    padding: 4px 0
+    padding: 5px 8px
 
     .var-header-left
         margin-right: auto
 
     .var-header-right
         margin-left: auto
+
+    .var-header-title
+        padding: 0 5px
+        border-radius: 5px
 </style>
