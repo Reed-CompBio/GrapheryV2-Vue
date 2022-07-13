@@ -14,7 +14,7 @@
             </q-btn>
         </div>
         <div v-else class="var-variable-wrapper-singular-repr">
-            {{ wrappedInfo.variable.value.repr }}
+            <code>{{ wrappedInfo.variable.value.repr }}</code>
         </div>
     </div>
 </template>

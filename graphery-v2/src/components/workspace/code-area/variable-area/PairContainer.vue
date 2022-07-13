@@ -7,9 +7,13 @@
             <div
                 v-for="(element, index) in repr"
                 :key="index"
-                class="var-pair-container-element"
+                class="var-pair-container-element var-element-iterable"
             >
-                <ElementWrapper :info="element" :index="index" />
+                <ElementWrapper :info="element.key" :index="index" />
+                <div class="var-pair-container-separator">
+                    {{ keyValueSeparator }}
+                </div>
+                <ElementWrapper :info="element.value" :index="index" />
             </div>
         </div>
     </div>
@@ -34,7 +38,14 @@ export default defineComponent({
     setup(props) {
         return {
             repr: computed(() => props.info.variable.value.repr),
+            keyValueSeparator: ':',
         };
     },
 });
 </script>
+
+<style lang="sass">
+.var-pair-container-element
+    display: grid
+    grid-template-columns: 20fr 1fr 20fr
+</style>

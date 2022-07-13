@@ -3,7 +3,7 @@
         <div v-if="info.isEmpty.value" class="var-empty-linear-container">
             <ElementWrapper :info="info" />
         </div>
-        <div v-else class="var-linear-container">
+        <div v-else class="var-linear-container var-element-iterable">
             <div
                 v-for="(element, index) in repr"
                 :key="index"

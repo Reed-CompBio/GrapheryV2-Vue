@@ -3,16 +3,22 @@
         <div v-if="info.isInit.value" class="var-body-init">
             <InitElement :info="info" />
         </div>
-        <div v-if="info.isSingular.value" class="var-body-singular">
+        <div v-else-if="info.isEdgeObject.value" class="var-body-edge">
+            <EdgeElement :info="info" />
+        </div>
+        <div v-else-if="info.isSingular.value" class="var-body-singular">
             <SingularElement :info="info" />
         </div>
         <div
-            v-if="info.isLinearContainer.value"
+            v-else-if="info.isLinearContainer.value"
             class="var-body-linear-container"
         >
             <LinearContainer :info="info" />
         </div>
-        <div v-if="info.isPairContainer.value" class="var-body-pair-container">
+        <div
+            v-else-if="info.isPairContainer.value"
+            class="var-body-pair-container"
+        >
             <PairContainer :info="info" />
         </div>
     </div>
@@ -27,6 +33,7 @@ import InitElement from 'components/workspace/code-area/variable-area/InitElemen
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';
+import EdgeElement from './EdgeElement.vue';
 
 export default defineComponent({
     components: {
@@ -34,6 +41,7 @@ export default defineComponent({
         LinearContainer,
         SingularElement,
         InitElement,
+        EdgeElement,
     },
     props: {
         info: {
@@ -53,4 +61,10 @@ export default defineComponent({
     display: flex
     justify-content: center
     align-items: center
+    padding: 8px 3px
+
+.var-element-iterable
+    display: grid
+    grid-template-columns: 1fr
+    grid-template-rows: aut
 </style>
