@@ -10,7 +10,7 @@ import {
     isRefType,
     isSingularType,
 } from 'src/types/execution-types';
-import { watch, reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 import type {
@@ -41,7 +41,7 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     stackLabels: [string, ...string[]];
     get baseLabel(): string;
     get fullLabel(): string;
-    toggled: Ref<number>;
+    toggled: number;
     get variable(): CompositionalObjectIdentityType<
         VariableInfo['isNodeObject'] extends true
             ? GraphNodeType
@@ -101,7 +101,7 @@ export class VariableInfoWrapper implements VariableInfo {
     get fullLabel(): string {
         return this.stackLabels.join('');
     }
-    toggled: Ref<number>;
+    toggled: number;
     get isSingular(): boolean {
         return isSingularType(this.variable);
     }
@@ -146,13 +146,13 @@ export class VariableInfoWrapper implements VariableInfo {
     }
     get highlightStatus(): HighlightStatusType {
         if (this.isSingular || this.isLinearContainer) {
-            if (this.toggled.value) {
+            if (this.toggled) {
                 return 'highlight-on';
             } else {
                 return 'highlight-off';
             }
         } else if (this.isPairContainer) {
-            switch (this.toggled.value) {
+            switch (this.toggled) {
                 case 1:
                     return 'highlight-key-on';
                 case 2:
@@ -189,14 +189,7 @@ export class VariableInfoWrapper implements VariableInfo {
     ) {
         this.stack = reactive([variable]);
         this.stackLabels = reactive([label]);
-        this.toggled = ref(defaultToggled);
-
-        watch(
-            () => this.highlightStatus,
-            () => {
-                this.handleHighlight();
-            }
-        );
+        this.toggled = defaultToggled;
     }
 
     get typeDescription() {
@@ -243,7 +236,8 @@ export class VariableInfoWrapper implements VariableInfo {
                 : this.isPairContainer
                 ? 3
                 : 1;
-        this.toggled.value = (this.toggled.value + 1) % factor;
+        this.toggled = (this.toggled + 1) % factor;
+        this.handleHighlight();
     }
 
     handleHighlight(_variable?: CompositionalObjectIdentityType) {
@@ -254,9 +248,6 @@ export class VariableInfoWrapper implements VariableInfo {
                 this.highlightStatus === 'highlight-on'
                     ? 'add-highlight'
                     : 'remove-highlight';
-
-            if (isEdgeType(variable))
-                console.log('this is edge object', variable);
 
             graphBus.emit(eventType, {
                 variable: variable,

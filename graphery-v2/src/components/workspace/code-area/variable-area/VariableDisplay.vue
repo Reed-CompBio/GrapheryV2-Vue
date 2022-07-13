@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, watch } from 'vue';
+import { computed, defineComponent, reactive, watch } from 'vue';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
 import { storeToRefs } from 'pinia';
 import { VariableInfoWrapper } from 'components/mixins/variable-base';
@@ -24,28 +24,65 @@ export default defineComponent({
         const storage = useHeadquarterStorage();
         // const refresh = storage.refreshStepRecord;
         const { currentStepRecord } = storeToRefs(storage);
-        const variables = computed<VariableInfoWrapper[]>(() => {
-            return [
-                ...(currentStepRecord.value?.accesses ?? []).map((access) => {
-                    return new VariableInfoWrapper(access, 'returned variable');
-                }),
-                ...Object.entries(currentStepRecord.value?.variables ?? {}).map(
+        const fixedVariables = reactive<Record<string, VariableInfoWrapper>>(
+            Object.fromEntries(
+                Object.entries(currentStepRecord.value?.variables ?? {}).map(
                     ([key, value]) => {
-                        return new VariableInfoWrapper(value, key);
+                        return [key, new VariableInfoWrapper(value, key)];
                     }
-                ),
+                )
+            )
+        );
+        const accessedVariables = computed<VariableInfoWrapper[]>(() =>
+            (currentStepRecord.value?.accesses ?? []).map((access) => {
+                return new VariableInfoWrapper(access, 'returned variable');
+            })
+        );
+        const _variables = computed<VariableInfoWrapper[]>(() => {
+            return [
+                ...accessedVariables.value,
+                ...Object.values(fixedVariables),
             ];
         });
         const graphBus = useGraphBus();
 
-        watch(variables, (newVal) => {
+        watch(
+            () => currentStepRecord.value?.variables,
+            (newVal) => {
+                if (newVal === undefined) {
+                    for (const prop of Object.getOwnPropertyNames(
+                        fixedVariables
+                    )) {
+                        delete fixedVariables[prop];
+                    }
+                } else {
+                    for (const key of Object.getOwnPropertyNames(newVal)) {
+                        if (!(key in fixedVariables)) {
+                            fixedVariables[key] = new VariableInfoWrapper(
+                                newVal[key],
+                                key
+                            );
+                        } else {
+                            if (
+                                newVal[key].pythonId !==
+                                fixedVariables[key].variable.pythonId
+                            ) {
+                                fixedVariables[key].updateBase(newVal[key]);
+                            }
+                        }
+                    }
+                }
+            }
+        );
+
+        watch(_variables, (newVal) => {
             graphBus.emit('clear-highlight');
 
             for (const variable of newVal) {
                 variable.requestHighlight();
             }
         });
-        return { variables };
+        return { variables: _variables };
     },
 });
 </script>
