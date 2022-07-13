@@ -71,8 +71,7 @@ export default defineComponent({
             props.info.popStack();
         }
         function highlightAction() {
-            // TODO
-            return null;
+            props.info.toggleHighlight();
         }
         function typeButtonClickHandler() {
             notify({

@@ -7,6 +7,7 @@ import drawLabel from 'sigma/rendering/canvas/label';
 export interface SpecialHighlightNodeDisplayData extends NodeDisplayData {
     highlightColor?: Set<string>; // TODO: maybe consider Set?
     accessed?: string;
+    hovered?: boolean;
 }
 
 export interface SpecialHighlightSettings
@@ -20,6 +21,7 @@ export interface SpecialHighlightSettings
 export const SPECIAL_HIGHLIGHT_DEFAULT_SETTINGS: SpecialHighlightSettings = {
     ...DEFAULT_SETTINGS,
     defaultAccessColor: '#00FF00',
+    renderLabels: true,
     highlightWidth: 3,
     highlightTransparency: 0.8,
     hoverRenderer: drawHighlight,
@@ -114,10 +116,9 @@ export function drawHighlight(
         context.shadowOffsetX = 0;
         context.shadowOffsetY = 0;
         context.shadowBlur = 0;
-
         // And finally we draw the label
         drawLabel(context, data, settings as Settings);
-    } else {
+    } else if (data.hovered) {
         drawHover(context, data, settings as Settings);
     }
 }

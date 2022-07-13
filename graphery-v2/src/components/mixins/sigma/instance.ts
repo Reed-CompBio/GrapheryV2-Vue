@@ -28,6 +28,16 @@ export function initSigma(
 ) {
     sigma = new Sigma(graph, container, settings as Settings);
 
+    sigma.on('enterNode', (e) => {
+        graph.setNodeAttribute(e.node, 'hovered', true);
+    });
+
+    sigma.on('leaveNode', (e) => {
+        if (draggedNodeSupport.isDragging || draggedNodeSupport.draggedNode) {
+            graph.setNodeAttribute(e.node, 'hovered', false);
+        }
+    });
+
     // dragging
     sigma.on('downNode', (e) => {
         draggedNodeSupport.isDragging = true;

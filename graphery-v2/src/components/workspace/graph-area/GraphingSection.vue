@@ -206,7 +206,7 @@ export default defineComponent({
         });
 
         eventBus.on('remove-highlight', (protocol) => {
-            toolBox.addVariableHighlight(protocol.variable);
+            toolBox.removeVariableHighlight(protocol.variable);
         });
 
         eventBus.on('replace-highlight', (protocols) => {

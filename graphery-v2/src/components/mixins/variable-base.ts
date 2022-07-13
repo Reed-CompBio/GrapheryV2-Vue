@@ -8,7 +8,7 @@ import {
     isRefType,
     isSingularType,
 } from 'src/types/execution-types';
-import { computed, reactive } from 'vue';
+import { watch, computed, reactive, ref } from 'vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 import type {
@@ -20,9 +20,16 @@ import type {
     RefType,
     SingularType,
 } from 'src/types/execution-types';
-import type { ComputedRef } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 
 const graphBus = useGraphBus();
+
+type HighlightStatusType =
+    | 'highlight-error'
+    | 'highlight-on'
+    | 'highlight-off'
+    | 'highlight-key-on'
+    | 'highlight-value-on';
 
 export interface VariableInfo<T extends ObjectType = ObjectType> {
     stack: [
@@ -32,7 +39,7 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     stackLabels: [string, ...string[]];
     baseLabel: ComputedRef<string>;
     fullLabel: ComputedRef<string>;
-    toggled: number;
+    toggled: Ref<number>;
     variable: ComputedRef<
         CompositionalObjectIdentityType<
             VariableInfo['isSingular']['value'] extends true
@@ -59,7 +66,9 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     isEdgeObject: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
+    highlightStatus: ComputedRef<HighlightStatusType>;
     highlightToggleIcon: ComputedRef<string>;
+    toggleHighlight: () => void;
     get typeDescription(): string;
     pushStack: (
         value:
@@ -84,7 +93,7 @@ export class VariableInfoWrapper implements VariableInfo {
     stackLabels: [string, ...string[]];
     baseLabel: ComputedRef<string>;
     fullLabel: ComputedRef<string>;
-    toggled: number;
+    toggled: Ref<number>;
     variable: ComputedRef<
         CompositionalObjectIdentityType<
             VariableInfo['isSingular']['value'] extends true
@@ -111,15 +120,20 @@ export class VariableInfoWrapper implements VariableInfo {
     isEdgeObject: ComputedRef<boolean>;
     stackBottom: ComputedRef<boolean>;
     typeIcon: ComputedRef<string>;
+    highlightStatus: ComputedRef<HighlightStatusType>;
     highlightToggleIcon: ComputedRef<string>;
 
-    constructor(variable: CompositionalObjectIdentityType, label: string) {
+    constructor(
+        variable: CompositionalObjectIdentityType,
+        label: string,
+        defaultToggled = 1
+    ) {
         this.stack = reactive([variable]);
         this.stackLabels = reactive([label]);
         this.baseLabel = computed(() => label);
         this.fullLabel = computed(() => this.stackLabels.join(''));
 
-        this.toggled = 0;
+        this.toggled = ref(defaultToggled);
         this.variable = computed(() => {
             // const ele = this.stack.at(-1);
             return this.stack[this.stack.length - 1];
@@ -155,24 +169,42 @@ export class VariableInfoWrapper implements VariableInfo {
         this.typeIcon = computed(() => {
             return getTypeIcon(this.variable.value.type);
         });
-        this.highlightToggleIcon = computed(() => {
+        this.highlightStatus = computed(() => {
             if (this.isSingular.value || this.isLinearContainer.value) {
-                if (this.toggled) {
-                    return 'mdi-lightbulb';
+                if (this.toggled.value) {
+                    return 'highlight-on';
                 } else {
-                    return 'mdi-lightbulb-off-outline';
+                    return 'highlight-off';
                 }
             } else if (this.isPairContainer.value) {
-                switch (this.toggled) {
+                switch (this.toggled.value) {
                     case 1:
-                        return 'mdi-alpha-k';
+                        return 'highlight-key-on';
                     case 2:
-                        return 'mdi-alpha-v';
+                        return 'highlight-value-on';
                     case 0:
-                        return 'mdi-lightbulb-off-outline';
+                        return 'highlight-off';
                 }
             }
-            return 'mdi-close-circle-outline';
+            return 'highlight-error';
+        });
+        this.highlightToggleIcon = computed(() => {
+            switch (this.highlightStatus.value) {
+                case 'highlight-on':
+                    return 'mdi-lightbulb-on-10';
+                case 'highlight-off':
+                    return 'mdi-lightbulb-off-outline';
+                case 'highlight-key-on':
+                    return 'mdi-alpha-k';
+                case 'highlight-value-on':
+                    return 'mdi-alpha-v';
+                default:
+                    return 'mdi-lightbulb-alert-outline';
+            }
+        });
+
+        watch(this.highlightStatus, () => {
+            this.handleHighlight();
         });
     }
 
@@ -212,12 +244,45 @@ export class VariableInfoWrapper implements VariableInfo {
             this.stackLabels.pop();
         }
     }
-    requestHighlight() {
-        if (this.variable.value) {
-            graphBus.emit('add-highlight', {
+
+    toggleHighlight() {
+        const factor =
+            this.isSingular.value || this.isLinearContainer.value
+                ? 2
+                : this.isPairContainer.value
+                ? 3
+                : 1;
+        this.toggled.value = (this.toggled.value + 1) % factor;
+    }
+
+    handleHighlight() {
+        if (!this.variable.value) {
+            return;
+        }
+
+        if (this.isEdgeObject.value || this.isNodeObject.value) {
+            const eventType =
+                this.highlightStatus.value === 'highlight-on'
+                    ? 'add-highlight'
+                    : 'remove-highlight';
+
+            graphBus.emit(eventType, {
                 variable: this.variable.value,
             });
+        } else if (this.isLinearContainer.value) {
+            const eventType =
+                this.highlightStatus.value === 'highlight-on'
+                    ? 'add-highlight'
+                    : 'remove-highlight';
+            for (const element of this.variable.value
+                .repr as CompositionalObjectIdentityType[]) {
+                graphBus.emit(eventType, { variable: element });
+            }
+        } else if (this.isPairContainer.value) {
         }
+    }
+    requestHighlight() {
+        this.handleHighlight();
     }
 }
 
