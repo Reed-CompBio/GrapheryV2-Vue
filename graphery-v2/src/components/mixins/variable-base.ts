@@ -23,7 +23,6 @@ import type {
     SingularType,
 } from 'src/types/execution-types';
 import type { Ref } from 'vue';
-import { isNode } from 'graphql/language/ast';
 
 const graphBus = useGraphBus();
 
@@ -239,7 +238,7 @@ export class VariableInfoWrapper implements VariableInfo {
 
     toggleHighlight() {
         const factor =
-            this.isSingular || this.isLinearContainer
+            this.isEdgeObject || this.isNodeObject || this.isLinearContainer
                 ? 2
                 : this.isPairContainer
                 ? 3
@@ -247,25 +246,24 @@ export class VariableInfoWrapper implements VariableInfo {
         this.toggled.value = (this.toggled.value + 1) % factor;
     }
 
-    handleHighlight(variable?: CompositionalObjectIdentityType) {
-        variable = variable ?? this.variable;
+    handleHighlight(_variable?: CompositionalObjectIdentityType) {
+        const variable = _variable || this.variable;
 
-        if (!variable) {
-            return;
-        }
-
-        if (isEdgeType(variable) || isNode(variable)) {
+        if (isEdgeType(variable) || isNodeType(variable)) {
             const eventType =
                 this.highlightStatus === 'highlight-on'
                     ? 'add-highlight'
                     : 'remove-highlight';
+
+            if (isEdgeType(variable))
+                console.log('this is edge object', variable);
 
             graphBus.emit(eventType, {
                 variable: variable,
                 color: this.variable.color,
             });
         } else if (isLinearContainerType(variable)) {
-            for (const element of variable.repr as CompositionalObjectIdentityType[]) {
+            for (const element of variable.repr) {
                 this.handleHighlight(element);
             }
         } else if (isPairContainerType(variable)) {

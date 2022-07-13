@@ -24,11 +24,8 @@ import type { PropType } from 'vue';
 import type { SpecialHighlightSettings } from 'components/mixins/sigma/sigma-highlight';
 import type { SerializedGraph } from 'graphology-types';
 import type { GraphNodeAttributeType } from 'components/mixins/sigma/instance';
-import {
-    CompositionalObjectIdentityType,
-    isEdgeType,
-    isNodeType,
-} from 'src/types/execution-types';
+import { isEdgeType, isNodeType } from 'src/types/execution-types';
+import type { HighLightProtocol } from 'components/mixins/controller/graph-bus';
 
 type GraphType = Graph<Partial<GraphNodeAttributeType>>;
 
@@ -38,9 +35,10 @@ type SigmaInfo = {
 
 function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
     return {
-        addVariableHighlight(variable: CompositionalObjectIdentityType) {
+        addVariableHighlight(value: HighLightProtocol) {
             let highlightColor: Set<string> | undefined;
-            const color = variable.color;
+            const variable = value.variable;
+            const color = value.color || variable.color;
 
             if (isNodeType(variable)) {
                 const nodeId = variable.attributes?.key;
@@ -83,9 +81,10 @@ function graphToolBoxCreator(graph: GraphType, sigma: Ref<Sigma | undefined>) {
 
             highlightColor.add(color);
         },
-        removeVariableHighlight(variable: CompositionalObjectIdentityType) {
+        removeVariableHighlight(value: HighLightProtocol) {
             let highlightColor;
-            const color = variable.color;
+            const variable = value.variable;
+            const color = value.color || variable.color;
 
             if (isNodeType(variable)) {
                 const nodeId = variable.attributes?.key;
@@ -202,11 +201,11 @@ export default defineComponent({
         });
 
         eventBus.on('add-highlight', (protocol) => {
-            toolBox.addVariableHighlight(protocol.variable);
+            toolBox.addVariableHighlight(protocol);
         });
 
         eventBus.on('remove-highlight', (protocol) => {
-            toolBox.removeVariableHighlight(protocol.variable);
+            toolBox.removeVariableHighlight(protocol);
         });
 
         eventBus.on('replace-highlight', (protocols) => {
