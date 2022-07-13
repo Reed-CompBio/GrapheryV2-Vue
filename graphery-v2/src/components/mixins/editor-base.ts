@@ -146,7 +146,6 @@ export class EditorInfoContainer<T extends boolean = boolean>
         });
 
         document.addEventListener('keyup', (e: KeyboardEvent) => {
-            console.log(e.key);
             if (e.key === 'Escape') {
                 this.editor?.focus();
             }

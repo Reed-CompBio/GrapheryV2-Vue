@@ -22,7 +22,6 @@ import type {
     RefType,
     SingularType,
 } from 'src/types/execution-types';
-import type { Ref } from 'vue';
 
 const graphBus = useGraphBus();
 
@@ -207,7 +206,7 @@ export class VariableInfoWrapper implements VariableInfo {
             this.stack.push(value.variable);
         } else {
             let variable: CompositionalObjectIdentityType | undefined;
-            for (let i = this.stack.length - 1; i >= 0; i++) {
+            for (let i = this.stack.length - 1; i >= 0; i--) {
                 if (this.stack[i].pythonId === value.refId) {
                     variable = this.stack[i];
                     break;
