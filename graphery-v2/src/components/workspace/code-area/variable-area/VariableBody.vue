@@ -7,7 +7,7 @@
             <EdgeElement :info="info" />
         </div>
         <div v-else-if="info.isSingular.value" class="var-body-singular">
-            <SingularElement :info="info" />
+            <ElementWrapper :info="info" :parent="info" />
         </div>
         <div
             v-else-if="info.isLinearContainer.value"
@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import SingularElement from 'components/workspace/code-area/variable-area/SingularElement.vue';
+import ElementWrapper from 'components/workspace/code-area/variable-area/ElementWrapper.vue';
 import LinearContainer from 'components/workspace/code-area/variable-area/LinearContainer.vue';
 import PairContainer from 'components/workspace/code-area/variable-area/PairContainer.vue';
 import InitElement from 'components/workspace/code-area/variable-area/InitElement.vue';
@@ -39,7 +39,7 @@ export default defineComponent({
     components: {
         PairContainer,
         LinearContainer,
-        SingularElement,
+        ElementWrapper,
         InitElement,
         EdgeElement,
     },

@@ -36,10 +36,13 @@ export const PYTHON_OBJECT_TYPES = [
     'Number',
     'String',
     'List',
+    'UserList',
     'Tuple',
+    'NamedTuple',
     'Deque',
     'None',
     'Set',
+    'UserDict',
     'Counter',
     'Mapping',
     'Sequence',
@@ -61,13 +64,20 @@ export function isSingularType(
     return (SINGULAR_TYPES as ReadonlyArray<string>).includes(variable.type);
 }
 
-export const LINEAR_CONTAINER_TYPES = [
+export const SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES = [
     'List',
+    'UserList',
     'Tuple',
+    'NamedTuple',
     'Deque',
-    'Set',
     'Sequence',
 ] as const;
+
+export const NON_SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES = ['Set'] as const;
+export const LINEAR_CONTAINER_TYPES = [
+    ...SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES,
+    ...NON_SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES,
+];
 export type LinearContainerType = typeof LINEAR_CONTAINER_TYPES[number];
 export function isLinearContainerType(
     variable: CompositionalObjectIdentityType
@@ -77,7 +87,15 @@ export function isLinearContainerType(
     );
 }
 
-export const PAIR_CONTAINER_TYPES = ['Counter', 'Mapping'] as const;
+export function isSubscriptable(
+    variable: CompositionalObjectIdentityType
+): boolean {
+    return (<ReadonlyArray<string>>(
+        SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES
+    )).includes(variable.type);
+}
+
+export const PAIR_CONTAINER_TYPES = ['UserDict', 'Counter', 'Mapping'] as const;
 export type PairContainerType = typeof PAIR_CONTAINER_TYPES[number];
 export function isPairContainerType(
     variable: CompositionalObjectIdentityType

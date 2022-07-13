@@ -1,11 +1,19 @@
 <template>
     <div class="var-edge-element-wrapper">
         <div class="var-edge-element-grid">
-            <ElementWrapper :info="source" />
+            <ElementWrapper
+                :info="source"
+                :parent="info"
+                :index="edgeIndexFormatter('source')"
+            />
             <div class="var-edge-direction-indicator">
                 {{ directionIndicator }}
             </div>
-            <ElementWrapper :info="target" />
+            <ElementWrapper
+                :info="target"
+                :parent="info"
+                :index="edgeIndexFormatter('target')"
+            />
         </div>
     </div>
 </template>
@@ -36,7 +44,11 @@ export default defineComponent({
             directed.value ? '->' : '-'
         );
 
-        return { source, target, directionIndicator };
+        function edgeIndexFormatter(type: 'source' | 'target') {
+            return type === 'source' ? '[0]' : '[1]';
+        }
+
+        return { source, target, directionIndicator, edgeIndexFormatter };
     },
 });
 </script>

@@ -8,9 +8,9 @@
             "
             class="var-variable-wrapper-ref-repr"
         >
-            <q-btn outline dense :label="refAbbrString">
+            <q-btn outline dense :label="refAbbrString" @click="handleRef">
                 <!-- TODO: i18n -->
-                <SwitchTooltip />
+                <SwitchTooltip text="go to reference" />
             </q-btn>
         </div>
         <div v-else class="var-variable-wrapper-singular-repr">
@@ -40,23 +40,44 @@ export default defineComponent({
             required: true,
         },
         index: {
-            type: Number as PropType<number | string>,
-            default: -1,
+            type: String,
+            default: '',
+        },
+        parent: {
+            type: Object as PropType<VariableInfo>,
+            required: true,
         },
     },
     setup(props) {
+        const wrappedInfo = computed(() => {
+            if (props.info instanceof VariableInfoWrapper) {
+                return props.info;
+            } else {
+                return new VariableInfoWrapper(
+                    props.info as CompositionalObjectIdentityType,
+                    ''
+                );
+            }
+        });
+
+        function handleRef() {
+            if (wrappedInfo.value.isRef.value) {
+                props.parent.pushStack({
+                    refId: wrappedInfo.value.variable.value.pythonId,
+                    label: props.index,
+                });
+            } else {
+                props.parent.pushStack({
+                    variable: wrappedInfo.value.variable.value,
+                    label: props.index,
+                });
+            }
+        }
+
         return {
+            handleRef,
             refAbbrString: REF_ABBR_STRING,
-            wrappedInfo: computed(() => {
-                if (props.info instanceof VariableInfoWrapper) {
-                    return props.info;
-                } else {
-                    return new VariableInfoWrapper(
-                        props.info as CompositionalObjectIdentityType,
-                        ''
-                    );
-                }
-            }),
+            wrappedInfo,
         };
     },
 });

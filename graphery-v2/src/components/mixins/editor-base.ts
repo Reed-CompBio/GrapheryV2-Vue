@@ -137,7 +137,7 @@ export class EditorInfoContainer<T extends boolean = boolean>
 
             this.handleBreakpintHint(showBreakpointHintAtLineNumber);
         });
-        codeEditor.onMouseLeave((_) => {
+        codeEditor.onMouseLeave(() => {
             this.handleBreakpintHint(-1);
         });
 

@@ -1,19 +1,27 @@
 <template>
     <div class="var-pair-container-wrapper">
         <div v-if="info.isEmpty.value" class="var-pair-container-empty">
-            <ElementWrapper :info="info" />
+            <ElementWrapper :info="info" :parent="info" />
         </div>
-        <div v-else class="var-pair-container">
+        <div v-else class="var-pair-container var-element-iterable">
             <div
                 v-for="(element, index) in repr"
                 :key="index"
-                class="var-pair-container-element var-element-iterable"
+                class="var-pair-container-element"
             >
-                <ElementWrapper :info="element.key" :index="index" />
+                <ElementWrapper
+                    :info="element.key"
+                    :parent="info"
+                    :index="pairIndexFormatter(element.key.repr, 'key')"
+                />
                 <div class="var-pair-container-separator">
                     {{ keyValueSeparator }}
                 </div>
-                <ElementWrapper :info="element.value" :index="index" />
+                <ElementWrapper
+                    :info="element.value"
+                    :parent="info"
+                    :index="pairIndexFormatter(element.key.repr, 'value')"
+                />
             </div>
         </div>
     </div>
@@ -36,9 +44,20 @@ export default defineComponent({
         },
     },
     setup(props) {
+        function pairIndexFormatter(
+            repr: string | object,
+            type: 'key' | 'value'
+        ) {
+            if (type === 'key') {
+                return `.key(${typeof repr === 'string' ? repr : '<object>'})`;
+            } else {
+                return `[${typeof repr === 'string' ? repr : '<object>'}]`;
+            }
+        }
         return {
             repr: computed(() => props.info.variable.value.repr),
             keyValueSeparator: ':',
+            pairIndexFormatter,
         };
     },
 });

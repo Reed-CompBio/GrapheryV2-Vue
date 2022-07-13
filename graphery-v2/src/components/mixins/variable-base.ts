@@ -7,11 +7,8 @@ import {
     isPairContainerType,
     isRefType,
     isSingularType,
-    LINEAR_CONTAINER_TYPES,
-    PAIR_CONTAINER_TYPES,
-    SINGULAR_TYPES,
 } from 'src/types/execution-types';
-import { computed } from 'vue';
+import { computed, reactive } from 'vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
 
 import type {
@@ -64,7 +61,17 @@ export interface VariableInfo<T extends ObjectType = ObjectType> {
     typeIcon: ComputedRef<string>;
     highlightToggleIcon: ComputedRef<string>;
     get typeDescription(): string;
-    pushStack: (target: number) => void;
+    pushStack: (
+        value:
+            | {
+                  variable: CompositionalObjectIdentityType;
+                  label: string;
+              }
+            | {
+                  refId: number;
+                  label: string;
+              }
+    ) => void;
     popStack: () => void;
     requestHighlight: () => void;
 }
@@ -107,8 +114,8 @@ export class VariableInfoWrapper implements VariableInfo {
     highlightToggleIcon: ComputedRef<string>;
 
     constructor(variable: CompositionalObjectIdentityType, label: string) {
-        this.stack = [variable];
-        this.stackLabels = [label];
+        this.stack = reactive([variable]);
+        this.stackLabels = reactive([label]);
         this.baseLabel = computed(() => label);
         this.fullLabel = computed(() => this.stackLabels.join(''));
 
@@ -173,31 +180,29 @@ export class VariableInfoWrapper implements VariableInfo {
         return getObjectTypeDescription(this.variable.value.type);
     }
 
-    pushStack(target: number) {
-        let variable: CompositionalObjectIdentityType;
+    pushStack(
+        value:
+            | { variable: CompositionalObjectIdentityType; label: string }
+            | { refId: number; label: string }
+    ) {
+        this.stackLabels.push(value.label);
 
-        if (this.isPairContainer.value) {
-            variable = <CompositionalObjectIdentityType>(
-                (<PairContainerRepr[]>this.variable.value.repr).find(
-                    (val) => val.key.pythonId === target
-                )?.value
-            );
-            this.stackLabels.push(`.${target}`);
-        } else if (this.isLinearContainer.value) {
-            variable = (<CompositionalObjectIdentityType[]>(
-                this.variable.value.repr
-            ))[target];
-            this.stackLabels.push(`[${target}]`);
+        if ('variable' in value) {
+            this.stack.push(value.variable);
         } else {
-            throw new Error(
-                `Cannot push stack for ${this.variable.value.type} with target ${target}`
-            );
-        }
+            let variable: CompositionalObjectIdentityType | undefined;
+            for (let i = this.stack.length - 1; i >= 0; i++) {
+                if (this.stack[i].pythonId === value.refId) {
+                    variable = this.stack[i];
+                    break;
+                }
+            }
+            if (!variable) {
+                throw Error(
+                    'The reference system went wrong since referenced object cannot be found'
+                );
+            }
 
-        if (isRefType(variable)) {
-            variable = this.stack.find(
-                (v) => v.pythonId === variable.pythonId
-            ) as CompositionalObjectIdentityType;
             this.stack.push(variable);
         }
     }
@@ -225,75 +230,50 @@ export const BAD_REFERENCE_OBJECT: CompositionalObjectIdentityType<'Init'> = {
     pythonId: INVALID_PYTHON_ID,
 } as const;
 
-export const SINGULAR_TYPE_ICONS = [
-    'mdi-numeric',
-    'mdi-alphabetical',
-    'mdi-ray-vertex',
-    'mdi-ray-start-end',
-    'mdi-ray-start-end', // TODO: replace icon to indicate different types of edges
-    'mdi-ray-start-end',
-    'mdi-ray-start-end',
-    'mdi-selection-ellipse',
-    'mdi-iframe-variable-outline',
-] as const;
+export enum SingularTypeIconMapping {
+    'Number' = 'mdi-numeric',
+    'String' = 'mdi-alphabetical',
+    'Node' = 'mdi-ray-vertex',
+    'Edge' = 'mdi-ray-start-end',
+    'DataEdge' = 'mdi-ray-start-end',
+    'MultiEdge' = 'mdi-ray-start-end',
+    'MultiDataEdge' = 'mdi-ray-start-end',
+    'None' = 'mdi-selection-ellipse',
+    'Object' = 'mdi-iframe-variable-outline',
+}
 
-export const SINGULAR_TYPE_ICON_MAPPING = Object.fromEntries(
-    SINGULAR_TYPES.map((value, i) => [value, SINGULAR_TYPE_ICONS[i]])
-) as Readonly<{
-    Number: 'mdi-numeric';
-    String: 'mdi-alphabetical';
-    Node: 'mdi-ray-vertex';
-    Edge: 'mdi-ray-start-end';
-    DataEdge: 'mdi-ray-start-end';
-    MultiEdge: 'mdi-ray-start-end';
-    MultiDataEdge: 'mdi-ray-start-end';
-    None: 'mdi-selection-ellipse';
-    Object: 'mdi-iframe-variable-outline';
-}>; // TODO this is stupid. Is there a better way to do this?
+export enum LinearContainerTypeIconMapping {
+    'UserList' = 'mdi-code-brackets',
+    'List' = 'mdi-code-brackets',
+    'Tuple' = 'mdi-code-parentheses',
+    'NamedTuple' = 'mdi-code-parenthese',
+    'Deque' = 'mdi-arrow-collapse-vertical',
+    'Set' = 'mdi-set-center',
+    'Sequence' = 'mdi-playlist-minus',
+}
 
-export const LINEAR_CONTAINER_TYPE_ICON = [
-    'mdi-code-brackets',
-    'mdi-code-parentheses',
-    'mdi-arrow-collapse-vertical',
-    'mdi-set-center',
-    'mdi-playlist-minus',
-] as const;
+export enum PairContainerTypeIconMapping {
+    'UserDict' = 'mdi-code-braces',
+    'Counter' = 'mdi-counter',
+    'Mapping' = 'mdi-code-braces',
+}
 
-export const LINEAR_CONTAINER_TYPE_ICON_MAPPING = Object.fromEntries(
-    LINEAR_CONTAINER_TYPES.map((value, i) => [
-        value,
-        LINEAR_CONTAINER_TYPE_ICON[i],
-    ])
-) as Readonly<{
-    List: 'mdi-code-brackets';
-    Tuple: 'mdi-code-parentheses';
-    Deque: 'mdi-arrow-collapse-vertical';
-    Set: 'mdi-set-center';
-    Sequence: 'mdi-playlist-minus';
-}>;
-
-export const PAIR_CONTAINER_TYPE_ICON = [
-    'mdi-counter',
-    'mdi-code-braces',
-] as const;
-
-export const PAIR_CONTAINER_TYPE_ICON_MAPPING = Object.fromEntries(
-    PAIR_CONTAINER_TYPES.map((value, i) => [value, PAIR_CONTAINER_TYPE_ICON[i]])
-) as Readonly<{
-    Counter: 'mdi-counter';
-    Mapping: 'mdi-code-braces';
-}>;
+export enum SpecialObjectTypeIconMapping {
+    'Init' = 'mdi-help-circle-outline',
+    'Ref' = 'mdi-swap-vertical-variant',
+}
 
 export const TYPE_ICON_MAPPING = {
-    ...SINGULAR_TYPE_ICON_MAPPING,
-    ...LINEAR_CONTAINER_TYPE_ICON_MAPPING,
-    ...PAIR_CONTAINER_TYPE_ICON_MAPPING,
-    Init: 'mdi-help-circle-outline',
-    Ref: 'mdi-swap-vertical-variant',
-} as const;
+    ...SingularTypeIconMapping,
+    ...LinearContainerTypeIconMapping,
+    ...PairContainerTypeIconMapping,
+    ...SpecialObjectTypeIconMapping,
+};
+
+type TYPE_ICON_MAPPING = typeof TYPE_ICON_MAPPING;
 
 export function getTypeIcon(type: ObjectType) {
-    return TYPE_ICON_MAPPING[type];
+    return TYPE_ICON_MAPPING[type] as string;
 }
 
 // TODO: i18n
@@ -306,11 +286,14 @@ export const OBJECT_DESCRIPTION = {
         'This is a edge object carrying its attributes in the multi graph.',
     Number: 'This is a number, either a float or an integer.',
     String: 'This is a string.',
+    UserList: 'This is a user defined List',
     List: 'This is a list of objects.',
     Tuple: 'This is a tuple of objects.',
+    NamedTuple: 'This is a named tuple',
     Deque: 'This is a deque of objects.',
     None: 'This is a the special entity None.',
     Set: 'This is a set of objects.',
+    UserDict: 'This is a user defined dictionary',
     Counter: 'This is a counter object.',
     Mapping: 'This is a mapping of objects.',
     Sequence: 'This is a sequence of objects.',

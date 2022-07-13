@@ -13,7 +13,6 @@ import { storeToRefs } from 'pinia';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
 import {
     EditorInfo,
-    EditorInfoContainer,
     getEditorInfo,
     initEditor,
 } from 'src/components/mixins/editor-base';

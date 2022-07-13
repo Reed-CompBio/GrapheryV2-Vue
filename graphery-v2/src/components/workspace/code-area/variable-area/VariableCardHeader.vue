@@ -9,7 +9,7 @@
                     :size="buttonSize"
                     :disable="info.stackBottom.value"
                     icon="mdi-backburger"
-                    @click="emitBackAction"
+                    @click="backAction"
                 ></q-btn>
             </div>
             <div class="var-header-center">
@@ -49,7 +49,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { useVariableBus } from 'components/mixins/controller/variable-bus';
 
 import type { PropType } from 'vue';
 import type { VariableInfo } from 'components/mixins/variable-base';
@@ -67,10 +66,9 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const bus = useVariableBus();
         const { notify } = useQuasar();
-        function emitBackAction() {
-            bus.emit('prop-var-stack', props.info.baseLabel);
+        function backAction() {
+            props.info.popStack();
         }
         function highlightAction() {
             // TODO
@@ -83,7 +81,7 @@ export default defineComponent({
             });
         }
         return {
-            emitBackAction,
+            backAction,
             buttonSize,
             highlightAction,
             typeButtonClickHandler,

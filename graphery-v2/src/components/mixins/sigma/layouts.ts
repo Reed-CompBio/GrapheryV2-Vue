@@ -1,11 +1,11 @@
 import ForceSupervisor from 'graphology-layout-force/worker';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import type { ForceLayoutSupervisorParameters } from 'graphology-layout-force/worker';
 import FA2Layout from 'graphology-layout-forceatlas2/worker';
 
 import type { ForceAtlas2SynchronousLayoutParameters } from 'graphology-layout-forceatlas2';
-import type { Ref, WritableComputedRef } from 'vue';
+import type { Ref } from 'vue';
 import type Graph from 'graphology';
 import type { Attributes } from 'graphology-types';
 
