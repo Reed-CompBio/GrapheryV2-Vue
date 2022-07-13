@@ -15,7 +15,6 @@
                 <div class="q-ml-xs">Workspace</div>
             </div>
             <div id="progress-wrapper">
-                <!-- TODO fix flickering bug -->
                 <q-badge id="progress-percentage" color="primary">
                     {{ percentage }}%
                 </q-badge>
@@ -162,10 +161,16 @@ export default defineComponent({
     #progress-bar
         width: inherit
         opacity: 0
+        transition-delay: 150ms
+        transition-duration: 200ms
+        transition-timing-function: ease-in
         margin-right: 10px
 
-#progress-wrapper:hover #progress-bar, #progress-bar.q-slider--active, #progress-bar:hover
+#progress-wrapper:hover #progress-bar, #progress-wrapper>.q-slider--active, #progress-bar:hover
     opacity: 100 !important
+    transition-duration: 200ms
+    transition-timing-function: ease-out
+
 
 #workspace-headquarter-wrapper
     flex: 1
