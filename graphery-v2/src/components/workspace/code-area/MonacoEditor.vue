@@ -16,6 +16,7 @@ import {
     getEditorInfo,
     initEditor,
 } from 'src/components/mixins/editor-base';
+import { useSettingsStorage } from 'src/stores/settings-storage';
 
 export default defineComponent({
     props: {
@@ -60,6 +61,12 @@ export default defineComponent({
             if (info.value && !info.value.isDiffEditor && newVal) {
                 info.value?.editor?.getModel()?.setValue(newVal.code);
             }
+        });
+
+        const { editor } = storeToRefs(useSettingsStorage());
+
+        watch(editor, (newVal) => {
+            editorInstance.value?.updateOptions(newVal);
         });
 
         onMounted(() => {

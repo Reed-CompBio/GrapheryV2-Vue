@@ -6,11 +6,11 @@
                     dense
                     flat
                     :icon="
-                        true
+                        editor.readOnly
                             ? 'mdi-lock-outline'
                             : 'mdi-lock-open-variant-outline'
                     "
-                    @click="eventBus.emit('toggleEditorLock')"
+                    @click="eventBus.emit('toggle-editor-lock')"
                 />
                 <div class="q-ml-xs">Workspace</div>
             </div>
@@ -22,6 +22,8 @@
                     id="progress-bar"
                     v-model="step"
                     color="primary"
+                    label
+                    switch-label-side
                     :step="1"
                     :min="0"
                     :max="maxStep"
@@ -108,12 +110,14 @@ import { computed, defineComponent } from 'vue';
 import { useHeadquarterStorage } from 'stores/headquarter-storage';
 import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { storeToRefs } from 'pinia';
+import { useSettingsStorage } from 'stores/settings-storage';
 
 export default defineComponent({
     setup() {
         const { currentStep, currentRecordArrayMaxLength } = storeToRefs(
             useHeadquarterStorage()
         );
+        const { editor } = storeToRefs(useSettingsStorage());
         const eventBus = useHeadquarterBus();
         const step = computed({
             get() {
@@ -140,6 +144,7 @@ export default defineComponent({
             percentage,
             forwardDisable,
             backwardDisable,
+            editor,
         };
     },
 });

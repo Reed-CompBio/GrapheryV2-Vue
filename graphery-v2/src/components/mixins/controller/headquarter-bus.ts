@@ -16,7 +16,7 @@ export interface EventDefTypes extends Record<EventType, unknown> {
     'execute-remotely': undefined;
     'execute-locally': undefined;
     // editor change
-    'toggle-editorLock': undefined;
+    'toggle-editor-lock': undefined;
     'copy-editor-code': undefined;
     'paste-editor-code': undefined;
     'toggle-var-list': undefined;
