@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watchEffect } from 'vue';
+import { defineComponent, reactive, watch } from 'vue';
 import VariableCardHeader from 'components/workspace/code-area/variable-area/VariableCardHeader.vue';
 import VariableBody from 'components/workspace/code-area/variable-area/VariableBody.vue';
 
@@ -26,14 +26,17 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const wrappedInfo = ref(
+        const wrappedInfo = reactive(
             new VariableInfoWrapper(props.info, props.info.label)
         );
 
-        watchEffect(() => {
-            wrappedInfo.value.updateBase(props.info);
-            wrappedInfo.value.requestHighlight();
-        });
+        watch(
+            () => props.info,
+            () => {
+                wrappedInfo.updateBase(props.info);
+                wrappedInfo.requestHighlight();
+            }
+        );
 
         return {
             wrappedInfo,
