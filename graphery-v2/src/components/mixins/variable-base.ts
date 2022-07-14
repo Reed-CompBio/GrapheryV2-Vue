@@ -296,7 +296,6 @@ export enum LinearContainerTypeIconMapping {
     'UserList' = 'mdi-code-brackets',
     'List' = 'mdi-code-brackets',
     'Tuple' = 'mdi-code-parentheses',
-    'NamedTuple' = 'mdi-code-parenthese',
     'Deque' = 'mdi-arrow-collapse-vertical',
     'Set' = 'mdi-set-center',
     'Sequence' = 'mdi-playlist-minus',

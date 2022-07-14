@@ -38,7 +38,6 @@ export const PYTHON_OBJECT_TYPES = [
     'List',
     'UserList',
     'Tuple',
-    'NamedTuple',
     'Deque',
     'None',
     'Set',
@@ -68,7 +67,6 @@ export const SUBSCRIPTABLE_LINEAR_CONTAINER_TYPES = [
     'List',
     'UserList',
     'Tuple',
-    'NamedTuple',
     'Deque',
     'Sequence',
 ] as const;
