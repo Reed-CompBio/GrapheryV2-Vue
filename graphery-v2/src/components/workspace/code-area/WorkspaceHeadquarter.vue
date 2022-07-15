@@ -67,7 +67,7 @@
                     @click="eventBus.emit('execute-locally')"
                 />
             </q-btn-group>
-            <q-btn-group id="vcs-buttons" dense flat>
+            <!-- <q-btn-group id="vcs-buttons" dense flat>
                 <q-btn
                     dense
                     icon="mdi-content-save-all-outline"
@@ -78,7 +78,7 @@
                     icon="mdi-content-save-move-outline"
                     @click="eventBus.emit('save-current-to-vcs')"
                 />
-            </q-btn-group>
+            </q-btn-group> -->
             <q-btn-group id="editor-buttons" dense flat>
                 <q-btn
                     dense
@@ -180,7 +180,7 @@ export default defineComponent({
 #workspace-headquarter-wrapper
     flex: 1
     display: grid
-    grid-template-columns: 1fr 35fr 4fr 2fr 2fr 4fr
+    grid-template-columns: 1fr 35fr 4fr 2fr 2fr
     grid-gap: 15px
 
     #workspace-headquarter-title
