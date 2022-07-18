@@ -196,7 +196,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
 
     const currentTutorialContent = computed(() => storage.tutorialContent);
 
-    const isLoadingTutorialContnet = computed(
+    const isLoadingTutorialContent = computed(
         () => storage.state.loadingTutorial
     );
 
@@ -650,7 +650,7 @@ export const useHeadquarterStorage = defineStore('headquarter', () => {
         currentLine,
         getNextBreakpoint,
         currentTutorialContent,
-        isLoadingTutorialContnet,
+        isLoadingTutorialContent,
         isLoadingGraph,
         isLoadingCode,
         // actions

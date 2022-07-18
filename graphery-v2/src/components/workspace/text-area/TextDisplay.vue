@@ -137,10 +137,10 @@ export default defineComponent({
         // TODO: add separate styles for different sections, and add a general style for
 
         const isLoadingTutorial = computed(
-            () => storage.isLoadingTutorialContnet
+            () => storage.isLoadingTutorialContent
         );
         const cannotLoadTutorial = computed(
-            () => storage.isLoadingTutorialContnet === false
+            () => storage.isLoadingTutorialContent === false
         );
 
         const tutorialData = computed<TutorialType | null>(() => {
