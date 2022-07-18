@@ -6,7 +6,7 @@ import { CHANGABLE_PROPERTIES } from 'src/types/execution-types';
 import type {
     HeadquarterStorageType,
     StepInfoType,
-} from 'stores/headquarter-storage-types';
+} from 'stores/headquarter/headquarter-storage-types';
 import type {
     CodeType,
     ExecutionResultType,

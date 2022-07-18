@@ -20,7 +20,7 @@ import type { PropType } from 'vue';
 import type { GraphAnchorType } from 'src/types/api-types';
 import GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
 import GraphControl from 'components/workspace/graph-area/GraphControl.vue';
-import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 
 export default defineComponent({
     components: { GraphControl, GraphingSection },

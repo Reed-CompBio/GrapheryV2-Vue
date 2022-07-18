@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, watch } from 'vue';
-import { useHeadquarterStorage } from 'stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { storeToRefs } from 'pinia';
 import VariableCard from 'components/workspace/code-area/variable-area/VariableCard.vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';

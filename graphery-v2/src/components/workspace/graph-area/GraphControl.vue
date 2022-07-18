@@ -78,7 +78,7 @@ import { toKebabCase } from 'src/utils/utils';
 import { useQuasar } from 'quasar';
 import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
-import { useHeadquarterStorage } from 'stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { useStorageBus } from 'src/components/mixins/controller/storage-bus';
 import { storeToRefs } from 'pinia';
 

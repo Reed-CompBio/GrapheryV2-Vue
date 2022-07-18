@@ -1,7 +1,7 @@
 import { editor, Range } from 'monaco-editor';
 import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
-import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { markRaw, watch } from 'vue';
 import { useHeadquarterBus } from './controller/headquarter-bus';
 

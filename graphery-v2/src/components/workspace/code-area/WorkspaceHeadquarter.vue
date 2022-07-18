@@ -107,7 +107,7 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { useHeadquarterStorage } from 'stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { storeToRefs } from 'pinia';
 import { useSettingsStorage } from 'stores/settings-storage';

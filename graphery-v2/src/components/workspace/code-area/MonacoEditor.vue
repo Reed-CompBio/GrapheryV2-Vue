@@ -10,7 +10,7 @@ import type { PropType, ComputedRef } from 'vue';
 import type monaco from 'monaco-editor';
 import { debounce } from 'quasar';
 import { storeToRefs } from 'pinia';
-import { useHeadquarterStorage } from 'stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import {
     EditorInfo,
     getEditorInfo,

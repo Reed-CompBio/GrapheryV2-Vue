@@ -30,7 +30,7 @@ import TextDisplay from 'components/workspace/text-area/TextDisplay.vue';
 import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
 import { useStorageBus } from 'components/mixins/controller/storage-bus';
 import { useRoute } from 'vue-router';
-import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 
 export default defineComponent({
     components: {

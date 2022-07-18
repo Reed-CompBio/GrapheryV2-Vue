@@ -1,8 +1,8 @@
-import { useHeadquarterBus } from 'src/components/mixins/controller/headquarter-bus';
+import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { apolloClient } from 'src/utils/graphql-client';
 import { LangCode } from 'src/types/api-types';
 import gql from 'graphql-tag';
-import { useStorageBus } from 'src/components/mixins/controller/storage-bus';
+import { useStorageBus } from 'components/mixins/controller/storage-bus';
 import type { useHeadquarterStorage } from './headquarter-storage';
 import type { CodeType, GraphType, TutorialType } from 'src/types/api-types';
 import type { RecordType } from 'src/types/execution-types';

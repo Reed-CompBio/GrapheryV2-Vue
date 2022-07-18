@@ -14,7 +14,7 @@ import {
 import Graph from 'graphology';
 import { initSigma, useSigma } from 'components/mixins/sigma/instance';
 import { initGraphLayouts } from 'components/mixins/sigma/layouts';
-import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { storeToRefs } from 'pinia';
 import { useGraphBus } from 'components/mixins/controller/graph-bus';
 

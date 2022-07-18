@@ -105,7 +105,7 @@ import { Status } from 'src/types/api-types';
 
 import type { PropType } from 'vue';
 import type { TutorialType } from 'src/types/api-types';
-import { useHeadquarterStorage } from 'src/stores/headquarter-storage';
+import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 
 interface TutorialTextStyle {
     titleFont?: string;
