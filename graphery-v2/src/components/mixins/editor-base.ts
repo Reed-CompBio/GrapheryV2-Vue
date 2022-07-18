@@ -9,10 +9,9 @@ const eventBus = useHeadquarterBus();
 
 export function initEditor(
     editorElement: HTMLElement,
-    isDiffEditor = false,
     options?: editor.IStandaloneEditorConstructionOptions
 ) {
-    editorInfo = new EditorInfoContainer(editorElement, isDiffEditor, options);
+    editorInfo = new EditorInfoContainer(editorElement, options);
     return editorInfo;
 }
 
@@ -40,21 +39,16 @@ export interface EditorInfo<T extends boolean = boolean> {
 export class EditorInfoContainer<T extends boolean = boolean>
     implements EditorInfo<T>
 {
-    isDiffEditor?: T;
     editor?: editor.IStandaloneCodeEditor;
-    diffEditor?: editor.IStandaloneDiffEditor;
     options?: editor.IStandaloneEditorConstructionOptions;
-    diffEditorOriginal?: string;
     decorationState: DecorationState;
     decorationOptions: DecorationOptions;
 
     constructor(
         editorElement: HTMLElement,
-        isDiffEditor: T,
         editorOptions?: editor.IStandaloneEditorConstructionOptions
     ) {
         this.options = editorOptions;
-        this.isDiffEditor = isDiffEditor;
         this.decorationState = {
             breakpointDecoration: new Map(),
             breakpointHintDecoration: [],
@@ -74,42 +68,26 @@ export class EditorInfoContainer<T extends boolean = boolean>
             },
         };
 
-        if (this.isDiffEditor) {
-            this.diffEditor = markRaw(
-                editor.createDiffEditor(editorElement, {
-                    fontSize: this.options?.fontSize,
-                    foldingStrategy: 'indentation', // fold text by indentation
-                    automaticLayout: true, // auto resize
-                    overviewRulerBorder: false, // scroll bar no boarder
-                    scrollBeyondLastLine: false, // remove blank space at the end of the editor
-                    readOnly: this.options?.readOnly,
-                    theme: this.options?.theme ? 'vs-dark' : 'vs',
-                    wordWrap: this.options?.wordWrap,
-                    minimap: this.options?.minimap,
-                    glyphMargin: true,
-                })
-            );
-        } else {
-            this.editor = markRaw(
-                editor.create(editorElement, {
-                    fontSize: this.options?.fontSize,
-                    foldingStrategy: 'indentation', // fold text by indentation
-                    automaticLayout: true, // auto resize
-                    overviewRulerBorder: false, // scroll bar no boarder
-                    scrollBeyondLastLine: false, // remove blank space at the end of the editor
-                    readOnly: this.options?.readOnly,
-                    theme: this.options?.theme ? 'vs-dark' : 'vs',
-                    language: this.options?.language ?? 'python',
-                    wordWrap: this.options?.wordWrap,
-                    minimap: this.options?.minimap,
-                    lineDecorationsWidth:
-                        this.options?.lineDecorationsWidth ?? '25px',
-                    glyphMargin: true,
-                    value: '# Hello there :)',
-                })
-            );
-            this._initCodeEditorEvents();
-        }
+        this.editor = markRaw(
+            editor.create(editorElement, {
+                fontSize: this.options?.fontSize,
+                foldingStrategy: 'indentation', // fold text by indentation
+                automaticLayout: true, // auto resize
+                overviewRulerBorder: false, // scroll bar no boarder
+                scrollBeyondLastLine: false, // remove blank space at the end of the editor
+                readOnly: this.options?.readOnly,
+                theme: this.options?.theme ? 'vs-dark' : 'vs',
+                language: this.options?.language ?? 'python',
+                wordWrap: this.options?.wordWrap,
+                minimap: this.options?.minimap,
+                lineDecorationsWidth:
+                    this.options?.lineDecorationsWidth ?? '25px',
+                glyphMargin: true,
+                value: '# Hello there :)',
+            })
+        );
+
+        this._initCodeEditorEvents();
     }
 
     _initCodeEditorEvents() {

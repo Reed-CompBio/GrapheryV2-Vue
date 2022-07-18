@@ -28,14 +28,6 @@ export default defineComponent({
             type: String,
             default: '',
         },
-        isDiffEditor: {
-            type: Boolean,
-            default: false,
-        },
-        original: {
-            type: String,
-            default: undefined,
-        },
         debounceWait: {
             type: Number,
             default: 200,
@@ -58,7 +50,7 @@ export default defineComponent({
 
         const { currentCode } = storeToRefs(useHeadquarterStorage());
         watch(currentCode, (newVal) => {
-            if (info.value && !info.value.isDiffEditor && newVal) {
+            if (info.value && newVal) {
                 info.value?.editor?.getModel()?.setValue(newVal.code);
             }
         });
@@ -75,13 +67,9 @@ export default defineComponent({
             ) as HTMLElement;
             console.assert(editorElement !== null);
 
-            info.value = initEditor(
-                editorElement,
-                props.isDiffEditor,
-                props.options
-            );
+            info.value = initEditor(editorElement, props.options);
 
-            if (info.value && !info.value.isDiffEditor) {
+            if (info.value) {
                 const editor =
                     editorInstance.value as monaco.editor.IStandaloneCodeEditor;
                 editor.getModel()?.onDidChangeContent(
