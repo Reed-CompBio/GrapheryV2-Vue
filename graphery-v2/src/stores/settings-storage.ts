@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { computed, reactive } from 'vue';
 import type { EditorSettings } from 'stores/settings-storage-types';
 import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
+import { LOCAL_EXECUTION_URL } from 'src/utils/vars';
 
 export const useSettingsStorage = defineStore('settings', () => {
     const editor = reactive<EditorSettings>({
         readOnly: false,
+        localExecutionPort: 7590,
     });
 
     const eventBus = useHeadquarterBus();
@@ -14,5 +16,9 @@ export const useSettingsStorage = defineStore('settings', () => {
         editor.readOnly = !editor.readOnly;
     });
 
-    return { editor };
+    const localExecutionURL = computed(
+        () => `${LOCAL_EXECUTION_URL}:${editor.localExecutionPort}/run`
+    );
+
+    return { editor, localExecutionURL };
 });
