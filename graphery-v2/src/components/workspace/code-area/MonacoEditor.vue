@@ -16,7 +16,7 @@ import {
     getEditorInfo,
     initEditor,
 } from 'src/components/mixins/editor-base';
-import { useSettingsStorage } from 'src/stores/settings-storage';
+import { useSettingsStorage } from 'stores/settings/settings-storage';
 
 export default defineComponent({
     props: {

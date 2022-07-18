@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, reactive } from 'vue';
-import type { EditorSettings } from 'stores/settings-storage-types';
+import type { EditorSettings } from 'stores/settings/settings-storage-types';
 import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { LOCAL_EXECUTION_URL } from 'src/utils/vars';
 
