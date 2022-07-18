@@ -16,14 +16,19 @@ type CodeType {
     tutorialAnchor: TutorialAnchorType!
 }
 
+type ErrorType {
+    message: String!
+    traceback: String!
+}
+
 type ExecutionResultType {
     code: CodeType!
     createdTime: DateTime!
     graphAnchor: GraphAnchorType!
     id: UUID!
     modifiedTime: DateTime!
-    resultJson: String!
-    resultJsonMeta: String!
+    resultJson: JSONType!
+    resultJsonMeta: JSONType!
 }
 
 type GraphAnchorType {
@@ -59,17 +64,21 @@ type GraphDescriptionType {
 type GraphType {
     createdTime: DateTime!
     graphAnchor: GraphAnchorType!
-    graphJson: String!
+    graphJson: JSONType!
     id: UUID!
     itemStatus: Status!
     makers: [UserType!]!
     modifiedTime: DateTime!
 }
 
+type InfoType {
+    result: JSONType!
+}
+
 type Mutation {
+    executionRequest(request: RequestType!): ResponseType!
     login(password: String!, username: String!): UserType
     logout: Boolean!
-    mutateTag(tag: TagMutationType): TagType
     register(user: UserMutationType!): UserType
 }
 
@@ -91,6 +100,11 @@ type Query {
     tagAnchors(filters: TagAnchorFilter): [TagAnchorType!]!
     tutorialAnchors(filters: TutorialAnchorFilter): [TutorialAnchorType!]!
     tutorialContent(lang: LangCode! = EN, url: String!): TutorialType
+}
+
+type ResponseType {
+    errors: [ErrorType!]
+    info: InfoType
 }
 
 type TagAnchorType {
@@ -278,6 +292,9 @@ enum Status {
 "Date with time (isoformat)"
 scalar DateTime
 
+"A JSON object or string"
+scalar JSONType
+
 scalar UUID
 
 input DatetimeFilterLookup {
@@ -313,6 +330,19 @@ input GraphAnchorFilter {
     url: StrFilterLookup
 }
 
+input RequestOptionType {
+    floatPrecision: Int
+    inputList: [String!]
+    randSeed: Int
+}
+
+input RequestType {
+    code: String!
+    graph: String!
+    options: RequestOptionType
+    version: String!
+}
+
 input StrFilterLookup {
     contains: String
     endsWith: String
@@ -340,21 +370,6 @@ input TagAnchorFilter {
     itemStatus: Status
     modifiedTime: DatetimeFilterLookup
     tags: DjangoModelFilterInput
-}
-
-input TagAnchorMutationType {
-    anchorName: String
-    id: UUID
-    itemStatus: Status
-}
-
-input TagMutationType {
-    description: String
-    id: UUID
-    itemStatus: Status
-    langCode: String
-    name: String
-    tagAnchor: TagAnchorMutationType
 }
 
 input TutorialAnchorFilter {

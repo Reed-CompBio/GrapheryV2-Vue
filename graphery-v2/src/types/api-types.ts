@@ -1,12 +1,3 @@
-import type { ApolloError } from '@apollo/client';
-
-export interface GraphQLLoadingType<N extends string, T> {
-    loading: boolean;
-    data: Record<N, T>;
-    errors?: object[];
-    error: ApolloError;
-}
-
 // https://transform.tools/graphql-to-typescript
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -27,6 +18,8 @@ export type Scalars = {
     Float: number;
     /** Date with time (isoformat) */
     DateTime: string;
+    /** A JSON object or string */
+    JSONType: string;
     UUID: string;
 };
 
@@ -46,6 +39,12 @@ export type CodeTypeExecutionResultArgs = {
     graphAnchorId: Scalars['UUID'];
 };
 
+export type ErrorType = {
+    __typename?: 'ErrorType';
+    message: Scalars['String'];
+    traceback: Scalars['String'];
+};
+
 export type ExecutionResultType = {
     __typename?: 'ExecutionResultType';
     code: CodeType;
@@ -53,8 +52,8 @@ export type ExecutionResultType = {
     graphAnchor: GraphAnchorType;
     id: Scalars['UUID'];
     modifiedTime: Scalars['DateTime'];
-    resultJson: Scalars['String'];
-    resultJsonMeta: Scalars['String'];
+    resultJson: Scalars['JSONType'];
+    resultJsonMeta: Scalars['JSONType'];
 };
 
 export type GraphAnchorType = {
@@ -101,28 +100,33 @@ export type GraphType = {
     __typename?: 'GraphType';
     createdTime: Scalars['DateTime'];
     graphAnchor: GraphAnchorType;
-    graphJson: Scalars['String'];
+    graphJson: Scalars['JSONType'];
     id: Scalars['UUID'];
     itemStatus: Status;
     makers: Array<UserType>;
     modifiedTime: Scalars['DateTime'];
 };
 
+export type InfoType = {
+    __typename?: 'InfoType';
+    result: Scalars['JSONType'];
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
+    executionRequest: ResponseType;
     login?: Maybe<UserType>;
     logout: Scalars['Boolean'];
-    mutateTag?: Maybe<TagType>;
     register?: Maybe<UserType>;
+};
+
+export type MutationExecutionRequestArgs = {
+    request: RequestType;
 };
 
 export type MutationLoginArgs = {
     password: Scalars['String'];
     username: Scalars['String'];
-};
-
-export type MutationMutateTagArgs = {
-    tag?: Maybe<TagMutationType>;
 };
 
 export type MutationRegisterArgs = {
@@ -180,6 +184,12 @@ export type QueryTutorialAnchorsArgs = {
 export type QueryTutorialContentArgs = {
     lang?: LangCode;
     url: Scalars['String'];
+};
+
+export type ResponseType = {
+    __typename?: 'ResponseType';
+    errors?: Maybe<Array<ErrorType>>;
+    info?: Maybe<InfoType>;
 };
 
 export type TagAnchorType = {
@@ -403,6 +413,19 @@ export type GraphAnchorFilter = {
     url?: Maybe<StrFilterLookup>;
 };
 
+export type RequestOptionType = {
+    floatPrecision?: Maybe<Scalars['Int']>;
+    inputList?: Maybe<Array<Scalars['String']>>;
+    randSeed?: Maybe<Scalars['Int']>;
+};
+
+export type RequestType = {
+    code: Scalars['String'];
+    graph: Scalars['String'];
+    options?: Maybe<RequestOptionType>;
+    version: Scalars['String'];
+};
+
 export type StrFilterLookup = {
     contains?: Maybe<Scalars['String']>;
     endsWith?: Maybe<Scalars['String']>;
@@ -430,21 +453,6 @@ export type TagAnchorFilter = {
     itemStatus?: Maybe<Status>;
     modifiedTime?: Maybe<DatetimeFilterLookup>;
     tags?: Maybe<DjangoModelFilterInput>;
-};
-
-export type TagAnchorMutationType = {
-    anchorName?: Maybe<Scalars['String']>;
-    id?: Maybe<Scalars['UUID']>;
-    itemStatus?: Maybe<Status>;
-};
-
-export type TagMutationType = {
-    description?: Maybe<Scalars['String']>;
-    id?: Maybe<Scalars['UUID']>;
-    itemStatus?: Maybe<Status>;
-    langCode?: Maybe<Scalars['String']>;
-    name?: Maybe<Scalars['String']>;
-    tagAnchor?: Maybe<TagAnchorMutationType>;
 };
 
 export type TutorialAnchorFilter = {
