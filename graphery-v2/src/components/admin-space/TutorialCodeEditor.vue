@@ -5,7 +5,7 @@
                 <GraphDisplay />
             </template>
             <template #after>
-                <MonacoEditor editor-id="monaco-graph-editor" />
+                <MonacoEditor editor-id="monaco-code-editor" />
             </template>
         </FullHeightSplitter>
     </div>

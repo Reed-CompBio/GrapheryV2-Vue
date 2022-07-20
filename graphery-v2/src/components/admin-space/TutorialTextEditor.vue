@@ -2,7 +2,7 @@
     <div class="tutorial-markdown-editor full-height">
         <FullHeightSplitter v-model="splitterPos">
             <template #before>
-                <MonacoEditor />
+                <MonacoEditor editor-id="monaco-text-editor" />
             </template>
             <template #after>
                 <MarkdownDisplay />

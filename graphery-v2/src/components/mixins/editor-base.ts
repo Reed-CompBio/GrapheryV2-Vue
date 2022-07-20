@@ -9,10 +9,15 @@ const eventBus = useHeadquarterBus();
 
 export function initEditor(
     editorElement: HTMLElement,
-    options?: editor.IStandaloneEditorConstructionOptions
+    options?: editor.IStandaloneEditorConstructionOptions,
+    customEditorInfo?: boolean
 ) {
-    editorInfo = new EditorInfoContainer(editorElement, options);
-    return editorInfo;
+    if (customEditorInfo) {
+        return new EditorInfoContainer(editorElement, options);
+    } else {
+        editorInfo = new EditorInfoContainer(editorElement, options);
+        return editorInfo;
+    }
 }
 
 export interface DecorationState {

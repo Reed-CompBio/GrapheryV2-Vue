@@ -18,6 +18,8 @@ import {
 } from 'src/components/mixins/editor-base';
 import { useSettingsStorage } from 'stores/settings/settings-storage';
 
+const DEFAULT_EDITOR_ID = 'monaco-editor';
+
 export default defineComponent({
     props: {
         options: {
@@ -32,10 +34,13 @@ export default defineComponent({
             type: Number,
             default: 200,
         },
+        editorId: {
+            type: String,
+            default: DEFAULT_EDITOR_ID,
+        },
     },
     emits: { 'update:modelValue': String },
     setup(props, ctx) {
-        const _editorID = 'monaco-editor';
         const info = ref(getEditorInfo());
 
         type EditorComputedRef<T extends EditorInfo = EditorInfo> = ComputedRef<
@@ -63,11 +68,15 @@ export default defineComponent({
 
         onMounted(() => {
             const editorElement = document.getElementById(
-                _editorID
+                props.editorId
             ) as HTMLElement;
             console.assert(editorElement !== null);
 
-            info.value = initEditor(editorElement, props.options);
+            info.value = initEditor(
+                editorElement,
+                props.options,
+                props.editorId !== DEFAULT_EDITOR_ID
+            );
 
             if (info.value) {
                 const editor =
@@ -88,7 +97,7 @@ export default defineComponent({
         });
 
         return {
-            editorID: _editorID,
+            editorID: props.editorId,
             editorInfo: info,
             editorInstance,
         };
