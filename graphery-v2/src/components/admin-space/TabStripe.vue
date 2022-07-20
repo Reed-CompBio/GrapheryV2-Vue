@@ -1,5 +1,10 @@
 <template>
-    <q-tabs v-model="tabModel" :inline-label="inlineLabels">
+    <q-tabs
+        v-model="tabModel"
+        :inline-label="inlineLabels"
+        :shrink="shrink"
+        dense
+    >
         <q-tab
             v-for="(tab, index) in tabSelection"
             :key="index"
@@ -34,6 +39,10 @@ export default defineComponent({
         inlineLabels: {
             type: Boolean,
             default: true,
+        },
+        shrink: {
+            type: Boolean,
+            default: false,
         },
     },
     emits: ['update:modelValue'],

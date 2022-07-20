@@ -1,5 +1,5 @@
 <template>
-    <div id="markdown-display" :class="markdownStyle" v-html="marked"></div>
+    <div :id="docId" :class="markdownStyle" v-html="marked"></div>
 </template>
 
 <script lang="ts">
@@ -68,11 +68,11 @@ export default defineComponent({
     props: {
         docId: {
             type: String,
-            default: '',
+            default: 'markdown-display',
         },
         markdownContent: {
             type: String,
-            default: '',
+            default: '# there will be text here :)',
         },
         options: {
             type: Object as PropType<MDT.Options>,
