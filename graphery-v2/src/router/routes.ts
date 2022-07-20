@@ -84,6 +84,19 @@ const routes: RouteRecordRaw[] = [
                 ],
             },
             {
+                path: '/admin-panel',
+                component: () => import('layouts/AdminLayout.vue'),
+                children: [
+                    {
+                        path: '/admin-panel/edit/:tutorialUrl',
+                        name: 'Tutorial Editor',
+                        props: true,
+                        component: () =>
+                            import('pages/admin-space/AdminEditorPanel.vue'),
+                    },
+                ],
+            },
+            {
                 path: '',
                 component: () => import('layouts/MaterialLayout.vue'),
                 children: [
