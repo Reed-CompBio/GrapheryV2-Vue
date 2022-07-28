@@ -79,7 +79,15 @@ type Mutation {
     executionRequest(request: RequestType!): ResponseType!
     login(password: String!, username: String!): UserType
     logout: Boolean!
-    register(user: UserMutationType!): UserType
+    mutateCode(data: CodeMutationType!, op: OperationType!): CodeType!
+    mutateGraph(data: GraphMutationType!, op: OperationType!): GraphType!
+    mutateGraphAnchor(data: GraphAnchorMutationType!, op: OperationType!): GraphAnchorType!
+    mutateGraphDescription(data: GraphDescriptionMutationType!, op: OperationType!): GraphDescriptionType!
+    mutateTag(data: TagMutationType!, op: OperationType!): TagType
+    mutateTagAnchor(data: TagAnchorMutationType!, op: OperationType!): TagAnchorType
+    mutateTutorial(data: TutorialMutationType!, op: OperationType!): TutorialType!
+    mutateTutorialAnchor(data: TutorialAnchorMutationType!, op: OperationType!): TutorialAnchorType!
+    register(data: UserMutationType!, recaptchaToken: String): UserType
 }
 
 type OrderedGraphAnchorType {
@@ -279,6 +287,12 @@ enum LangCode {
     ZH_HANT
 }
 
+enum OperationType {
+    CREATE
+    DELETE
+    UPDATE
+}
+
 enum Status {
     AUTOSAVE
     CLOSED
@@ -296,6 +310,13 @@ scalar DateTime
 scalar JSONType
 
 scalar UUID
+
+input CodeMutationType {
+    code: String
+    id: UUID
+    name: String
+    tutorialAnchor: TutorialAnchorMutationType
+}
 
 input DatetimeFilterLookup {
     contains: DateTime
@@ -328,6 +349,44 @@ input GraphAnchorFilter {
     itemStatus: Status
     modifiedTime: DatetimeFilterLookup
     url: StrFilterLookup
+}
+
+input GraphAnchorMutationType {
+    anchorName: String
+    defaultOrder: Int
+    id: UUID
+    itemStatus: Status
+    tagAnchors: [TagAnchorMutationType]
+    tutorialAnchors: [OrderedTutorialAnchorBindingType]
+    url: String
+}
+
+input GraphDescriptionMutationType {
+    authors: [UserMutationType]
+    descriptionMarkdown: String
+    graphAnchor: GraphAnchorMutationType
+    id: UUID
+    itemStatus: Status
+    langCode: String
+    title: String
+}
+
+input GraphMutationType {
+    graphAnchor: GraphAnchorMutationType
+    graphJson: String
+    id: UUID
+    itemStatus: Status
+    makers: [UserMutationType]
+}
+
+input OrderedGraphAnchorBindingType {
+    graphAnchor: GraphAnchorMutationType!
+    order: Int
+}
+
+input OrderedTutorialAnchorBindingType {
+    order: Int
+    tutorialAnchor: TutorialAnchorMutationType!
 }
 
 input RequestOptionType {
@@ -372,6 +431,21 @@ input TagAnchorFilter {
     tags: DjangoModelFilterInput
 }
 
+input TagAnchorMutationType {
+    anchorName: String
+    id: UUID
+    itemStatus: Status
+}
+
+input TagMutationType {
+    description: String
+    id: UUID
+    itemStatus: Status
+    langCode: String
+    name: String
+    tagAnchor: TagAnchorMutationType
+}
+
 input TutorialAnchorFilter {
     anchorName: StrFilterLookup
     createdTime: DatetimeFilterLookup
@@ -381,6 +455,15 @@ input TutorialAnchorFilter {
     rank: StrFilterLookup
     tutorials: TutorialFilter
     url: StrFilterLookup
+}
+
+input TutorialAnchorMutationType {
+    anchorName: String
+    graphAnchors: [OrderedGraphAnchorBindingType]
+    id: UUID
+    itemStatus: Status
+    tagAnchors: [TagAnchorMutationType]
+    url: String
 }
 
 input TutorialFilter {
@@ -394,6 +477,17 @@ input TutorialFilter {
     modifiedTime: DatetimeFilterLookup
     title: StrFilterLookup
     tutorialAnchor: TutorialAnchorFilter
+}
+
+input TutorialMutationType {
+    abstract: String
+    authors: [UserMutationType]
+    contentMarkdown: String
+    id: UUID
+    itemStatus: Status
+    langCode: String
+    title: String
+    tutorialAnchor: TutorialAnchorMutationType
 }
 
 input UUIDFilterLookup {

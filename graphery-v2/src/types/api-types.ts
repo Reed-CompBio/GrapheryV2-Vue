@@ -117,6 +117,14 @@ export type Mutation = {
     executionRequest: ResponseType;
     login?: Maybe<UserType>;
     logout: Scalars['Boolean'];
+    mutateCode: CodeType;
+    mutateGraph: GraphType;
+    mutateGraphAnchor: GraphAnchorType;
+    mutateGraphDescription: GraphDescriptionType;
+    mutateTag?: Maybe<TagType>;
+    mutateTagAnchor?: Maybe<TagAnchorType>;
+    mutateTutorial: TutorialType;
+    mutateTutorialAnchor: TutorialAnchorType;
     register?: Maybe<UserType>;
 };
 
@@ -129,8 +137,49 @@ export type MutationLoginArgs = {
     username: Scalars['String'];
 };
 
+export type MutationMutateCodeArgs = {
+    data: CodeMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateGraphArgs = {
+    data: GraphMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateGraphAnchorArgs = {
+    data: GraphAnchorMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateGraphDescriptionArgs = {
+    data: GraphDescriptionMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateTagArgs = {
+    data: TagMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateTagAnchorArgs = {
+    data: TagAnchorMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateTutorialArgs = {
+    data: TutorialMutationType;
+    op: OperationType;
+};
+
+export type MutationMutateTutorialAnchorArgs = {
+    data: TutorialAnchorMutationType;
+    op: OperationType;
+};
+
 export type MutationRegisterArgs = {
-    user: UserMutationType;
+    data: UserMutationType;
+    recaptchaToken?: Maybe<Scalars['String']>;
 };
 
 export type OrderedGraphAnchorType = {
@@ -370,6 +419,12 @@ export enum LangCode {
     ZHHANT = 'ZH_HANT',
 }
 
+export enum OperationType {
+    CREATE = 'CREATE',
+    DELETE = 'DELETE',
+    UPDATE = 'UPDATE',
+}
+
 export enum Status {
     AUTOSAVE = 'AUTOSAVE',
     CLOSED = 'CLOSED',
@@ -379,6 +434,13 @@ export enum Status {
     REVIEWING = 'REVIEWING',
     TRASH = 'TRASH',
 }
+
+export type CodeMutationType = {
+    code?: Maybe<Scalars['String']>;
+    id?: Maybe<Scalars['UUID']>;
+    name?: Maybe<Scalars['String']>;
+    tutorialAnchor?: Maybe<TutorialAnchorMutationType>;
+};
 
 export type DatetimeFilterLookup = {
     contains?: Maybe<Scalars['DateTime']>;
@@ -411,6 +473,44 @@ export type GraphAnchorFilter = {
     itemStatus?: Maybe<Status>;
     modifiedTime?: Maybe<DatetimeFilterLookup>;
     url?: Maybe<StrFilterLookup>;
+};
+
+export type GraphAnchorMutationType = {
+    anchorName?: Maybe<Scalars['String']>;
+    defaultOrder?: Maybe<Scalars['Int']>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    tagAnchors?: Maybe<Array<Maybe<TagAnchorMutationType>>>;
+    tutorialAnchors?: Maybe<Array<Maybe<OrderedTutorialAnchorBindingType>>>;
+    url?: Maybe<Scalars['String']>;
+};
+
+export type GraphDescriptionMutationType = {
+    authors?: Maybe<Array<Maybe<UserMutationType>>>;
+    descriptionMarkdown?: Maybe<Scalars['String']>;
+    graphAnchor?: Maybe<GraphAnchorMutationType>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    langCode?: Maybe<Scalars['String']>;
+    title?: Maybe<Scalars['String']>;
+};
+
+export type GraphMutationType = {
+    graphAnchor?: Maybe<GraphAnchorMutationType>;
+    graphJson?: Maybe<Scalars['String']>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    makers?: Maybe<Array<Maybe<UserMutationType>>>;
+};
+
+export type OrderedGraphAnchorBindingType = {
+    graphAnchor: GraphAnchorMutationType;
+    order?: Maybe<Scalars['Int']>;
+};
+
+export type OrderedTutorialAnchorBindingType = {
+    order?: Maybe<Scalars['Int']>;
+    tutorialAnchor: TutorialAnchorMutationType;
 };
 
 export type RequestOptionType = {
@@ -455,6 +555,21 @@ export type TagAnchorFilter = {
     tags?: Maybe<DjangoModelFilterInput>;
 };
 
+export type TagAnchorMutationType = {
+    anchorName?: Maybe<Scalars['String']>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+};
+
+export type TagMutationType = {
+    description?: Maybe<Scalars['String']>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    langCode?: Maybe<Scalars['String']>;
+    name?: Maybe<Scalars['String']>;
+    tagAnchor?: Maybe<TagAnchorMutationType>;
+};
+
 export type TutorialAnchorFilter = {
     anchorName?: Maybe<StrFilterLookup>;
     createdTime?: Maybe<DatetimeFilterLookup>;
@@ -464,6 +579,15 @@ export type TutorialAnchorFilter = {
     rank?: Maybe<StrFilterLookup>;
     tutorials?: Maybe<TutorialFilter>;
     url?: Maybe<StrFilterLookup>;
+};
+
+export type TutorialAnchorMutationType = {
+    anchorName?: Maybe<Scalars['String']>;
+    graphAnchors?: Maybe<Array<Maybe<OrderedGraphAnchorBindingType>>>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    tagAnchors?: Maybe<Array<Maybe<TagAnchorMutationType>>>;
+    url?: Maybe<Scalars['String']>;
 };
 
 export type TutorialFilter = {
@@ -477,6 +601,17 @@ export type TutorialFilter = {
     modifiedTime?: Maybe<DatetimeFilterLookup>;
     title?: Maybe<StrFilterLookup>;
     tutorialAnchor?: Maybe<TutorialAnchorFilter>;
+};
+
+export type TutorialMutationType = {
+    abstract?: Maybe<Scalars['String']>;
+    authors?: Maybe<Array<Maybe<UserMutationType>>>;
+    contentMarkdown?: Maybe<Scalars['String']>;
+    id?: Maybe<Scalars['UUID']>;
+    itemStatus?: Maybe<Status>;
+    langCode?: Maybe<Scalars['String']>;
+    title?: Maybe<Scalars['String']>;
+    tutorialAnchor?: Maybe<TutorialAnchorMutationType>;
 };
 
 export type UuidFilterLookup = {
