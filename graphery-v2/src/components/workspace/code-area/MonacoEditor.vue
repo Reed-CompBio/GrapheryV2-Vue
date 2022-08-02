@@ -9,14 +9,14 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import type { PropType, ComputedRef } from 'vue';
 import type monaco from 'monaco-editor';
 import { debounce } from 'quasar';
-import { storeToRefs } from 'pinia';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
+import { StateTree, Store, storeToRefs } from 'pinia';
 import {
     EditorInfo,
     getEditorInfo,
     initEditor,
 } from 'src/components/mixins/editor-base';
 import { useSettingsStorage } from 'stores/settings/settings-storage';
+import { CodeType } from 'src/types/api-types';
 
 const DEFAULT_EDITOR_ID = 'monaco-editor';
 
@@ -38,6 +38,16 @@ export default defineComponent({
             type: String,
             default: DEFAULT_EDITOR_ID,
         },
+        storage: {
+            type: Object as PropType<
+                Store<
+                    string,
+                    StateTree,
+                    { currentCode: CodeType; currentLine: number }
+                >
+            >,
+            default: undefined,
+        },
     },
     emits: { 'update:modelValue': String },
     setup(props, ctx) {
@@ -53,18 +63,17 @@ export default defineComponent({
             () => info.value?.editor
         ) as EditorComputedRef;
 
-        // refactor: storage code
-        const { currentCode, currentLine } = storeToRefs(
-            useHeadquarterStorage()
-        );
-        watch(currentCode, (newVal) => {
-            if (info.value && newVal) {
-                info.value?.editor?.getModel()?.setValue(newVal.code);
-            }
-        });
-        watch(currentLine, (newVal) => {
-            info.value?.moveToLine(newVal);
-        });
+        if (props.storage) {
+            const { currentCode, currentLine } = storeToRefs(props.storage);
+            watch(currentCode, (newVal) => {
+                if (info.value && newVal) {
+                    info.value?.editor?.getModel()?.setValue(newVal.code);
+                }
+            });
+            watch(currentLine, (newVal) => {
+                info.value?.moveToLine(newVal);
+            });
+        }
 
         const { editor } = storeToRefs(useSettingsStorage());
 
@@ -96,8 +105,12 @@ export default defineComponent({
                     }, props.debounceWait)
                 );
 
-                if (currentCode.value) {
-                    editor.getModel()?.setValue(currentCode.value.code);
+                if (props.storage) {
+                    if (props.storage.currentCode.code) {
+                        editor
+                            .getModel()
+                            ?.setValue(props.storage.currentCode.code);
+                    }
                 }
             }
         });
