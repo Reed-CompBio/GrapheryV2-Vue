@@ -15,6 +15,9 @@ export interface IGraphGetters {
 
 export interface IStateGetters {
     currentStepRecord: RecordType;
+    currentLine: number;
+    currentStep: number;
+    currentRecordArrayMaxLength: number;
 }
 
 export interface ICodeGetters {

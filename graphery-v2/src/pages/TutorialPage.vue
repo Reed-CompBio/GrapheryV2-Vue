@@ -9,13 +9,7 @@
                         <GraphDisplay :storage="headquarterStorage" />
                     </template>
                     <template #after>
-                        <div class="full-height">
-                            <WorkspaceHeadquarter :style="barStyle" />
-                            <CodeDisplay
-                                :style="editorStyle"
-                                :storage="headquarterStorage"
-                            />
-                        </div>
+                        <CodeDisplay :storage="headquarterStorage" />
                     </template>
                 </FullHeightSplitter>
             </template>
@@ -27,17 +21,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineAsyncComponent, defineComponent, ref } from 'vue';
+import { defineAsyncComponent, defineComponent, ref } from 'vue';
 import FullHeightSplitter from 'components/workspace/frames/FullHeightSplitter.vue';
 import TextDisplay from 'components/workspace/text-area/TextDisplay.vue';
-import WorkspaceHeadquarter from 'components/workspace/code-area/WorkspaceHeadquarter.vue';
 import { useStorageBus } from 'components/mixins/controller/storage-bus';
 import { useRoute } from 'vue-router';
 import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 
 export default defineComponent({
     components: {
-        WorkspaceHeadquarter,
         GraphDisplay: defineAsyncComponent(
             () => import('components/workspace/graph-area/GraphDisplay.vue')
         ),
@@ -58,19 +50,9 @@ export default defineComponent({
             url: route.params.url as string,
         });
 
-        const appBarSize = '32px';
-        const barStyle = computed(() => ({
-            height: appBarSize,
-        }));
-        const editorStyle = computed(() => ({
-            height: `calc(100% - ${appBarSize}) !important`,
-        }));
-
         return {
             leftRightSplitterPos,
             upDownSplitterPos,
-            barStyle,
-            editorStyle,
             headquarterStorage,
         };
     },

@@ -107,15 +107,23 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
+import { PropType } from 'vue';
 import { useHeadquarterBus } from 'components/mixins/controller/headquarter-bus';
 import { storeToRefs } from 'pinia';
+import { StateTree, Store } from 'pinia';
 import { useSettingsStorage } from 'stores/settings/settings-storage';
+import type { IStateGetters } from 'src/stores/store-interfaces';
 
 export default defineComponent({
-    setup() {
+    props: {
+        storage: {
+            type: Object as PropType<Store<string, StateTree, IStateGetters>>,
+            required: true,
+        },
+    },
+    setup(props) {
         const { currentStep, currentRecordArrayMaxLength } = storeToRefs(
-            useHeadquarterStorage()
+            props.storage
         );
         const { editor } = storeToRefs(useSettingsStorage());
         const eventBus = useHeadquarterBus();
