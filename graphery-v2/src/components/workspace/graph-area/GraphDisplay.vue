@@ -5,7 +5,7 @@
             id="graph-display-loading"
             class="full-height"
         >
-            <q-spinner />
+            <q-spinner size="64px" />
         </div>
         <div id="graph-display-section" class="full-height">
             <GraphControl ref="graph-control" :graphing="graphing" />
@@ -48,3 +48,10 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped lang="sass">
+#graph-display-loading
+    display: flex
+    align-items: center
+    justify-content: center
+</style>
