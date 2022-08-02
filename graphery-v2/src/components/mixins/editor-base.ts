@@ -1,8 +1,6 @@
 import { editor, Range } from 'monaco-editor';
-import { storeToRefs } from 'pinia';
 import { useQuasar } from 'quasar';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
-import { markRaw, watch } from 'vue';
+import { markRaw } from 'vue';
 import { useHeadquarterBus } from './controller/headquarter-bus';
 
 const eventBus = useHeadquarterBus();
@@ -133,11 +131,6 @@ export class EditorInfoContainer<T extends boolean = boolean>
             if (e.key === 'Escape') {
                 this.editor?.focus();
             }
-        });
-
-        const { currentLine } = storeToRefs(useHeadquarterStorage());
-        watch(currentLine, (newVal) => {
-            this.moveToLine(newVal);
         });
 
         const { notify } = useQuasar();

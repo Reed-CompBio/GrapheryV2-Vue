@@ -53,11 +53,17 @@ export default defineComponent({
             () => info.value?.editor
         ) as EditorComputedRef;
 
-        const { currentCode } = storeToRefs(useHeadquarterStorage());
+        // refactor: storage code
+        const { currentCode, currentLine } = storeToRefs(
+            useHeadquarterStorage()
+        );
         watch(currentCode, (newVal) => {
             if (info.value && newVal) {
                 info.value?.editor?.getModel()?.setValue(newVal.code);
             }
+        });
+        watch(currentLine, (newVal) => {
+            info.value?.moveToLine(newVal);
         });
 
         const { editor } = storeToRefs(useSettingsStorage());
