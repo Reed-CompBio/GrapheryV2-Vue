@@ -9,18 +9,22 @@
         </div>
         <div id="graph-display-section" class="full-height">
             <GraphControl ref="graph-control" :graphing="graphing" />
-            <GraphingSection ref="graphing" />
+            <GraphingSection
+                ref="graphing"
+                :graph-json="currentGraph?.graphJson"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import type { PropType } from 'vue';
 import type { GraphAnchorType } from 'src/types/api-types';
 import GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
 import GraphControl from 'components/workspace/graph-area/GraphControl.vue';
 import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
+import { storeToRefs } from 'pinia';
 
 export default defineComponent({
     components: { GraphControl, GraphingSection },
@@ -36,14 +40,15 @@ export default defineComponent({
             null
         );
 
-        const storage = useHeadquarterStorage();
-
-        const isLoadingGraph = computed(() => storage.isLoadingGraph);
+        const { isLoadingGraph, currentGraph } = storeToRefs(
+            useHeadquarterStorage()
+        );
 
         return {
             graphing,
             graphControl,
             isLoadingGraph,
+            currentGraph,
         };
     },
 });

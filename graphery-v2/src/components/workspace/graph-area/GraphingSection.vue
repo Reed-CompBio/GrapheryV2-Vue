@@ -145,6 +145,10 @@ export default defineComponent({
             type: Object as PropType<Partial<SpecialHighlightSettings>>,
             default: undefined,
         },
+        graphJson: {
+            type: String,
+            default: '',
+        },
     },
     setup(props) {
         // graph object
@@ -175,24 +179,22 @@ export default defineComponent({
 
             sigmaInfo.sigma = useSigma();
 
-            if (currentGraph.value) {
-                toolBox.importGraph(currentGraph.value.graphJson);
+            if (props.graphJson) {
+                toolBox.importGraph(props.graphJson);
             }
         });
 
-        const { currentGraph } = storeToRefs(useHeadquarterStorage());
-
-        watch(currentGraph, (newVal) => {
-            console.debug(
-                'preparing loading new graph since current graph is changed to',
-                newVal
-            );
-            if (newVal && newVal.graphJson) {
-                toolBox.importGraph(newVal.graphJson);
-            } else {
-                toolBox.clearGraph();
+        watch(
+            () => props.graphJson,
+            (newVal) => {
+                console.debug('import new graph from', newVal);
+                if (typeof newVal === 'string') {
+                    toolBox.importGraph(newVal);
+                } else {
+                    toolBox.clearGraph();
+                }
             }
-        });
+        );
 
         const eventBus = useGraphBus();
 
