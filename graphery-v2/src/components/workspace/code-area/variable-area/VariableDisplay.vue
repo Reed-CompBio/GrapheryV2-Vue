@@ -23,16 +23,26 @@
 
 <script lang="ts">
 import { computed, defineComponent, watch } from 'vue';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { storeToRefs } from 'pinia';
-import VariableCard from 'components/workspace/code-area/variable-area/VariableCard.vue';
 import { useGraphBus } from 'src/components/mixins/controller/graph-bus';
+import VariableCard from 'components/workspace/code-area/variable-area/VariableCard.vue';
+
+import type { PropType } from 'vue';
+import type { StateTree, Store } from 'pinia';
+import type { RecordType } from 'src/types/execution-types';
 
 export default defineComponent({
     components: { VariableCard },
-    setup() {
-        const storage = useHeadquarterStorage();
-        const { currentStepRecord } = storeToRefs(storage);
+    props: {
+        storage: {
+            type: Object as PropType<
+                Store<string, StateTree, { currentStepRecord: RecordType }>
+            >,
+            required: true,
+        },
+    },
+    setup(props) {
+        const { currentStepRecord } = storeToRefs(props.storage);
 
         const fixedNamedVars = computed(() =>
             Object.entries(currentStepRecord.value?.variables ?? {}).map(

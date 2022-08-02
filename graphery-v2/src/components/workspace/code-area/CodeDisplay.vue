@@ -4,7 +4,7 @@
             <MonacoEditor :storage="headquarterStorage" />
         </template>
         <template #after>
-            <VariableDisplay />
+            <VariableDisplay :storage="headquarterStorage" />
         </template>
     </FullHeightSplitter>
 </template>
