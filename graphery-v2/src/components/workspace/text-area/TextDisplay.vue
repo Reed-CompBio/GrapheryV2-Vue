@@ -105,7 +105,8 @@ import { Status } from 'src/types/api-types';
 
 import type { PropType } from 'vue';
 import type { TutorialType } from 'src/types/api-types';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
+import type { StateTree, Store } from 'pinia';
+import type { ITutorialGetters } from 'src/stores/store-interfaces';
 
 interface TutorialTextStyle {
     titleFont?: string;
@@ -128,23 +129,28 @@ export default defineComponent({
             type: Object as PropType<TutorialTextStyle>,
             default: undefined,
         },
+        storage: {
+            type: Object as PropType<
+                Store<string, StateTree, ITutorialGetters>
+            >,
+            required: true,
+        },
     },
     setup(props) {
-        const storage = useHeadquarterStorage();
         const style = computed(() => {
             return { ...props.style };
         });
         // TODO: add separate styles for different sections, and add a general style for
 
         const isLoadingTutorial = computed(
-            () => storage.isLoadingTutorialContent
+            () => props.storage.isLoadingTutorialContent
         );
         const cannotLoadTutorial = computed(
-            () => storage.isLoadingTutorialContent === false
+            () => props.storage.isLoadingTutorialContent === false
         );
 
         const tutorialData = computed<TutorialType | null>(() => {
-            return storage.currentTutorialContent;
+            return props.storage.currentTutorialContent;
         });
 
         const tutorialPublished = computed(() => {

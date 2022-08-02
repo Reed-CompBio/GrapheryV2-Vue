@@ -1,4 +1,9 @@
-import type { CodeType, GraphAnchorType, GraphType } from 'src/types/api-types';
+import type {
+    CodeType,
+    GraphAnchorType,
+    GraphType,
+    TutorialType,
+} from 'src/types/api-types';
 import type { RecordType } from 'src/types/execution-types';
 
 export interface IGraphGetters {
@@ -15,4 +20,9 @@ export interface IStateGetters {
 export interface ICodeGetters {
     currentCode: CodeType;
     currentLine: number;
+}
+
+export interface ITutorialGetters {
+    isLoadingTutorialContent: boolean;
+    currentTutorialContent: TutorialType;
 }

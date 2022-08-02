@@ -20,7 +20,7 @@
                 </FullHeightSplitter>
             </template>
             <template #after>
-                <TextDisplay />
+                <TextDisplay :storage="headquarterStorage" />
             </template>
         </FullHeightSplitter>
     </div>
