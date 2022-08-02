@@ -22,7 +22,7 @@
                 dense
                 rounded
                 label="Graph"
-                :options="storage.graphAnchors"
+                :options="graphAnchors"
                 :map-options="true"
                 :option-label="(x) => x.graphDescription.title"
                 :loading="isLoadingGraph"
@@ -78,13 +78,13 @@ import { toKebabCase } from 'src/utils/utils';
 import { useQuasar } from 'quasar';
 import saveAsPNG from 'components/mixins/sigma/save-as-png';
 import { useGraphLayouts } from 'components/mixins/sigma/layouts';
-import { useHeadquarterStorage } from 'stores/headquarter/headquarter-storage';
 import { useStorageBus } from 'src/components/mixins/controller/storage-bus';
-import { storeToRefs } from 'pinia';
+import { StateTree, Store, storeToRefs } from 'pinia';
 
 import type { PropType } from 'vue';
 import type GraphingSection from 'components/workspace/graph-area/GraphingSection.vue';
 import type { GraphAnchorType } from 'src/types/api-types';
+import { IGraphGetters } from 'src/stores/store-interfaces';
 
 export default defineComponent({
     props: {
@@ -106,16 +106,19 @@ export default defineComponent({
             > | null>,
             default: null,
         },
+        storage: {
+            type: Object as PropType<Store<string, StateTree, IGraphGetters>>,
+            required: true,
+        },
     },
     setup(props) {
-        const storage = useHeadquarterStorage();
         const eventBus = useStorageBus();
 
         const choice = ref({
             choosing: false,
             choosingWhich: computed({
                 get() {
-                    return storage.currentGraphAnchor;
+                    return props.storage.currentGraphAnchor;
                 },
                 set(anchorObj: GraphAnchorType | null) {
                     eventBus.emit('fetch-graph', {
@@ -128,7 +131,8 @@ export default defineComponent({
             },
         });
 
-        const { graphAnchors, isLoadingGraph } = storeToRefs(storage);
+        const { graphAnchors, isLoadingGraph } = storeToRefs(props.storage);
+
         if (graphAnchors) {
             console.debug('init graph anchors: ', graphAnchors);
             choice.value.choosingWhich = graphAnchors.value[0];
@@ -218,7 +222,7 @@ export default defineComponent({
             buttons,
             layouts,
             choice,
-            storage,
+            graphAnchors,
             isLoadingGraph,
         };
     },

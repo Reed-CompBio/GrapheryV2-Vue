@@ -6,12 +6,15 @@
                 <!--       Top and Down splitter         -->
                 <FullHeightSplitter v-model="upDownSplitterPos" horizontal>
                     <template #before>
-                        <GraphDisplay />
+                        <GraphDisplay :storage="headquarterStorage" />
                     </template>
                     <template #after>
                         <div class="full-height">
                             <WorkspaceHeadquarter :style="barStyle" />
-                            <CodeDisplay :style="editorStyle" />
+                            <CodeDisplay
+                                :style="editorStyle"
+                                :storage="headquarterStorage"
+                            />
                         </div>
                     </template>
                 </FullHeightSplitter>
@@ -50,7 +53,7 @@ export default defineComponent({
 
         const bus = useStorageBus();
         const route = useRoute();
-        useHeadquarterStorage();
+        const headquarterStorage = useHeadquarterStorage();
         bus.emit('fetch-tutorial', {
             url: route.params.url as string,
         });
@@ -68,6 +71,7 @@ export default defineComponent({
             upDownSplitterPos,
             barStyle,
             editorStyle,
+            headquarterStorage,
         };
     },
 });

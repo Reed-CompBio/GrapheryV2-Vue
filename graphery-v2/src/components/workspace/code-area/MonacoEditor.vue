@@ -9,14 +9,15 @@ import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import type { PropType, ComputedRef } from 'vue';
 import type monaco from 'monaco-editor';
 import { debounce } from 'quasar';
-import { StateTree, Store, storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia';
+import { StateTree, Store } from 'pinia';
 import {
     EditorInfo,
     getEditorInfo,
     initEditor,
 } from 'src/components/mixins/editor-base';
 import { useSettingsStorage } from 'stores/settings/settings-storage';
-import { CodeType } from 'src/types/api-types';
+import type { ICodeGetters } from 'src/stores/store-interfaces';
 
 const DEFAULT_EDITOR_ID = 'monaco-editor';
 
@@ -39,13 +40,7 @@ export default defineComponent({
             default: DEFAULT_EDITOR_ID,
         },
         storage: {
-            type: Object as PropType<
-                Store<
-                    string,
-                    StateTree,
-                    { currentCode: CodeType; currentLine: number }
-                >
-            >,
+            type: Object as PropType<Store<string, StateTree, ICodeGetters>>,
             default: undefined,
         },
     },

@@ -29,15 +29,13 @@ import VariableCard from 'components/workspace/code-area/variable-area/VariableC
 
 import type { PropType } from 'vue';
 import type { StateTree, Store } from 'pinia';
-import type { RecordType } from 'src/types/execution-types';
+import type { IStateGetters } from 'src/stores/store-interfaces';
 
 export default defineComponent({
     components: { VariableCard },
     props: {
         storage: {
-            type: Object as PropType<
-                Store<string, StateTree, { currentStepRecord: RecordType }>
-            >,
+            type: Object as PropType<Store<string, StateTree, IStateGetters>>,
             required: true,
         },
     },
